@@ -21,14 +21,8 @@ module.exports = function(host) {
         }
       })
       .fail(function() {
-
       })
       .always(function() {
-        host.$('[data-id="' + id + '"]').remove();
-
-        if (host.$('[data-role=item]').length === 0) {
-          host.getList();
-        }
       });
   };
 

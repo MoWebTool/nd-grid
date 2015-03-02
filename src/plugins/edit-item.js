@@ -38,13 +38,8 @@ module.exports = function(host) {
         plugin.trigger('hide');
       })
       .fail(function() {
-
       })
       .always(function() {
-        // 成功，刷新当前页
-        host.getList();
-
-        plugin.trigger('hide');
       });
   });
 

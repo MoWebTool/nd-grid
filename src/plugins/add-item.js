@@ -31,16 +31,8 @@ module.exports = function(host) {
         plugin.trigger('hide');
       })
       .fail(function() {
-
       })
       .always(function() {
-        // 成功，返回第一页
-        host.getList({
-          offset: 0
-        });
-
-        // 隐藏
-        plugin.trigger('hide');
       });
   });
 
