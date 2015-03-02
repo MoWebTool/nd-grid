@@ -9,6 +9,8 @@ module.exports = function(grunt) {
 
     server: {
       develop: {
+        // src: 'examples/config.js.tpl',
+        // dest: 'examples/config.js',
         options: {
           config: false,
           release: false
