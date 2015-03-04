@@ -50,6 +50,8 @@ module.exports = Widget.extend({
     // 数据
     model: {},
 
+    uniqueId: 'id',
+
     checkable: false,
 
     plugins: require('./src/plugins'),
@@ -220,26 +222,29 @@ module.exports = Widget.extend({
   },
 
   _parsePages: function(data) {
-    var pageList = [{
+    var pageList = [],
+      pageCount = Math.ceil(data.count / data.limit),
+      currentPage = Math.floor(data.offset / data.limit) + 1;
+
+    if (pageCount) {
+      pageList = [{
           page: '-1',
           text: '<',
-          cls: 'prev'
+          cls: 'prev',
+          disabled: currentPage === 1
         },
         {
+          page: currentPage,
+          text: currentPage + '/' + pageCount,
           cls: 'current'
         },
         {
           page: '+1',
           text: '>',
-          cls: 'next'
-        }],
-      pageCount = Math.ceil(data.count / data.limit),
-      currentPage = Math.floor(data.offset / data.limit) + 1;
-
-    pageList[0].disabled = currentPage === 1;
-    pageList[1].page = currentPage;
-    pageList[1].text = currentPage + '/' + pageCount;
-    pageList[2].disabled = currentPage === pageCount;
+          cls: 'next',
+          disabled: currentPage === pageCount
+        }];
+    }
 
     this.set('pageSize', data.limit);
     this.set('pageCount', pageCount);

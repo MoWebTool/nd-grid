@@ -7,43 +7,17 @@
 
 var $ = require('jquery');
 
-var Form = require('nd-form');
-var FD = require('nd-formdata');
 var Alert = require('nd-alert');
 
+var MForm = require('../modules/form');
+
 function makeForm(host, plugin) {
-  var form = new Form($.extend(true, {
+  var form = new MForm($.extend(true, {
     // name: '',
     // action: '',
     method: 'POST',
 
-    // 表单数据
-    formData: {},
-
-    dataParser: function() {
-      return new FD(this.getElements()).toJSON();
-    },
-
-    // 数据相符校验，用于处理 formData 与 fields 匹配
-    // matchers: {
-      // test: function(value, match) {
-      // return value === match[0].value;
-      // }
-    // },
-
-    fields: [],
-
-    buttons: [{
-      label: '取消',
-      type: 'button',
-      role: 'form-cancel'
-    }, {
-      label: '添加',
-      type: 'submit',
-      role: 'form-submit'
-    }],
-
-    parentNode: '#main',
+    parentNode: host.get('parentNode'),
 
     events: {
       'click [data-role=form-cancel]': function() {

@@ -20,7 +20,7 @@ function makeForm(host, plugin, id, data) {
   var form = new MForm($.extend(true, {
     // name: '',
     // action: '',
-    method: 'PATCH',
+    method: 'PUT',
 
     // 表单数据
     formData: data,
@@ -55,12 +55,12 @@ module.exports = function(host) {
   }
 
   host.get('itemActions').push({
-    'role': 'edit-item',
+    'role': 'put-item',
     'text': '编辑'
   });
 
   host.delegateEvents({
-    'click [data-role=edit-item]': function(e) {
+    'click [data-role=put-item]': function(e) {
       var id = getItemId(e.currentTarget),
         key = 'form-' + id;
 
@@ -95,7 +95,7 @@ module.exports = function(host) {
   });
 
   plugin.on('submit', function(id, data) {
-    host.PATCH(id, data)
+    host.PUT(id, data)
       .done(function(/*data*/) {
         // 成功，刷新当前页
         host.getList();

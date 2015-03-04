@@ -13,6 +13,12 @@ module.exports = {
     plugin: require('./plugins/edit-item')
     // callback needed
   },
+  putItem: {
+    disabled: true,
+    name: 'putItem',
+    plugin: require('./plugins/put-item')
+    // callback needed
+  },
   delItem: {
     disabled: true,
     name: 'delItem',
