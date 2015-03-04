@@ -8,21 +8,21 @@
 var $ = require('jquery');
 
 var Confirm = require('nd-confirm');
+var Alert = require('nd-alert');
 
 module.exports = function(host) {
 
   var delItem = function(id) {
     host.DELETE(id)
-      .done(function(data) {
+      .done(function(/*data*/) {
         host.$('[data-id="' + id + '"]').remove();
 
         if (host.$('[data-role=item]').length === 0) {
           host.reloadList();
         }
       })
-      .fail(function() {
-      })
-      .always(function() {
+      .fail(function(error) {
+        Alert.show(error);
       });
   };
 

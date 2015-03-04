@@ -38,9 +38,6 @@ module.exports = Widget.extend({
     // 模板
     template: require('./src/templates/grid.handlebars'),
 
-    // 数据源名
-    scope: 'grid',
-
     // 行处理
     itemActions: [],
 

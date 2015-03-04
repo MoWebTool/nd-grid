@@ -5,6 +5,8 @@
 
 'use strict';
 
+var Alert = require('nd-alert');
+
 module.exports = function(host) {
   var plugin = this;
 
@@ -26,9 +28,8 @@ module.exports = function(host) {
         .done(function(data) {
           plugin.trigger('show', id, data);
         })
-        .fail(function() {
-        })
-        .always(function() {
+        .fail(function(error) {
+          Alert.show(error);
         });
     }
   });
