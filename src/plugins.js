@@ -45,5 +45,10 @@ module.exports = {
   reload: {
     name: 'reload',
     plugin: require('./plugins/reload')
+  },
+  search: {
+    disabled: true,
+    name: 'search',
+    plugin: require('./plugins/search')
   }
 };
