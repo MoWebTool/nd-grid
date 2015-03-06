@@ -24,8 +24,8 @@ module.exports = function(host) {
       type: 'submit',
       role: 'form-submit'
     }],
-    parentNode: host.get('parentNode'),
-    insertTo: function(element, parentNode) {
+    parentNode: host.element,
+    insertInto: function(element, parentNode) {
       element.prependTo(parentNode);
     },
     events: {
