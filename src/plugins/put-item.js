@@ -11,38 +11,38 @@ var Alert = require('nd-alert');
 
 var MForm = require('../modules/form');
 
-/*jshint maxparams:4*/
-function makeForm(host, plugin, id, data) {
-  data || (data = {});
+module.exports = function() {
+  var plugin = this,
+    host = plugin.host;
 
-  data[host.get('uniqueId')] = id;
+  function makeForm(id, data) {
+    data || (data = {});
 
-  var form = new MForm($.extend(true, {
-    // name: '',
-    // action: '',
-    method: 'PUT',
+    data[host.get('uniqueId')] = id;
 
-    // 表单数据
-    formData: data,
+    var form = new MForm($.extend(true, {
+      // name: '',
+      // action: '',
+      method: 'PUT',
 
-    parentNode: host.get('parentNode'),
+      // 表单数据
+      formData: data,
 
-    events: {
-      'click [data-role=form-cancel]': function() {
-        plugin.trigger('hide', id);
+      parentNode: host.get('parentNode'),
+
+      events: {
+        'click [data-role=form-cancel]': function() {
+          plugin.trigger('hide', this);
+        }
       }
-    }
-  }, plugin.options))
-  .on('submit', function(e) {
-    e.preventDefault();
-    plugin.trigger('submit', this.get('dataParser').call(this));
-  });
+    }, plugin.options))
+    .on('submit', function(e) {
+      e.preventDefault();
+      plugin.trigger('submit', this.get('dataParser').call(this));
+    });
 
-  return form;
-}
-
-module.exports = function(host) {
-  var plugin = this;
+    return form;
+  }
 
   // helpers
 
@@ -71,27 +71,27 @@ module.exports = function(host) {
           // 接口的 REST 不规范，采用 hack
           data = data.items[0];
 
-          plugin[key] = new makeForm(host, plugin, id, data).render();
+          plugin[key] = makeForm(id, data).render();
 
-          plugin.trigger('show', id);
+          plugin.trigger('show', plugin[key]);
         })
         .fail(function(error) {
           Alert.show(error);
         });
       } else {
-        plugin.trigger('show', id);
+        plugin.trigger('show', plugin[key]);
       }
     }
   });
 
-  plugin.on('show', function(id) {
+  plugin.on('show', function(form) {
     host.element.hide();
-    plugin['form-' + id].element.show();
+    form.element.show();
   });
 
-  plugin.on('hide', function(id) {
+  plugin.on('hide', function(form) {
     host.element.show();
-    plugin['form-' + id].element.hide();
+    form.element.hide();
   });
 
   plugin.on('submit', function(id, data) {
@@ -100,7 +100,7 @@ module.exports = function(host) {
         // 成功，刷新当前页
         host.getList();
 
-        plugin.trigger('hide', id);
+        plugin.trigger('hide', plugin['form-' + id]);
       })
       .fail(function(error) {
         Alert.show(error);

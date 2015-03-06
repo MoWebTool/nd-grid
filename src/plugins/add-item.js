@@ -11,30 +11,31 @@ var Alert = require('nd-alert');
 
 var MForm = require('../modules/form');
 
-function makeForm(host, plugin) {
-  var form = new MForm($.extend(true, {
-    // name: '',
-    // action: '',
-    method: 'POST',
+module.exports = function() {
+  var plugin = this,
+    host = plugin.host;
 
-    parentNode: host.get('parentNode'),
+  function makeForm() {
+    var form = new MForm($.extend(true, {
+      // name: '',
+      // action: '',
+      method: 'POST',
 
-    events: {
-      'click [data-role=form-cancel]': function() {
-        plugin.trigger('hide');
+      parentNode: host.get('parentNode'),
+
+      events: {
+        'click [data-role=form-cancel]': function() {
+          plugin.trigger('hide', this);
+        }
       }
-    }
-  }, plugin.options))
-  .on('submit', function(e) {
-    e.preventDefault();
-    plugin.trigger('submit', this.get('dataParser').call(this));
-  });
+    }, plugin.options))
+    .on('submit', function(e) {
+      e.preventDefault();
+      plugin.trigger('submit', this.get('dataParser').call(this));
+    });
 
-  return form;
-}
-
-module.exports = function(host) {
-  var plugin = this;
+    return form;
+  }
 
   host.get('gridActions').push({
     'role': 'add-item',
@@ -44,21 +45,21 @@ module.exports = function(host) {
   host.delegateEvents({
     'click [data-role=add-item]': function() {
       if (!plugin.form) {
-        plugin.form = new makeForm(host, plugin).render();
+        plugin.form = makeForm().render();
       }
 
-      plugin.trigger('show');
+      plugin.trigger('show', plugin.form);
     }
   });
 
-  plugin.on('show', function() {
+  plugin.on('show', function(form) {
     host.element.hide();
-    plugin.form.element.show();
+    form.element.show();
   });
 
-  plugin.on('hide', function() {
+  plugin.on('hide', function(form) {
     host.element.show();
-    plugin.form.element.hide();
+    form.element.hide();
   });
 
   plugin.on('submit', function(data) {
@@ -73,7 +74,7 @@ module.exports = function(host) {
         plugin.form.element[0].reset();
 
         // 隐藏
-        plugin.trigger('hide');
+        plugin.trigger('hide', plugin.form);
       })
       .fail(function(error) {
         Alert.show(error);

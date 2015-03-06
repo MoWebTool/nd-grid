@@ -8,7 +8,9 @@
 var Confirm = require('nd-confirm');
 var Alert = require('nd-alert');
 
-module.exports = function(host) {
+module.exports = function() {
+  var plugin = this,
+    host = plugin.host;
 
   // helpers
 

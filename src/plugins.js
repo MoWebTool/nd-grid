@@ -5,19 +5,19 @@ module.exports = {
     disabled: true,
     name: 'viewItem',
     plugin: require('./plugins/view-item')
-    // callback needed
+    // callbacks needed
   },
   editItem: {
     disabled: true,
     name: 'editItem',
     plugin: require('./plugins/edit-item')
-    // callback needed
+    // callbacks needed
   },
   putItem: {
     disabled: true,
     name: 'putItem',
     plugin: require('./plugins/put-item')
-    // callback needed
+    // callbacks needed
   },
   delItem: {
     disabled: true,
@@ -28,7 +28,7 @@ module.exports = {
     disabled: true,
     name: 'addItem',
     plugin: require('./plugins/add-item')
-    // callback needed
+    // callbacks needed
   },
   check: {
     disabled: true,

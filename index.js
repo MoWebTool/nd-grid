@@ -126,7 +126,7 @@ module.exports = Widget.extend({
     // boot
     $.each(plugins, function(i, item) {
       if (!item.disabled) {
-        that.addPlugin(item.name, item.plugin, item.callback);
+        that.addPlugin(item.name, item.plugin, item.callbacks);
       }
     });
   },

@@ -9,11 +9,9 @@ var $ = require('jquery');
 
 var MForm = require('../modules/form');
 
-module.exports = function(host) {
-  var plugin = this;
-
-  // 通知就绪
-  this.ready();
+module.exports = function() {
+  var plugin = this,
+    host = plugin.host;
 
   // 在 ready 后执行，让 callback 先设置 options
   // TODO: 存在问题：不支持 options 为异步的情况
@@ -39,4 +37,7 @@ module.exports = function(host) {
   plugin.on('submit', function(data) {
     host.getList(data);
   });
+
+  // 通知就绪
+  this.ready();
 };

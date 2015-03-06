@@ -10,30 +10,30 @@ var $ = require('jquery');
 var Dialog = require('nd-dialog');
 var Alert = require('nd-alert');
 
-/*jshint maxparams:4*/
-function makeDialog(host, plugin, id, data) {
-  var dialog = new Dialog($.extend(true, {
+module.exports = function() {
+  var plugin = this,
+    host = plugin.host;
 
-    parentNode: host.get('parentNode'),
+  function makeDialog(id, data) {
+    var dialog = new Dialog($.extend(true, {
 
-    data: null,
+      parentNode: host.get('parentNode'),
 
-    afterHide: function() {
-      plugin.trigger('hide', id);
-    },
+      data: null,
 
-    onChangeData: function(data) {
-      this.set('content', this.get('partial')(data));
-    }
-  }, plugin.options));
+      afterHide: function() {
+        plugin.trigger('hide', this);
+      },
 
-  dialog.set('data', data);
+      onChangeData: function(data) {
+        this.set('content', this.get('partial')(data));
+      }
+    }, plugin.options));
 
-  return dialog;
-}
+    dialog.set('data', data);
 
-module.exports = function(host) {
-  var plugin = this;
+    return dialog;
+  }
 
   // helpers
 
@@ -57,25 +57,25 @@ module.exports = function(host) {
           // 接口的 REST 不规范，采用 hack
           data = data.items[0];
 
-          plugin[key] = new makeDialog(host, plugin, id, data).render();
+          plugin[key] = makeDialog(id, data).render();
 
-          plugin.trigger('show', id);
+          plugin.trigger('show', plugin[key]);
         })
         .fail(function(error) {
           Alert.show(error);
         });
       } else {
-        plugin.trigger('show', id);
+        plugin.trigger('show', plugin[key]);
       }
     }
   });
 
-  plugin.on('show', function(id) {
+  plugin.on('show', function(dialog) {
     host.element.hide();
-    plugin['dialog-' + id].show();
+    dialog.show();
   });
 
-  plugin.on('hide', function(/*id*/) {
+  plugin.on('hide', function(/*dialog*/) {
     host.element.show();
     // plugin['dialog-' + id].hide();
   });

@@ -5,7 +5,9 @@
 
 'use strict';
 
-module.exports = function(host) {
+module.exports = function() {
+  var plugin = this,
+    host = plugin.host;
 
   // helpers
 
