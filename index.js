@@ -7,6 +7,7 @@
 
 var $ = require('jquery');
 
+var Alert = require('nd-alert');
 var Widget = require('nd-widget');
 var Template = require('nd-template');
 var Plugins = require('nd-plugins');
@@ -24,6 +25,7 @@ module.exports = Widget.extend({
     isEquals: function(key, uniqueId, options) {
       return key === uniqueId ? options.fn(this) : options.inverse(this);
     }
+    // and adapters, from attrs
   },
 
   templatePartials: {
@@ -60,6 +62,8 @@ module.exports = Widget.extend({
 
     currentPage: 1,
     pageCount: 0,
+    limit: 10,
+    offset: 0,
 
     // url
     baseUri: null,
@@ -98,6 +102,8 @@ module.exports = Widget.extend({
 
   setup: function() {
     this.initPlugins();
+
+    this.templateHelpers.adapters = this.get('adapters');
 
     // 取列表
     this.getList();
@@ -139,32 +145,22 @@ module.exports = Widget.extend({
     }
 
     this.getList({
-      offset: (page - 1) * this.get('pageSize')
+      offset: (page - 1) * this.get('limit')
     });
   },
 
   getList: function(params) {
-    var that = this,
-      gridData;
+    var that = this;
 
-    if (!params) {
-      gridData = this.get('gridData');
-
-      if (gridData) {
-        params = {
-          offset: gridData.offset
-        };
-      }
-    }
-
-    this.LIST(params)
+    this.LIST($.extend({
+        offset: this.get('offset'),
+        limit: this.get('limit')
+      }, params))
       .done(function(data) {
         that.set('gridData', data);
       })
-      .fail(function(xhr, statusText, error) {
-        that.trigger('fail', xhr, statusText, error);
-      })
-      .always(function() {
+      .fail(function(error) {
+        Alert.show(error);
       });
   },
 
@@ -199,19 +195,17 @@ module.exports = Widget.extend({
   _parseItems: function(data) {
     var items = data.items,
       labelMap,
-      adapters,
       itemList;
 
     if (items && items.length) {
       labelMap = this.get('labelMap');
-      adapters = this.get('adapters');
 
       itemList = $.map(items, function(item) {
         var _item = {};
 
         // 仅取 labelMap 定义的字段
         $.each(labelMap, function(key) {
-          _item[key] = adapters(key, item[key]);
+          _item[key] = item[key];
         });
 
         return _item;
@@ -223,8 +217,9 @@ module.exports = Widget.extend({
 
   _parsePages: function(data) {
     var pageList = [],
-      pageCount = Math.ceil(data.count / data.limit),
-      currentPage = Math.floor(data.offset / data.limit) + 1;
+      limit = this.get('limit'),
+      pageCount = Math.ceil(data.count / limit),
+      currentPage = Math.floor(this.get('offset') / limit) + 1;
 
     if (pageCount) {
       pageList = [{
@@ -246,7 +241,6 @@ module.exports = Widget.extend({
         }];
     }
 
-    this.set('pageSize', data.limit);
     this.set('pageCount', pageCount);
     this.set('currentPage', currentPage);
 

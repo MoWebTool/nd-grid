@@ -13,9 +13,9 @@
       {{#each this}}
         <td>
           {{#isEquals @key ../../uniqueId}}
-            <a href="javascript:;" data-role="view-item">{{../this}}</a>
+            <a href="javascript:;" data-role="view-item">{{adapters @key ../this}}</a>
           {{else}}
-            {{../this}}
+            {{adapters @key ../this}}
           {{/isEquals}}
         </td>
       {{/each}}
