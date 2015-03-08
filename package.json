@@ -32,12 +32,12 @@
       "jquery": "1.11.1",
       "nd-alert": "1.0.0",
       "nd-confirm": "1.0.0",
+      "nd-dialog": "1.0.0",
       "nd-form": "1.0.0",
       "nd-formdata": "1.0.0",
-      "nd-plugins": "1.0.0",
       "nd-restful": "1.0.0",
       "nd-template": "1.0.0",
-      "nd-widget": "0.1.1"
+      "nd-widget": "1.0.0"
     },
     "devDependencies": {
       "expect.js": "0.3.1"

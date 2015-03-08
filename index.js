@@ -10,13 +10,12 @@ var $ = require('jquery');
 var Alert = require('nd-alert');
 var Widget = require('nd-widget');
 var Template = require('nd-template');
-var Plugins = require('nd-plugins');
 var RESTful = require('nd-restful');
 
 module.exports = Widget.extend({
 
   // 使用 handlebars
-  Implements: [Template, Plugins, RESTful],
+  Implements: [Template, RESTful],
 
   templateHelpers: {
     uniqueId: function(uniqueId) {
