@@ -35,6 +35,7 @@
       "nd-dialog": "1.0.0",
       "nd-form": "1.0.0",
       "nd-formdata": "1.0.0",
+      "nd-queue": "1.0.0",
       "nd-restful": "1.0.0",
       "nd-template": "1.0.0",
       "nd-widget": "1.0.0"

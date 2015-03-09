@@ -7,6 +7,7 @@
 
 var Form = require('nd-form');
 var FD = require('nd-formdata');
+var Queue = require('nd-queue');
 
 module.exports = Form.extend({
 
@@ -39,7 +40,11 @@ module.exports = Form.extend({
       label: '提交',
       type: 'submit',
       role: 'form-submit'
-    }]
+    }],
+
+    initProps: function() {
+      this.queue = new Queue();
+    }
   }
 
 });

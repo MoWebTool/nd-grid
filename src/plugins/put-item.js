@@ -28,17 +28,18 @@ module.exports = function() {
       // 表单数据
       formData: data,
 
-      parentNode: host.get('parentNode'),
-
-      events: {
-        'click [data-role=form-cancel]': function() {
-          plugin.trigger('hide', this);
-        }
-      }
+      parentNode: host.get('parentNode')
     }, plugin.options))
-    .on('submit', function(e) {
-      e.preventDefault();
-      plugin.trigger('submit', this.get('dataParser').call(this));
+    .on('formCancel', function() {
+      plugin.trigger('hide', this);
+    })
+    .on('formSubmit', function() {
+      // 调用队列
+      this.queue.run(function() {
+        plugin.trigger('submit', this.get('dataParser').call(this));
+      });
+      // 阻止默认事件发生
+      return false;
     });
 
     return form;

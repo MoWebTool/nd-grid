@@ -25,14 +25,16 @@ module.exports = function() {
     parentNode: host.element,
     insertInto: function(element, parentNode) {
       element.prependTo(parentNode);
-    },
-    events: {
-      'submit': function(e) {
-        e.preventDefault();
-        plugin.trigger('submit', this.get('dataParser').call(this));
-      }
     }
-  }, plugin.options)).render();
+  }, plugin.options))
+  .on('formSubmit', function() {
+    // 调用队列
+    this.queue.run(function() {
+      plugin.trigger('submit', this.get('dataParser').call(this));
+    });
+    // 阻止默认事件发生
+    return false;
+  }).render();
 
   plugin.on('submit', function(data) {
     host.getList(data);
