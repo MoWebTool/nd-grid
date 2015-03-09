@@ -34,9 +34,10 @@ module.exports = function() {
       plugin.trigger('hide', this);
     })
     .on('formSubmit', function() {
+      var that = this;
       // 调用队列
       this.queue.run(function() {
-        plugin.trigger('submit', this.get('dataParser').call(this));
+        plugin.trigger('submit', that.get('dataParser').call(that));
       });
       // 阻止默认事件发生
       return false;

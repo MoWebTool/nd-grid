@@ -13,8 +13,6 @@ module.exports = function() {
   var plugin = this,
     host = plugin.host;
 
-  // 在 ready 后执行，让 callback 先设置 options
-  // TODO: 存在问题：不支持 options 为异步的情况
   new MForm($.extend(true, {
     className: 'ui-form-search',
     buttons: [{
@@ -28,9 +26,10 @@ module.exports = function() {
     }
   }, plugin.options))
   .on('formSubmit', function() {
+    var that = this;
     // 调用队列
     this.queue.run(function() {
-      plugin.trigger('submit', this.get('dataParser').call(this));
+      plugin.trigger('submit', that.get('dataParser').call(that));
     });
     // 阻止默认事件发生
     return false;
