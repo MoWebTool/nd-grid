@@ -16,7 +16,7 @@ module.exports = function() {
   new MForm($.extend(true, {
     className: 'ui-form-search',
     buttons: [{
-      label: '提交',
+      label: '搜索',
       type: 'submit',
       role: 'form-submit'
     }],
