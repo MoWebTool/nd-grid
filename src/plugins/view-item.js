@@ -12,9 +12,10 @@ var Alert = require('nd-alert');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host;
+    host = plugin.host,
+    dialog, uniqueId;
 
-  function makeDialog(id, data) {
+  function makeDialog(data) {
     var dialog = new Dialog($.extend(true, {
 
       parentNode: host.get('parentNode'),
@@ -47,25 +48,18 @@ module.exports = function() {
 
   host.delegateEvents({
     'click [data-role=view-item]': function(e) {
-      var id = getItemId(e.currentTarget),
-        key = 'dialog-' + id;
+      uniqueId = getItemId(e.currentTarget);
 
-      if (!plugin[key]) {
-        host.GET(id)
+      if (!dialog) {
+        host.GET(uniqueId)
         .done(function(data) {
-          // TODO: hack 移到业务
-          // 接口的 REST 不规范，采用 hack
-          data = data.items[0];
-
-          plugin[key] = makeDialog(id, data).render();
-
-          plugin.trigger('show', plugin[key]);
+          plugin.trigger('show', (dialog = makeDialog(data).render()));
         })
         .fail(function(error) {
           Alert.show(error);
         });
       } else {
-        plugin.trigger('show', plugin[key]);
+        plugin.trigger('show', dialog);
       }
     }
   });
@@ -75,9 +69,10 @@ module.exports = function() {
     dialog.show();
   });
 
-  plugin.on('hide', function(/*dialog*/) {
+  plugin.on('hide', function(dialog) {
     host.element.show();
-    // plugin['dialog-' + id].hide();
+    dialog.destroy();
+    dialog = null;
   });
 
   // 通知就绪

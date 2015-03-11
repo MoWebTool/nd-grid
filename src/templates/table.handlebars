@@ -12,7 +12,7 @@
       {{#if ../checkable}}<td><input name="check-item" type="checkbox" value="{{uniqueId ../../uniqueId}}"></td>{{/if}}
       {{#each this}}
         <td>
-          {{#isEquals @key ../../uniqueId}}
+          {{#isEquals @key ../../entryKey}}
             <a href="javascript:;" data-role="view-item">{{adapters @key ../this}}</a>
           {{else}}
             {{adapters @key ../this}}

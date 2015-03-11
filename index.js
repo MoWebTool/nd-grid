@@ -21,8 +21,8 @@ module.exports = Widget.extend({
     uniqueId: function(uniqueId) {
       return this[uniqueId];
     },
-    isEquals: function(key, uniqueId, options) {
-      return key === uniqueId ? options.fn(this) : options.inverse(this);
+    isEquals: function(v1, v2, options) {
+      return v1 === v2 ? options.fn(this) : options.inverse(this);
     }
     // and adapters, from attrs
   },
@@ -52,6 +52,11 @@ module.exports = Widget.extend({
     model: {},
 
     uniqueId: 'id',
+    entryKey: {
+      getter: function(value) {
+        return (typeof value === 'undefined') ? this.get('uniqueId') : value;
+      }
+    },
 
     checkable: false,
 
@@ -122,6 +127,10 @@ module.exports = Widget.extend({
       });
     }
 
+    if (plugins.viewItem.disabled) {
+      this.set('entryKey', null);
+    }
+
     // boot
     $.each(plugins, function(i, item) {
       if (!item.disabled) {
@@ -171,6 +180,7 @@ module.exports = Widget.extend({
   _onRenderItemList: function(itemList) {
     this.$('.content').html(this.templatePartials.table({
       uniqueId: this.get('uniqueId'),
+      entryKey: this.get('entryKey'),
       baseUri: this.get('baseUri'),
       checkable: this.get('checkable'),
       labelMap: this.get('labelMap'),

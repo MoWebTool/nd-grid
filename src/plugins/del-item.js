@@ -40,7 +40,7 @@ module.exports = function() {
             host.$('[data-id="' + id + '"]').remove();
 
             if (host.$('[data-role=item]').length === 0) {
-              host.reloadList();
+              host.getList();
             }
           })
           .fail(function(error) {

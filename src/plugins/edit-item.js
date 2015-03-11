@@ -13,13 +13,10 @@ var MForm = require('../modules/form');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host;
+    host = plugin.host,
+    form, uniqueId;
 
-  function makeForm(id, data) {
-    data || (data = {});
-
-    data[host.get('uniqueId')] = id;
-
+  function makeForm(data) {
     var form = new MForm($.extend(true, {
       // name: '',
       // action: '',
@@ -63,25 +60,18 @@ module.exports = function() {
 
   host.delegateEvents({
     'click [data-role=edit-item]': function(e) {
-      var id = getItemId(e.currentTarget),
-        key = 'form-' + id;
+      uniqueId = getItemId(e.currentTarget);
 
-      if (!plugin[key]) {
-        host.GET(id)
+      if (!form) {
+        host.GET(uniqueId)
         .done(function(data) {
-          // TODO: hack 移到业务
-          // 接口的 REST 不规范，采用 hack
-          data = data.items[0];
-
-          plugin[key] = makeForm(id, data).render();
-
-          plugin.trigger('show', plugin[key]);
+          plugin.trigger('show', (form = makeForm(data).render()));
         })
         .fail(function(error) {
           Alert.show(error);
         });
       } else {
-        plugin.trigger('show', plugin[key]);
+        plugin.trigger('show', form);
       }
     }
   });
@@ -93,16 +83,17 @@ module.exports = function() {
 
   plugin.on('hide', function(form) {
     host.element.show();
-    form.element.hide();
+    form.destroy();
+    form = null;
   });
 
-  plugin.on('submit', function(id, data) {
-    host.PATCH(id, data)
+  plugin.on('submit', function(data) {
+    host.PATCH(uniqueId, data)
       .done(function(/*data*/) {
         // 成功，刷新当前页
         host.getList();
 
-        plugin.trigger('hide', plugin['form-id']);
+        plugin.trigger('hide', form);
       })
       .fail(function(error) {
         Alert.show(error);

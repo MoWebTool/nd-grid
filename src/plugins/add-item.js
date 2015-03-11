@@ -13,7 +13,8 @@ var MForm = require('../modules/form');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host;
+    host = plugin.host,
+    form;
 
   function makeForm() {
     var form = new MForm($.extend(true, {
@@ -46,11 +47,11 @@ module.exports = function() {
 
   host.delegateEvents({
     'click [data-role=add-item]': function() {
-      if (!plugin.form) {
-        plugin.form = makeForm().render();
+      if (!form) {
+        form = makeForm().render();
       }
 
-      plugin.trigger('show', plugin.form);
+      plugin.trigger('show', form);
     }
   });
 
@@ -61,7 +62,8 @@ module.exports = function() {
 
   plugin.on('hide', function(form) {
     host.element.show();
-    form.element.hide();
+    form.destroy();
+    form = null;
   });
 
   plugin.on('submit', function(data) {
@@ -72,11 +74,8 @@ module.exports = function() {
           offset: 0
         });
 
-        // 重置
-        plugin.form.element[0].reset();
-
         // 隐藏
-        plugin.trigger('hide', plugin.form);
+        plugin.trigger('hide', form);
       })
       .fail(function(error) {
         Alert.show(error);
