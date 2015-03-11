@@ -17,7 +17,7 @@ module.exports = function() {
 
   function makeForm() {
     var form = new MForm($.extend(true, {
-      // name: '',
+      name: 'grid-add-item',
       // action: '',
       method: 'POST',
 

@@ -14,6 +14,7 @@ module.exports = function() {
     host = plugin.host;
 
   new MForm($.extend(true, {
+    name: 'grid-search',
     className: 'ui-form-search',
     buttons: [{
       label: '搜索',

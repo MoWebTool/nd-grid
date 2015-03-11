@@ -8,16 +8,18 @@
   </thead>
   <tbody>
     {{#each itemList}}
-      <tr data-role="item" data-id="{{uniqueId ../uniqueId}}">
-      {{#if ../checkable}}<td><input name="check-item" type="checkbox" value="{{uniqueId ../../uniqueId}}"></td>{{/if}}
+      <tr data-role="item" data-id="{{uniqueId}}">
+      {{#if ../checkable}}<td><input name="check-item" type="checkbox" value="{{uniqueId}}"></td>{{/if}}
       {{#each this}}
+      {{#if key}}
         <td>
-          {{#isEquals @key ../../entryKey}}
-            <a href="javascript:;" data-role="view-item">{{adapters @key ../this}}</a>
+          {{#isEntryKey ../../../entryKey}}
+            <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
           {{else}}
-            {{adapters @key ../this}}
-          {{/isEquals}}
+            {{adapters ../../key ../../value}}
+          {{/isEntryKey}}
         </td>
+      {{/if}}
       {{/each}}
       {{#if ../itemActions}}
         <td>

@@ -18,11 +18,8 @@ module.exports = Widget.extend({
   Implements: [Template, RESTful],
 
   templateHelpers: {
-    uniqueId: function(uniqueId) {
-      return this[uniqueId];
-    },
-    isEquals: function(v1, v2, options) {
-      return v1 === v2 ? options.fn(this) : options.inverse(this);
+    isEntryKey: function(entryKey, options) {
+      return this.key === entryKey ? options.fn(this) : options.inverse(this);
     }
     // and adapters, from attrs
   },
@@ -57,6 +54,7 @@ module.exports = Widget.extend({
         return (typeof value === 'undefined') ? this.get('uniqueId') : value;
       }
     },
+    labelMap: {},
 
     checkable: false,
 
@@ -115,19 +113,27 @@ module.exports = Widget.extend({
 
   initPlugins: function() {
     var that = this,
-      plugins = this.get('plugins');
+      plugins = this.get('plugins'),
+      labelMap = this.get('labelMap'),
+      entryKey = this.get('entryKey'),
+      delCheck = plugins.delCheck,
+      viewItem = plugins.viewItem;
 
     // checkboxes
     plugins.check.disabled = !this.get('checkable');
 
     // delCheck's dependencies
-    if (!plugins.delCheck.disabled) {
-      $.each(plugins.delCheck.dependencies, function(i, item) {
+    if (!delCheck.disabled) {
+      $.each(delCheck.dependencies, function(i, item) {
         plugins[item].disabled = false;
       });
     }
 
-    if (plugins.viewItem.disabled) {
+    if (!labelMap[entryKey]) {
+      viewItem.disabled = true;
+    }
+
+    if (viewItem.disabled) {
       this.set('entryKey', null);
     }
 
@@ -204,20 +210,28 @@ module.exports = Widget.extend({
   _parseItems: function(data) {
     var items = data.items,
       labelMap,
-      itemList;
+      _labelMap,
+      uniqueId,
+      showUniqueId,
+      itemList = [];
 
     if (items && items.length) {
       labelMap = this.get('labelMap');
+      uniqueId = this.get('uniqueId');
 
-      itemList = $.map(items, function(item) {
-        var _item = {};
-
-        // 仅取 labelMap 定义的字段
-        $.each(labelMap, function(key) {
-          _item[key] = item[key];
+      $.each(items, function(i, item) {
+        // 仅取 labelMap 中定义的字段
+        var _item = $.map(labelMap, function(value, key) {
+          return {
+            key: key,
+            value: item[key]
+          };
         });
 
-        return _item;
+        // 加设 uniqueId
+        _item.uniqueId = item[uniqueId];
+
+        itemList.push(_item);
       });
 
       this.set('itemList', itemList);
