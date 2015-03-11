@@ -20,18 +20,19 @@ module.exports = function() {
 
       parentNode: host.get('parentNode'),
 
-      data: null,
+      partial: function(data) {
+        return data.toString ? data.toString() : data;
+      },
 
       afterHide: function() {
         plugin.trigger('hide', this);
       },
 
-      onChangeData: function(data) {
+      afterRender: function() {
         this.set('content', this.get('partial')(data));
       }
-    }, plugin.options));
 
-    dialog.set('data', data);
+    }, plugin.options));
 
     return dialog;
   }
@@ -65,12 +66,10 @@ module.exports = function() {
   });
 
   plugin.on('show', function(dialog) {
-    host.element.hide();
     dialog.show();
   });
 
   plugin.on('hide', function(dialog) {
-    host.element.show();
     dialog.destroy();
     delete plugin.dialog;
   });
