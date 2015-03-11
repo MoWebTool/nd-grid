@@ -13,7 +13,7 @@ var Alert = require('nd-alert');
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
-    dialog, uniqueId;
+    uniqueId;
 
   function makeDialog(data) {
     var dialog = new Dialog($.extend(true, {
@@ -50,16 +50,16 @@ module.exports = function() {
     'click [data-role=view-item]': function(e) {
       uniqueId = getItemId(e.currentTarget);
 
-      if (!dialog) {
+      if (!plugin.dialog) {
         host.GET(uniqueId)
         .done(function(data) {
-          plugin.trigger('show', (dialog = makeDialog(data).render()));
+          plugin.trigger('show', (plugin.dialog = makeDialog(data).render()));
         })
         .fail(function(error) {
           Alert.show(error);
         });
       } else {
-        plugin.trigger('show', dialog);
+        plugin.trigger('show', plugin.dialog);
       }
     }
   });
@@ -72,7 +72,7 @@ module.exports = function() {
   plugin.on('hide', function(dialog) {
     host.element.show();
     dialog.destroy();
-    dialog = null;
+    delete plugin.dialog;
   });
 
   // 通知就绪

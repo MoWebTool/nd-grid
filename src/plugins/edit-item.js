@@ -14,7 +14,7 @@ var MForm = require('../modules/form');
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
-    form, uniqueId;
+    uniqueId;
 
   function makeForm(data) {
     var form = new MForm($.extend(true, {
@@ -62,16 +62,16 @@ module.exports = function() {
     'click [data-role=edit-item]': function(e) {
       uniqueId = getItemId(e.currentTarget);
 
-      if (!form) {
+      if (!plugin.form) {
         host.GET(uniqueId)
         .done(function(data) {
-          plugin.trigger('show', (form = makeForm(data).render()));
+          plugin.trigger('show', (plugin.form = makeForm(data).render()));
         })
         .fail(function(error) {
           Alert.show(error);
         });
       } else {
-        plugin.trigger('show', form);
+        plugin.trigger('show', plugin.form);
       }
     }
   });
@@ -84,7 +84,7 @@ module.exports = function() {
   plugin.on('hide', function(form) {
     host.element.show();
     form.destroy();
-    form = null;
+    delete plugin.form;
   });
 
   plugin.on('submit', function(data) {
@@ -93,7 +93,7 @@ module.exports = function() {
         // 成功，刷新当前页
         host.getList();
 
-        plugin.trigger('hide', form);
+        plugin.trigger('hide', plugin.form);
       })
       .fail(function(error) {
         Alert.show(error);
