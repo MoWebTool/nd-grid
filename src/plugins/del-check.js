@@ -21,6 +21,8 @@ module.exports = function() {
 
         if (host.$('[data-role=item]').length === 0) {
           host.getList();
+        } else {
+          getDelCheck().prop('disabled', !getChecked().length);
         }
       })
       .fail(function(error) {
@@ -63,7 +65,7 @@ module.exports = function() {
     'click [data-role=del-check]': function() {
 
       Confirm.show('确定删除选定？', function() {
-        // TODO: batch delete
+        // TODO: batch delete?
         $.each(getChecked(), function(i, item) {
           delItem(item.value);
         });

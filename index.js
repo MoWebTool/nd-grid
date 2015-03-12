@@ -21,7 +21,7 @@ module.exports = Widget.extend({
     isEntryKey: function(entryKey, options) {
       return this.key === entryKey ? options.fn(this) : options.inverse(this);
     }
-    // and adapters, from attrs
+    // and isDisabled, adapters, from attrs
   },
 
   templatePartials: {
@@ -67,6 +67,8 @@ module.exports = Widget.extend({
     limit: 10,
     offset: 0,
 
+    params: {},
+
     // url
     baseUri: null,
     // dataUrls: {},
@@ -82,6 +84,10 @@ module.exports = Widget.extend({
 
     adapters: function(key, value) {
       return value;
+    },
+
+    isDisabled: function(itemData, options) {
+      return this.disabled ? options.fn(this) : options.inverse(this);
     }
   },
 
@@ -106,6 +112,7 @@ module.exports = Widget.extend({
     this.initPlugins();
 
     this.templateHelpers.adapters = this.get('adapters');
+    this.templateHelpers.isDisabled = this.get('isDisabled');
 
     // 取列表
     this.getList();
@@ -166,10 +173,14 @@ module.exports = Widget.extend({
   getList: function(params) {
     var that = this;
 
+    if (params) {
+      this.set('params', params);
+    }
+
     this.LIST($.extend({
         offset: this.get('offset'),
         limit: this.get('limit')
-      }, params))
+      }, this.get('params')))
       .done(function(data) {
         that.set('gridData', data);
       })
@@ -210,9 +221,7 @@ module.exports = Widget.extend({
   _parseItems: function(data) {
     var items = data.items,
       labelMap,
-      _labelMap,
       uniqueId,
-      showUniqueId,
       itemList = [];
 
     if (items && items.length) {

@@ -24,7 +24,7 @@
       {{#if ../itemActions}}
         <td>
           {{#each ../../itemActions}}
-            <button class="button-{{role}}" data-role="{{role}}"{{#if disabled}} disabled{{/if}}>{{text}}</button>
+            <button class="button-{{role}}" data-role="{{role}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}>{{text}}</button>
           {{/each}}
         </td>
       {{/if}}
