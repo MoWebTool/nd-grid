@@ -8,8 +8,7 @@
 var $ = require('jquery');
 
 var Alert = require('nd-alert');
-
-var MForm = require('../modules/form');
+var FormExtra = require('nd-form-extra');
 
 module.exports = function() {
   var plugin = this,
@@ -17,7 +16,7 @@ module.exports = function() {
     uniqueId;
 
   function makeForm(data) {
-    var form = new MForm($.extend(true, {
+    var form = new FormExtra($.extend(true, {
       name: 'grid-edit-item',
       // action: '',
       method: 'PATCH',
@@ -43,24 +42,14 @@ module.exports = function() {
     return form;
   }
 
-  // helpers
-
-  function getItem(target) {
-    return host.$(target).closest('[data-role=item]');
-  }
-
-  function getItemId(target) {
-    return getItem(target).data('id');
-  }
-
-  host.get('itemActions').push({
+  host.addItemAction({
     'role': 'edit-item',
     'text': '编辑'
   });
 
   host.delegateEvents({
     'click [data-role=edit-item]': function(e) {
-      uniqueId = getItemId(e.currentTarget);
+      uniqueId = host.getItemIdByTarget(e.currentTarget);
 
       if (!plugin.form) {
         host.GET(uniqueId)

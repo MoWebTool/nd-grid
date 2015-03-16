@@ -29,7 +29,7 @@ module.exports = function() {
       },
 
       afterRender: function() {
-        this.set('content', this.get('partial')(data));
+        this.set('content', this.get('partial').call(this, data));
       }
 
     }, plugin.options));
@@ -37,19 +37,9 @@ module.exports = function() {
     return dialog;
   }
 
-  // helpers
-
-  function getItem(target) {
-    return host.$(target).closest('[data-role=item]');
-  }
-
-  function getItemId(target) {
-    return getItem(target).data('id');
-  }
-
   host.delegateEvents({
     'click [data-role=view-item]': function(e) {
-      uniqueId = getItemId(e.currentTarget);
+      uniqueId = host.getItemIdByTarget(e.currentTarget);
 
       if (!plugin.dialog) {
         host.GET(uniqueId)

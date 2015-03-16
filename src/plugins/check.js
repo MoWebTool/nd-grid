@@ -11,10 +11,6 @@ module.exports = function() {
 
   // helpers
 
-  function getItem(target) {
-    return host.$(target).closest('[data-role=item]');
-  }
-
   function getChecked() {
     return host.$('[name=check-item]:checked');
   }
@@ -39,7 +35,7 @@ module.exports = function() {
       var checked = e.currentTarget.checked,
         checkAll = getCheckAll();
 
-      getItem(e.currentTarget).toggleClass('selected', checked);
+      host.getItemByTarget(e.currentTarget).toggleClass('selected', checked);
 
       if (checked) {
         if (getChecked().length === host.get('itemList').length) {
@@ -52,6 +48,13 @@ module.exports = function() {
       }
     }
 
+  });
+
+  // 未全部选中的状态下，
+  // 将未选中项全部删除后，
+  // 需要重新设置全选按钮（checkbox）状态
+  host.after('deleteItem', function() {
+    getCheckAll().prop('checked', getChecked().length === host.get('itemList').length);
   });
 
   // 通知就绪

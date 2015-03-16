@@ -1,6 +1,13 @@
 'use strict';
 
 module.exports = {
+  delCheck: {
+    disabled: true,
+    name: 'delCheck',
+    plugin: require('./plugins/del-check'),
+    // 依赖项
+    dependencies: ['check']
+  },
   viewItem: {
     disabled: true,
     name: 'viewItem',
@@ -35,16 +42,14 @@ module.exports = {
     name: 'check',
     plugin: require('./plugins/check')
   },
-  delCheck: {
-    disabled: true,
-    name: 'delCheck',
-    plugin: require('./plugins/del-check'),
-    // 依赖项
-    dependencies: ['check']
-  },
   reload: {
     name: 'reload',
     plugin: require('./plugins/reload')
+  },
+  paginate: {
+    // disabled: true,
+    name: 'paginate',
+    plugin: require('./plugins/paginate')
   },
   search: {
     disabled: true,

@@ -12,17 +12,7 @@ module.exports = function() {
   var plugin = this,
     host = plugin.host;
 
-  // helpers
-
-  function getItem(target) {
-    return host.$(target).closest('[data-role=item]');
-  }
-
-  function getItemId(target) {
-    return getItem(target).data('id');
-  }
-
-  host.get('itemActions').push({
+  host.addItemAction({
     'role': 'del-item',
     'text': '删除'
   });
@@ -30,18 +20,12 @@ module.exports = function() {
   host.delegateEvents({
 
     'click [data-role=del-item]': function(e) {
-
       Confirm.show('确定删除？', function() {
-
-        var id = getItemId(e.currentTarget);
+        var id = host.getItemIdByTarget(e.currentTarget);
 
         host.DELETE(id)
           .done(function(/*data*/) {
-            host.$('[data-id="' + id + '"]').remove();
-
-            if (host.$('[data-role=item]').length === 0) {
-              host.getList();
-            }
+            host.deleteItem(id);
           })
           .fail(function(error) {
             Alert.show(error);

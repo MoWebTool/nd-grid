@@ -7,13 +7,13 @@
 
 var $ = require('jquery');
 
-var MForm = require('../modules/form');
+var FormExtra = require('nd-form-extra');
 
 module.exports = function() {
   var plugin = this,
     host = plugin.host;
 
-  var form = new MForm($.extend(true, {
+  var form = new FormExtra($.extend(true, {
     name: 'grid-search',
     className: 'ui-form-search',
     buttons: [{
@@ -37,7 +37,12 @@ module.exports = function() {
   }).render();
 
   plugin.on('submit', function(data) {
-    host.getList(data, true);
+    data || (data = {});
+
+    // 重置为第一页
+    data.offset = 0;
+
+    host.getList(data);
   });
 
   // 刷新参数，重置表单

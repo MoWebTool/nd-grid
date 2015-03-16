@@ -5,29 +5,17 @@
 
 'use strict';
 
-var $ = require('jquery');
+var $ = require('/static/spm_modules/jquery/1.11.1/jquery.js');
 
-var Alert = require('nd-alert');
-var Widget = require('nd-widget');
-var Template = require('nd-template');
-var RESTful = require('nd-restful');
+var Alert = require('/static/spm_modules/nd-alert/1.0.0/index.js');
+var Widget = require('/static/spm_modules/nd-widget/1.0.0/index.js');
+var Template = require('/static/spm_modules/nd-template/1.0.0/index.js');
+var RESTful = require('/static/spm_modules/nd-restful/1.0.0/index.js');
 
 module.exports = Widget.extend({
 
   // 使用 handlebars
   Implements: [Template, RESTful],
-
-  templateHelpers: {
-    isEntryKey: function(entryKey, options) {
-      return this.key === entryKey ? options.fn(this) : options.inverse(this);
-    }
-    // and isDisabled, adapters, from attrs
-  },
-
-  templatePartials: {
-    table: require('./src/templates/table.handlebars'),
-    action: require('./src/templates/action.handlebars')
-  },
 
   attrs: {
     // 统一样式前缀
@@ -35,6 +23,23 @@ module.exports = Widget.extend({
 
     // 模板
     template: require('./src/templates/grid.handlebars'),
+
+    partial: function(data) {
+      var template = require('./src/templates/partial.handlebars');
+
+      return template(data, {
+        helpers: {
+          uniqueId: function(uniqueId) {
+            return this[uniqueId].value;
+          },
+          isEntryKey: function(entryKey, options) {
+            return this.key === entryKey ? options.fn(this) : options.inverse(this);
+          },
+          adapters: this.get('adapters'),
+          isDisabled: this.get('isDisabled')
+        }
+      });
+    },
 
     // 行处理
     itemActions: [],
@@ -62,16 +67,10 @@ module.exports = Widget.extend({
 
     proxy: $.ajax,
 
-    currentPage: 1,
-    pageCount: 0,
-    limit: 10,
-    offset: 0,
-
-    params: {},
-
-    // url
-    baseUri: null,
-    // dataUrls: {},
+    params: {
+      limit: 10,
+      offset: 0
+    },
 
     // 服务端返回的原始数据
     gridData: null,
@@ -79,9 +78,7 @@ module.exports = Widget.extend({
     // 解析后的数据列表
     itemList: null,
 
-    // 分页列表
-    pageList: null,
-
+    // 数据处理，放在 handlebars 中进行
     adapters: function(key, value) {
       return value;
     },
@@ -91,28 +88,12 @@ module.exports = Widget.extend({
     }
   },
 
-  events: {
-    'click [data-role=page-link]': function(e) {
-      var pageText = e.currentTarget.getAttribute('data-page'),
-        toPage;
-
-      if (pageText === '+1') {
-        toPage = this.get('currentPage') + 1;
-      } else if (pageText === '-1') {
-        toPage = this.get('currentPage') - 1;
-      } else {
-        toPage = +pageText;
-      }
-
-      this.gotoPage(toPage);
-    }
-  },
-
   setup: function() {
-    this.initPlugins();
+    // 列表项操作按钮
+    this.__actions = [];
 
-    this.templateHelpers.adapters = this.get('adapters');
-    this.templateHelpers.isDisabled = this.get('isDisabled');
+    // 初始化插件
+    this.initPlugins();
 
     // 取列表
     this.getList();
@@ -152,24 +133,6 @@ module.exports = Widget.extend({
     });
   },
 
-  gotoPage: function(page) {
-    if (page < 1) {
-      return;
-    }
-
-    if (page === this.get('currentPage')) {
-      return;
-    }
-
-    if (page > this.get('pageCount')) {
-      return;
-    }
-
-    this.getList({
-      offset: (page - 1) * this.get('limit')
-    });
-  },
-
   getList: function(params) {
     var that = this;
 
@@ -177,10 +140,7 @@ module.exports = Widget.extend({
       this.set('params', params);
     }
 
-    this.LIST($.extend({
-        offset: this.get('offset'),
-        limit: this.get('limit')
-      }, this.get('params')))
+    this.LIST(this.get('params'))
       .done(function(data) {
         that.set('gridData', data);
       })
@@ -189,94 +149,102 @@ module.exports = Widget.extend({
       });
   },
 
+  deleteItem: function(id) {
+    var item = this.getItemById(id),
+      index = item.index(),
+      itemList = this.get('itemList');
+
+    // 从 model 中移除
+    itemList.splice(index, 1);
+
+    // 从 DOM 中移除
+    item.remove();
+
+    // 判断当前行数
+    if (!itemList.length) {
+      this.getList();
+    }
+  },
+
   _onRenderGridData: function(gridData) {
-    this._parsePages(gridData);
-    this._parseItems(gridData);
-  },
-
-  _onRenderItemList: function(itemList) {
-    this.$('.content').html(this.templatePartials.table({
-      uniqueId: this.get('uniqueId'),
-      entryKey: this.get('entryKey'),
-      baseUri: this.get('baseUri'),
-      checkable: this.get('checkable'),
-      labelMap: this.get('labelMap'),
-      itemActions: this.get('itemActions'),
-      itemList: itemList
-    }, {
-      helpers: this.templateHelpers
-    }));
-  },
-
-  _onRenderPageList: function(pageList) {
-    this.$('.header, .footer').html(this.templatePartials.action({
-      gridActions: this.get('gridActions'),
-      pageActions: this.get('pageActions'),
-      pageList: pageList
-    }, {
-      helpers: this.templateHelpers
-    }));
-  },
-
-  _parseItems: function(data) {
-    var items = data.items,
+    var items = gridData.items,
       labelMap,
       uniqueId,
+      entryKey,
       itemList = [];
 
     if (items && items.length) {
       labelMap = this.get('labelMap');
       uniqueId = this.get('uniqueId');
+      entryKey = this.get('entryKey');
 
-      $.each(items, function(i, item) {
+      itemList = $.map(items, function(item) {
         // 仅取 labelMap 中定义的字段
-        var _item = $.map(labelMap, function(value, key) {
-          return {
+        var _item = {};
+
+        $.each(labelMap, function(key/*, value*/) {
+          _item[key] = {
             key: key,
-            value: item[key]
+            value: item[key],
+            visible: true,
+            isEntry: key === entryKey
           };
         });
 
-        // 加设 uniqueId
-        _item.uniqueId = item[uniqueId];
+        // 如果 uniqueId 不在 labelMap 中
+        // 加入隐藏的 uniqueId
+        if (!(uniqueId in labelMap)) {
+          _item[uniqueId] = {
+            key: uniqueId,
+            value: item[uniqueId]
+          };
+        }
 
-        itemList.push(_item);
+        return _item;
       });
 
       this.set('itemList', itemList);
     }
   },
 
-  _parsePages: function(data) {
-    var pageList = [],
-      limit = this.get('limit'),
-      pageCount = Math.ceil(data.count / limit),
-      currentPage = Math.floor(this.get('offset') / limit) + 1;
+  _onRenderItemList: function(itemList) {
+    this.$('.content').html(
+      this.get('partial').call(this, {
+        uniqueId: this.get('uniqueId'),
+        checkable: this.get('checkable'),
+        labelMap: this.get('labelMap'),
+        itemActions: this.getItemActions(),
+        itemList: itemList
+      })
+    );
+  },
 
-    if (pageCount) {
-      pageList = [{
-          page: '-1',
-          text: '<',
-          cls: 'prev',
-          disabled: currentPage === 1
-        },
-        {
-          page: currentPage,
-          text: currentPage + '/' + pageCount,
-          cls: 'current'
-        },
-        {
-          page: '+1',
-          text: '>',
-          cls: 'next',
-          disabled: currentPage === pageCount
-        }];
-    }
+  addItemAction: function(options) {
+    this.__actions.push(options);
+  },
 
-    this.set('pageCount', pageCount);
-    this.set('currentPage', currentPage);
+  getItemActions: function() {
+    return this.__actions;
+  },
 
-    this.set('pageList', pageList);
+  getItems: function() {
+    return this.$('[data-role="item"]');
+  },
+
+  getItemByTarget: function(target) {
+    return this.$(target).closest('[data-role="item"]');
+  },
+
+  getItemById: function(id) {
+    return this.$('[data-id="' + id + '"]');
+  },
+
+  getItemId: function(item) {
+    return item.data('id');
+  },
+
+  getItemIdByTarget: function(target) {
+    return this.getItemId(this.getItemByTarget(target));
   }
 
 });

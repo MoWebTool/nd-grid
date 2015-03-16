@@ -8,21 +8,23 @@
 var $ = require('jquery');
 
 var Alert = require('nd-alert');
+var FormExtra = require('nd-form-extra');
 
-var MForm = require('../modules/form');
+var helpers = require('../helpers');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host;
+    host = plugin.host,
+    options = plugin.options || {};
 
   function makeForm() {
-    var form = new MForm($.extend(true, {
+    var form = new FormExtra($.extend(true, {
       name: 'grid-add-item',
       // action: '',
       method: 'POST',
 
       parentNode: host.get('parentNode')
-    }, plugin.options))
+    }, options))
     .on('formCancel', function() {
       plugin.trigger('hide', this);
     })
@@ -39,13 +41,21 @@ module.exports = function() {
     return form;
   }
 
-  host.get('gridActions').push({
-    'role': 'add-item',
-    'text': '新增'
-  });
+  (function() {
+    // 添加按钮到顶部
+    host.$(helpers.makePlace(options.button)).append(
+      helpers.makeButton($.extend({
+        'role': 'add-item',
+        'text': '新增'
+      }, options.button))
+    );
+
+    // 移除参数
+    delete options.button;
+  })();
 
   host.delegateEvents({
-    'click [data-role=add-item]': function() {
+    'click [data-role="add-item"]': function() {
       if (!plugin.form) {
         plugin.form = makeForm().render();
       }

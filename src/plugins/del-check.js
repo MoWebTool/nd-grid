@@ -7,23 +7,22 @@
 
 var $ = require('jquery');
 
-var Confirm = require('nd-confirm');
 var Alert = require('nd-alert');
+var Confirm = require('nd-confirm');
+
+var helpers = require('../helpers');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host;
+    host = plugin.host,
+    options = plugin.options || {};
 
   var delItem = function(id) {
     host.DELETE(id)
       .done(function(/*data*/) {
-        host.$('[data-id="' + id + '"]').remove();
+        host.deleteItem(id);
 
-        if (host.$('[data-role=item]').length === 0) {
-          host.getList();
-        } else {
-          getDelCheck().prop('disabled', !getChecked().length);
-        }
+        getDelCheck().prop('disabled', !getChecked().length);
       })
       .fail(function(error) {
         Alert.show(error);
@@ -33,28 +32,36 @@ module.exports = function() {
   // helpers
 
   function getChecked() {
-    return host.$('[name=check-item]:checked');
+    return host.$('[name="check-item"]:checked');
   }
 
   function getDelCheck() {
-    return host.$('[data-role=del-check]');
+    return host.$('[data-role="del-check"]');
   }
 
-  host.get('gridActions').unshift({
-    'role': 'del-check',
-    'text': '删除选定',
-    'disabled': true
-  });
+  (function() {
+    // 添加按钮到顶部
+    host.$(helpers.makePlace(options.button)).append(
+      helpers.makeButton($.extend({
+        'role': 'del-check',
+        'text': '删除选定',
+        'disabled': true
+      }, options.button))
+    );
+
+    // 移除参数
+    delete options.button;
+  })();
 
   host.delegateEvents({
 
     // 全选
-    'change [data-role=check-all]': function(e) {
+    'change [data-role="check-all"]': function(e) {
       getDelCheck().prop('disabled', !e.currentTarget.checked);
     },
 
     // 选中行
-    'change [name=check-item]': function(e) {
+    'change [name="check-item"]': function(e) {
       if (e.currentTarget.checked) {
         getDelCheck().prop('disabled', false);
       } else {
@@ -62,8 +69,7 @@ module.exports = function() {
       }
     },
 
-    'click [data-role=del-check]': function() {
-
+    'click [data-role="del-check"]': function() {
       Confirm.show('确定删除选定？', function() {
         // TODO: batch delete?
         $.each(getChecked(), function(i, item) {
@@ -72,6 +78,10 @@ module.exports = function() {
       });
     }
 
+  });
+
+  host.on('change:itemList', function(/*itemList*/) {
+    getDelCheck().prop('disabled', !getChecked().length);
   });
 
   // 通知就绪
