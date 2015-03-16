@@ -5,12 +5,12 @@
 
 'use strict';
 
-var $ = require('/static/spm_modules/jquery/1.11.1/jquery.js');
+var $ = require('jquery');
 
-var Alert = require('/static/spm_modules/nd-alert/1.0.0/index.js');
-var Widget = require('/static/spm_modules/nd-widget/1.0.0/index.js');
-var Template = require('/static/spm_modules/nd-template/1.0.0/index.js');
-var RESTful = require('/static/spm_modules/nd-restful/1.0.0/index.js');
+var Alert = require('nd-alert');
+var Widget = require('nd-widget');
+var Template = require('nd-template');
+var RESTful = require('nd-restful');
 
 module.exports = Widget.extend({
 
