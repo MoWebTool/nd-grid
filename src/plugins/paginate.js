@@ -15,11 +15,15 @@ module.exports = function() {
     options = plugin.options || {};
 
   host.on('change:gridData', function(gridData) {
-    var params = host.get('params');
-
     if (plugin.exports) {
       plugin.exports.destroy();
     }
+
+    if (!gridData.count) {
+      return;
+    }
+
+    var params = host.get('params');
 
     plugin.exports = new Pagination($.extend(true, {
       theme: 'floating',
