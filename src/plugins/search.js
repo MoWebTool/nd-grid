@@ -11,7 +11,8 @@ var FormExtra = require('nd-form-extra');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host;
+    host = plugin.host,
+    options = plugin.options || {};
 
   var form = new FormExtra($.extend(true, {
     name: 'grid-search',
@@ -25,7 +26,7 @@ module.exports = function() {
     insertInto: function(element, parentNode) {
       element.prependTo(parentNode);
     }
-  }, plugin.options))
+  }, options))
   .on('formSubmit', function() {
     var that = this;
     // 调用队列

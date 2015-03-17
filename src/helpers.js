@@ -22,14 +22,12 @@ exports.makePlace = function(options) {
 
   // 位置
   if (!place) {
-    place = '[data-role="header"]';
+    return '[data-role="header"]';
   } else {
     if (place === 'both') {
-      place = '[data-role="header"],[data-role="footer"]';
+      return '[data-role="header"],[data-role="footer"]';
     } else {
-      place = '[data-role="' + place + '"]';
+      return '[data-role="' + place + '"]';
     }
   }
-
-  return place;
 };

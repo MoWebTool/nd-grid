@@ -7,6 +7,7 @@
 
 var $ = require('jquery');
 
+var ajax = require('nd-ajax');
 var Alert = require('nd-alert');
 var Widget = require('nd-widget');
 var Template = require('nd-template');
@@ -65,7 +66,12 @@ module.exports = Widget.extend({
 
     plugins: require('./src/plugins'),
 
-    proxy: $.ajax,
+    proxy: function(options) {
+      // MUST, for restful
+      options.baseUri = this.get('baseUri');
+
+      return ajax(options);
+    },
 
     params: {
       limit: 10,

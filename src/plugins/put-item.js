@@ -13,6 +13,7 @@ var FormExtra = require('nd-form-extra');
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
+    options = plugin.options || {},
     uniqueId;
 
   function makeForm(data) {
@@ -25,7 +26,7 @@ module.exports = function() {
       formData: data,
 
       parentNode: host.get('parentNode')
-    }, plugin.options))
+    }, options))
     .on('formCancel', function() {
       plugin.trigger('hide', this);
     })
@@ -42,10 +43,10 @@ module.exports = function() {
     return form;
   }
 
-  host.get('itemActions').push({
+  host.addItemAction($.extend({
     'role': 'put-item',
     'text': '编辑'
-  });
+  }, options.button));
 
   host.delegateEvents({
     'click [data-role=put-item]': function(e) {

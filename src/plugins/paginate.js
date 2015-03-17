@@ -5,11 +5,14 @@
 
 'use strict';
 
+var $ = require('jquery');
+
 var Pagination = require('nd-pagination');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host;
+    host = plugin.host,
+    options = plugin.options || {};
 
   host.on('change:gridData', function(gridData) {
     var params = host.get('params');
@@ -18,13 +21,13 @@ module.exports = function() {
       plugin.exports.destroy();
     }
 
-    plugin.exports = new Pagination({
+    plugin.exports = new Pagination($.extend(true, {
       theme: 'floating',
       offset: params.offset,
       limit: params.limit,
       count: gridData.count,
       parentNode: host.$('[data-role="footer"]')
-    }).on('goto', function(page) {
+    }, options)).on('goto', function(page) {
       host.getList({
         offset: (page - 1) * params.limit
       });

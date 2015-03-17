@@ -5,17 +5,20 @@
 
 'use strict';
 
+var $ = require('jquery');
+
 var Confirm = require('nd-confirm');
 var Alert = require('nd-alert');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host;
+    host = plugin.host,
+    options = plugin.options || {};
 
-  host.addItemAction({
+  host.addItemAction($.extend({
     'role': 'del-item',
     'text': '删除'
-  });
+  }, options.button));
 
   host.delegateEvents({
 

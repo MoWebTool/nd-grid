@@ -13,6 +13,7 @@ var Alert = require('nd-alert');
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
+    options = plugin.options || {},
     uniqueId;
 
   function makeDialog(data) {
@@ -32,7 +33,7 @@ module.exports = function() {
         this.set('content', this.get('partial').call(this, data));
       }
 
-    }, plugin.options));
+    }, options));
 
     return dialog;
   }
