@@ -17,7 +17,7 @@ module.exports = function() {
     uniqueId;
 
   function makeDialog(data) {
-    var dialog = new Dialog($.extend(true, {
+    return new Dialog($.extend(true, {
 
       parentNode: host.get('parentNode'),
 
@@ -34,24 +34,22 @@ module.exports = function() {
       }
 
     }, options));
-
-    return dialog;
   }
 
   host.delegateEvents({
     'click [data-role=view-item]': function(e) {
       uniqueId = host.getItemIdByTarget(e.currentTarget);
 
-      if (!plugin.dialog) {
+      if (!plugin.exports) {
         host.GET(uniqueId)
         .done(function(data) {
-          plugin.trigger('show', (plugin.dialog = makeDialog(data).render()));
+          plugin.trigger('show', (plugin.exports = makeDialog(data).render()));
         })
         .fail(function(error) {
           Alert.show(error);
         });
       } else {
-        plugin.trigger('show', plugin.dialog);
+        plugin.trigger('show', plugin.exports);
       }
     }
   });
@@ -62,7 +60,7 @@ module.exports = function() {
 
   plugin.on('hide', function(dialog) {
     dialog.destroy();
-    delete plugin.dialog;
+    delete plugin.exports;
   });
 
   // 通知就绪

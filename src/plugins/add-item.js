@@ -18,7 +18,7 @@ module.exports = function() {
     options = plugin.options || {};
 
   function makeForm() {
-    var form = new FormExtra($.extend(true, {
+    return new FormExtra($.extend(true, {
       name: 'grid-add-item',
       // action: '',
       method: 'POST',
@@ -37,8 +37,6 @@ module.exports = function() {
       // 阻止默认事件发生
       return false;
     });
-
-    return form;
   }
 
   (function() {
@@ -56,11 +54,11 @@ module.exports = function() {
 
   host.delegateEvents({
     'click [data-role="add-item"]': function() {
-      if (!plugin.form) {
-        plugin.form = makeForm().render();
+      if (!plugin.exports) {
+        plugin.exports = makeForm().render();
       }
 
-      plugin.trigger('show', plugin.form);
+      plugin.trigger('show', plugin.exports);
     }
   });
 
@@ -72,7 +70,7 @@ module.exports = function() {
   plugin.on('hide', function(form) {
     host.element.show();
     form.destroy();
-    delete plugin.form;
+    delete plugin.exports;
   });
 
   plugin.on('submit', function(data) {
@@ -84,7 +82,7 @@ module.exports = function() {
         });
 
         // 隐藏
-        plugin.trigger('hide', plugin.form);
+        plugin.trigger('hide', plugin.exports);
       })
       .fail(function(error) {
         Alert.show(error);

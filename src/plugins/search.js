@@ -14,7 +14,7 @@ module.exports = function() {
     host = plugin.host,
     options = plugin.options || {};
 
-  var form = new FormExtra($.extend(true, {
+  plugin.exports = new FormExtra($.extend(true, {
     name: 'grid-search',
     className: 'ui-form-search',
     buttons: [{
@@ -48,13 +48,13 @@ module.exports = function() {
 
   // 刷新参数，重置表单
   host.on('change:params', function(params) {
-    var fields = form.get('fields');
+    var fields = plugin.exports.get('fields');
 
     $.each(fields, function(i, item) {
       var name = item.name,
         value = params && (name in params) ? params[name] : item.value;
 
-      form.$('[name="' + name + '"]').val(value);
+      plugin.exports.$('[name="' + name + '"]').val(value);
     });
   });
 

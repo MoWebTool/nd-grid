@@ -17,7 +17,7 @@ module.exports = function() {
     uniqueId;
 
   function makeForm(data) {
-    var form = new FormExtra($.extend(true, {
+    return new FormExtra($.extend(true, {
       name: 'grid-edit-item',
       // action: '',
       method: 'PATCH',
@@ -39,8 +39,6 @@ module.exports = function() {
       // 阻止默认事件发生
       return false;
     });
-
-    return form;
   }
 
   host.addItemAction($.extend({
@@ -49,19 +47,19 @@ module.exports = function() {
   }, options.button));
 
   host.delegateEvents({
-    'click [data-role=edit-item]': function(e) {
+    'click [data-role="edit-item"]': function(e) {
       uniqueId = host.getItemIdByTarget(e.currentTarget);
 
-      if (!plugin.form) {
+      if (!plugin.exports) {
         host.GET(uniqueId)
         .done(function(data) {
-          plugin.trigger('show', (plugin.form = makeForm(data).render()));
+          plugin.trigger('show', (plugin.exports = makeForm(data).render()));
         })
         .fail(function(error) {
           Alert.show(error);
         });
       } else {
-        plugin.trigger('show', plugin.form);
+        plugin.trigger('show', plugin.exports);
       }
     }
   });
@@ -74,7 +72,7 @@ module.exports = function() {
   plugin.on('hide', function(form) {
     host.element.show();
     form.destroy();
-    delete plugin.form;
+    delete plugin.exports;
   });
 
   plugin.on('submit', function(data) {
@@ -83,7 +81,7 @@ module.exports = function() {
         // 成功，刷新当前页
         host.getList();
 
-        plugin.trigger('hide', plugin.form);
+        plugin.trigger('hide', plugin.exports);
       })
       .fail(function(error) {
         Alert.show(error);

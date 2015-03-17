@@ -22,7 +22,7 @@ module.exports = function() {
 
   host.delegateEvents({
 
-    'click [data-role=del-item]': function(e) {
+    'click [data-role="del-item"]': function(e) {
       Confirm.show('确定删除？', function() {
         var id = host.getItemIdByTarget(e.currentTarget);
 

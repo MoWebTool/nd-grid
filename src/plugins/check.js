@@ -12,26 +12,26 @@ module.exports = function() {
   // helpers
 
   function getChecked() {
-    return host.$('[name=check-item]:checked');
+    return host.$('[name="check-item"]:checked');
   }
 
   function getCheckAll() {
-    return host.$('[data-role=check-all]');
+    return host.$('[data-role="check-all"]');
   }
 
   function getCheckItems() {
-    return host.$('[name=check-item]');
+    return host.$('[name="check-item"]');
   }
 
   host.delegateEvents({
 
     // 全选
-    'change [data-role=check-all]': function(e) {
+    'change [data-role="check-all"]': function(e) {
       getCheckItems().prop('checked', e.currentTarget.checked);
     },
 
     // 选中行
-    'change [name=check-item]': function(e) {
+    'change [name="check-item"]': function(e) {
       var checked = e.currentTarget.checked,
         checkAll = getCheckAll();
 
