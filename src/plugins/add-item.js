@@ -63,6 +63,9 @@ module.exports = function() {
   });
 
   plugin.on('show', function(form) {
+    // 通知就绪
+    plugin.ready();
+
     host.element.hide();
     form.element.show();
   });
@@ -90,5 +93,5 @@ module.exports = function() {
   });
 
   // 通知就绪
-  this.ready();
+  // this.ready();
 };
