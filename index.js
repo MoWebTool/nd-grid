@@ -13,7 +13,7 @@ var Widget = require('nd-widget');
 var Template = require('nd-template');
 var RESTful = require('nd-restful');
 
-module.exports = Widget.extend({
+var Grid = Widget.extend({
 
   // 使用 handlebars
   Implements: [Template, RESTful],
@@ -98,20 +98,16 @@ module.exports = Widget.extend({
     // 列表项操作按钮
     this.__actions = [];
 
-    // 初始化插件
-    this.initPlugins();
-
     // 取列表
     this.getList();
   },
 
   initPlugins: function() {
-    var that = this,
-      plugins = this.get('plugins'),
-      labelMap = this.get('labelMap'),
-      entryKey = this.get('entryKey'),
-      delCheck = plugins.delCheck,
-      viewItem = plugins.viewItem;
+    var plugins = this.get('plugins');
+    var labelMap = this.get('labelMap');
+    var entryKey = this.get('entryKey');
+    var delCheck = plugins.delCheck;
+    var viewItem = plugins.viewItem;
 
     // checkboxes
     plugins.check.disabled = !this.get('checkable');
@@ -131,12 +127,7 @@ module.exports = Widget.extend({
       this.set('entryKey', null);
     }
 
-    // boot
-    $.each(plugins, function(i, item) {
-      if (!item.disabled) {
-        that.addPlugin(item.name, item.plugin, item.callbacks);
-      }
-    });
+    Grid.superclass.initPlugins.call(this);
   },
 
   getList: function(params) {
@@ -254,3 +245,5 @@ module.exports = Widget.extend({
   }
 
 });
+
+module.exports = Grid;
