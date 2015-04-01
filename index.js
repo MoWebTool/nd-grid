@@ -66,12 +66,7 @@ var Grid = Widget.extend({
 
     plugins: require('./src/plugins'),
 
-    proxy: function(options) {
-      // MUST, for restful
-      options.baseUri = this.get('baseUri');
-
-      return ajax(options);
-    },
+    proxy: ajax(),
 
     params: {
       limit: 10,
@@ -130,14 +125,14 @@ var Grid = Widget.extend({
     Grid.superclass.initPlugins.call(this);
   },
 
-  getList: function(params) {
+  getList: function(params, urlParams) {
     var that = this;
 
     if (params) {
       this.set('params', params);
     }
 
-    this.LIST(this.get('params'))
+    this.LIST(this.get('params'), urlParams)
       .done(function(data) {
         that.set('gridData', data);
       })
