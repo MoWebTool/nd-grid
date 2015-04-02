@@ -18,16 +18,14 @@
           {{#isEntry}}
             <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
           {{else}}
-            {{adapters ../../key ../../value}}
+            <span>{{adapters ../../key ../../value}}</span>
           {{/isEntry}}
         </td>
       {{/if}}
       {{/each}}
       {{#if ../itemActions}}
         <td>
-          {{#each ../../itemActions}}
-            <button class="button-{{role}}" data-role="{{role}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}>{{text}}</button>
-          {{/each}}
+          {{#each ../../itemActions}}<button class="button-{{role}}" data-role="{{role}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}>{{text}}</button>{{/each}}
         </td>
       {{/if}}
       </tr>

@@ -5,6 +5,8 @@
 
 'use strict';
 
+var $ = require('jquery');
+
 module.exports = function() {
   var plugin = this,
     host = plugin.host;
@@ -24,6 +26,12 @@ module.exports = function() {
   }
 
   host.delegateEvents({
+
+    'click [data-role="item"]': function(e) {
+      if (e.target.tagName === 'TD') {
+        $(e.currentTarget).find('[name="check-item"]').trigger('click');
+      }
+    },
 
     // 全选
     'change [data-role="check-all"]': function(e) {
