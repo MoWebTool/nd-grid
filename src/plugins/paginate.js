@@ -19,8 +19,13 @@ module.exports = function() {
       plugin.exports.destroy();
     }
 
-    if (!gridData.count) {
-      return;
+    if (!('count' in gridData)) {
+      if (!gridData.page) {
+        return;
+      }
+
+      // TODO: 统一接口，不再 HACK
+      gridData.count = gridData.page.total;
     }
 
     var params = host.get('params');

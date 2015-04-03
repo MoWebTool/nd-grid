@@ -56,6 +56,7 @@ module.exports = function() {
     'click [data-role="add-item"]': function() {
       if (!plugin.exports) {
         plugin.exports = makeForm().render();
+        // plugin.trigger('export', plugin.exports);
       }
 
       plugin.trigger('show', plugin.exports);
@@ -64,7 +65,7 @@ module.exports = function() {
 
   plugin.on('show', function(form) {
     // 通知就绪
-    plugin.ready();
+    // plugin.ready();
 
     host.element.hide();
     form.element.show();
@@ -93,5 +94,5 @@ module.exports = function() {
   });
 
   // 通知就绪
-  // this.ready();
+  this.ready();
 };

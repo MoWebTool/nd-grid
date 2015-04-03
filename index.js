@@ -18,6 +18,8 @@ var Grid = Widget.extend({
   // 使用 handlebars
   Implements: [Template, RESTful],
 
+  Plugins: require('./src/plugins'),
+
   attrs: {
     // 统一样式前缀
     classPrefix: 'ui-grid',
@@ -64,7 +66,11 @@ var Grid = Widget.extend({
 
     checkable: false,
 
-    plugins: require('./src/plugins'),
+    pluginCfg: {
+      check: {},
+      delCheck: {},
+      viewItem: {}
+    },
 
     proxy: ajax(),
 
@@ -98,27 +104,23 @@ var Grid = Widget.extend({
   },
 
   initPlugins: function() {
-    var plugins = this.get('plugins');
     var labelMap = this.get('labelMap');
     var entryKey = this.get('entryKey');
-    var delCheck = plugins.delCheck;
-    var viewItem = plugins.viewItem;
+    var checkable = this.get('checkable');
 
-    // checkboxes
-    plugins.check.disabled = !this.get('checkable');
+    var pluginCfg = this.get('pluginCfg');
 
-    // delCheck's dependencies
-    if (!delCheck.disabled) {
-      $.each(delCheck.dependencies, function(i, item) {
-        plugins[item].disabled = false;
-      });
+    pluginCfg.check.disabled = !checkable;
+
+    if (!checkable) {
+      pluginCfg.delCheck.disabled = true;
     }
 
     if (!labelMap[entryKey]) {
-      viewItem.disabled = true;
+      pluginCfg.viewItem.disabled = true;
     }
 
-    if (viewItem.disabled) {
+    if (pluginCfg.viewItem.disabled) {
       this.set('entryKey', null);
     }
 

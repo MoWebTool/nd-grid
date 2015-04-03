@@ -43,7 +43,8 @@ module.exports = function() {
       if (!plugin.exports) {
         host.GET(uniqueId)
         .done(function(data) {
-          plugin.trigger('show', (plugin.exports = makeDialog(data).render()));
+          plugin.exports = makeDialog(data).render();
+          plugin.trigger('show', plugin.exports);
         })
         .fail(function(error) {
           Alert.show(error);
@@ -56,7 +57,7 @@ module.exports = function() {
 
   plugin.on('show', function(dialog) {
     // 通知就绪
-    plugin.ready();
+    // plugin.ready();
 
     dialog.show();
   });
@@ -67,5 +68,5 @@ module.exports = function() {
   });
 
   // 通知就绪
-  // this.ready();
+  this.ready();
 };

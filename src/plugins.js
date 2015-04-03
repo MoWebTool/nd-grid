@@ -1,49 +1,53 @@
 'use strict';
 
-module.exports = {
-  delCheck: {
+module.exports = [
+  {
+    name: 'delCheck',
     disabled: true,
-    plugin: require('./plugins/del-check'),
-    // 依赖项
-    dependencies: ['check']
+    starter: require('./plugins/del-check')
   },
-  viewItem: {
+  {
+    name: 'viewItem',
     disabled: true,
-    plugin: require('./plugins/view-item')
-    // callbacks needed
+    starter: require('./plugins/view-item')
   },
-  editItem: {
+  {
+    name: 'editItem',
     disabled: true,
-    plugin: require('./plugins/edit-item')
-    // callbacks needed
+    starter: require('./plugins/edit-item')
   },
-  putItem: {
+  {
+    name: 'putItem',
     disabled: true,
-    plugin: require('./plugins/put-item')
-    // callbacks needed
+    starter: require('./plugins/put-item')
   },
-  delItem: {
+  {
+    name: 'delItem',
     disabled: true,
-    plugin: require('./plugins/del-item')
+    starter: require('./plugins/del-item')
   },
-  addItem: {
+  {
+    name: 'addItem',
     disabled: true,
-    plugin: require('./plugins/add-item')
-    // callbacks needed
+    starter: require('./plugins/add-item')
   },
-  check: {
+  {
+    name: 'check',
     disabled: true,
-    plugin: require('./plugins/check')
+    starter: require('./plugins/check')
   },
-  reload: {
-    plugin: require('./plugins/reload')
+  {
+    name: 'reload',
+    starter: require('./plugins/reload')
   },
-  paginate: {
+  {
+    name: 'paginate',
     // disabled: true,
-    plugin: require('./plugins/paginate')
+    starter: require('./plugins/paginate')
   },
-  search: {
+  {
+    name: 'search',
     disabled: true,
-    plugin: require('./plugins/search')
+    starter: require('./plugins/search')
   }
-};
+];
