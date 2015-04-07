@@ -41,7 +41,7 @@ module.exports = function() {
     data || (data = {});
 
     // 重置为第一页
-    data.offset = 0;
+    data.$offset = 0;
 
     host.getList(data);
   });

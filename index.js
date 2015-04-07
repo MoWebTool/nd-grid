@@ -65,8 +65,12 @@ var Grid = Widget.extend({
     labelMap: {},
 
     checkable: false,
+    // 是否可按字段排序
+    // boolean, or array for sortable columns
+    sortable: false,
 
     pluginCfg: {
+      sort: {},
       check: {},
       delCheck: {},
       viewItem: {}
@@ -75,8 +79,8 @@ var Grid = Widget.extend({
     proxy: ajax(),
 
     params: {
-      limit: 10,
-      offset: 0
+      $limit: 10,
+      $offset: 0
     },
 
     // 服务端返回的原始数据
@@ -107,8 +111,11 @@ var Grid = Widget.extend({
     var labelMap = this.get('labelMap');
     var entryKey = this.get('entryKey');
     var checkable = this.get('checkable');
+    var sortable = this.get('sortable');
 
     var pluginCfg = this.get('pluginCfg');
+
+    pluginCfg.sort.disabled = !sortable;
 
     pluginCfg.check.disabled = !checkable;
 
@@ -134,7 +141,15 @@ var Grid = Widget.extend({
       this.set('params', params);
     }
 
-    this.LIST(this.get('params'), urlParams)
+    params = $.extend({}, this.get('params'));
+
+    $.each(params, function(key, value) {
+      if (value === '') {
+        delete params[key];
+      }
+    });
+
+    this.LIST(params, urlParams)
       .done(function(data) {
         that.set('gridData', data);
       })
@@ -196,9 +211,9 @@ var Grid = Widget.extend({
 
         return _item;
       });
-
-      this.set('itemList', itemList);
     }
+
+    this.set('itemList', itemList);
   },
 
   _onRenderItemList: function(itemList) {

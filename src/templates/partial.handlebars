@@ -1,16 +1,17 @@
+{{#if itemList}}
 <table>
   <thead>
     <tr>
       {{#if checkable}}<th><input data-role="check-all" type="checkbox" title="全选"></th>{{/if}}
-      {{#each labelMap}}<th>{{this}}</th>{{/each}}
+      {{#each labelMap}}<th data-key="{{@key}}">{{this}}</th>{{/each}}
       {{#if itemActions}}<th>操作</th>{{/if}}
     </tr>
   </thead>
   <tbody>
     {{#each itemList}}
     {{!-- ROWS --}}
-      <tr data-role="item" data-id="{{uniqueId ../uniqueId}}">
-      {{#if ../checkable}}<td><input name="check-item" type="checkbox" value="{{uniqueId ../../uniqueId}}"></td>{{/if}}
+      <tr data-role="item" data-id="{{uniqueId @root.uniqueId}}">
+      {{#if @root.checkable}}<td><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"></td>{{/if}}
       {{#each this}}
       {{#if visible}}
       {{!-- COLS --}}
@@ -23,12 +24,15 @@
         </td>
       {{/if}}
       {{/each}}
-      {{#if ../itemActions}}
+      {{#if @root.itemActions}}
         <td>
-          {{#each ../../itemActions}}<button class="button-{{role}}" data-role="{{role}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}>{{text}}</button>{{/each}}
+          {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}>{{text}}</button>{{/each}}
         </td>
       {{/if}}
       </tr>
     {{/each}}
   </tbody>
 </table>
+{{else}}
+  <p class="list-empty">没有数据啦！</p>
+{{/if}}

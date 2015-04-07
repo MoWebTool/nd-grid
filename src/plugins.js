@@ -2,6 +2,11 @@
 
 module.exports = [
   {
+    name: 'sort',
+    disabled: true,
+    starter: require('./plugins/sort')
+  },
+  {
     name: 'delCheck',
     disabled: true,
     starter: require('./plugins/del-check')
