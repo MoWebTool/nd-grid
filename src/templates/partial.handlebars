@@ -13,16 +13,39 @@
       <tr data-role="item" data-id="{{uniqueId @root.uniqueId}}">
       {{#if @root.checkable}}<td><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"></td>{{/if}}
       {{#each this}}
+
       {{#if visible}}
       {{!-- COLS --}}
-        <td>
-          {{#isEntry}}
+        {{#if isMerge}}
+
+        {{#if index}}
+        {{else}}
+          <td rowspan="{{count}}">
+
+            {{#if isEntry}}
+              <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
+            {{else}}
+
+              <span>{{adapters ../../key ../../value}}</span>
+            {{/if}}
+          </td>
+
+        {{/if}}
+
+        {{else}}
+          <td>
+
+          {{#if isEntry}}
             <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
           {{else}}
+
             <span>{{adapters ../../key ../../value}}</span>
-          {{/isEntry}}
-        </td>
+          {{/if}}
+          </td>
+        {{/if}}
+
       {{/if}}
+
       {{/each}}
       {{#if @root.itemActions}}
         <td>

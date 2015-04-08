@@ -55,7 +55,7 @@ var Grid = Widget.extend({
 
     // 数据
     model: {},
-
+    mergeKey: '',
     uniqueId: 'id',
     entryKey: {
       getter: function(value) {
@@ -68,6 +68,7 @@ var Grid = Widget.extend({
     // 是否可按字段排序
     // boolean, or array for sortable columns
     sortable: false,
+
 
     pluginCfg: {
       sort: {},
@@ -96,6 +97,10 @@ var Grid = Widget.extend({
 
     isDisabled: function(itemData, options) {
       return this.disabled ? options.fn(this) : options.inverse(this);
+    },
+    //过滤数据
+    outFilter:function(data){
+      return data;
     }
   },
 
@@ -155,10 +160,10 @@ var Grid = Widget.extend({
         if (data.count && !data.items.length) {
           // 到最后一页
           that.getList({
-            $offset: (Math.ceil(data.count / params.$limit) -1 ) * params.$limit
+            $offset: (Math.ceil(data.count / params.$limit) - 1 ) * params.$limit
           });
         } else {
-          that.set('gridData', data);
+          that.set('gridData', that.get('outFilter').call(that, data));
         }
       })
       .fail(function(error) {
@@ -188,12 +193,14 @@ var Grid = Widget.extend({
       labelMap,
       uniqueId,
       entryKey,
+      mergeKey,
       itemList = [];
 
     if (items && items.length) {
       labelMap = this.get('labelMap');
       uniqueId = this.get('uniqueId');
       entryKey = this.get('entryKey');
+      mergeKey = this.get('mergeKey');
 
       itemList = $.map(items, function(item) {
         // 仅取 labelMap 中定义的字段
@@ -204,7 +211,10 @@ var Grid = Widget.extend({
             key: key,
             value: item[key],
             visible: true,
-            isEntry: key === entryKey
+            isEntry: key === entryKey,
+            isMerge: key === mergeKey,
+            count: item.count,
+            index:item.index
           };
         });
 
