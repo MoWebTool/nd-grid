@@ -151,7 +151,15 @@ var Grid = Widget.extend({
 
     this.LIST(params, urlParams)
       .done(function(data) {
-        that.set('gridData', data);
+        // offset 溢出
+        if (data.count && !data.items.length) {
+          // 到最后一页
+          that.getList({
+            $offset: (Math.ceil(data.count / params.$limit) -1 ) * params.$limit
+          });
+        } else {
+          that.set('gridData', data);
+        }
       })
       .fail(function(error) {
         Alert.show(error);
