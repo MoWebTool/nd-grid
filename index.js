@@ -35,9 +35,6 @@ var Grid = Widget.extend({
           uniqueId: function(uniqueId) {
             return this[uniqueId].value;
           },
-          isEntryKey: function(entryKey, options) {
-            return this.key === entryKey ? options.fn(this) : options.inverse(this);
-          },
           adapters: this.get('adapters'),
           isDisabled: this.get('isDisabled')
         }
@@ -98,8 +95,9 @@ var Grid = Widget.extend({
     isDisabled: function(itemData, options) {
       return this.disabled ? options.fn(this) : options.inverse(this);
     },
+
     //过滤数据
-    outFilter:function(data){
+    outFilter: function(data){
       return data;
     }
   },
@@ -163,7 +161,7 @@ var Grid = Widget.extend({
             $offset: (Math.ceil(data.count / params.$limit) - 1 ) * params.$limit
           });
         } else {
-          that.set('gridData', that.get('outFilter').call(that, data));
+          that.set('gridData', data);
         }
       })
       .fail(function(error) {
@@ -189,6 +187,12 @@ var Grid = Widget.extend({
   },
 
   _onRenderGridData: function(gridData) {
+    // 保存原始数据
+    this.set('originData', gridData);
+
+    // 拷贝一份数据给 filter
+    gridData = this.get('outFilter').call(this, $.extend(true, {}, gridData));
+
     var items = gridData.items,
       labelMap,
       uniqueId,
