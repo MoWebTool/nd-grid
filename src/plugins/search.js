@@ -14,48 +14,52 @@ module.exports = function() {
     host = plugin.host,
     options = plugin.options || {};
 
-  plugin.exports = new FormExtra($.extend(true, {
-    name: 'grid-search',
-    className: 'ui-form-search',
-    buttons: [{
-      label: '搜索',
-      type: 'submit',
-      role: 'form-submit'
-    }],
-    parentNode: host.element,
-    insertInto: function(element, parentNode) {
-      element.prependTo(parentNode);
-    }
-  }, options))
-  .on('formSubmit', function() {
-    var that = this;
-    // 调用队列
-    this.queue.run(function() {
-      plugin.trigger('submit', that.get('dataParser').call(that));
+  host.after('render', function() {
+
+    plugin.exports = new FormExtra($.extend(true, {
+      name: 'grid-search',
+      className: 'ui-form-search',
+      buttons: [{
+        label: '搜索',
+        type: 'submit',
+        role: 'form-submit'
+      }],
+      parentNode: host.element,
+      insertInto: function(element, parentNode) {
+        element.prependTo(parentNode);
+      }
+    }, options))
+    .on('formSubmit', function() {
+      var that = this;
+      // 调用队列
+      this.queue.run(function() {
+        plugin.trigger('submit', that.get('dataParser').call(that));
+      });
+      // 阻止默认事件发生
+      return false;
+    }).render();
+
+    plugin.on('submit', function(data) {
+      data || (data = {});
+
+      // 重置为第一页
+      data.$offset = 0;
+
+      host.getList(data);
     });
-    // 阻止默认事件发生
-    return false;
-  }).render();
 
-  plugin.on('submit', function(data) {
-    data || (data = {});
+    // 刷新参数，重置表单
+    host.on('change:params', function(params) {
+      var fields = plugin.exports.get('fields');
 
-    // 重置为第一页
-    data.$offset = 0;
+      $.each(fields, function(i, item) {
+        var name = item.name,
+          value = params && (name in params) ? params[name] : item.value;
 
-    host.getList(data);
-  });
-
-  // 刷新参数，重置表单
-  host.on('change:params', function(params) {
-    var fields = plugin.exports.get('fields');
-
-    $.each(fields, function(i, item) {
-      var name = item.name,
-        value = params && (name in params) ? params[name] : item.value;
-
-      plugin.exports.$('[name="' + name + '"]').val(value);
+        plugin.exports.$('[name="' + name + '"]').val(value);
+      });
     });
+
   });
 
   // 通知就绪
