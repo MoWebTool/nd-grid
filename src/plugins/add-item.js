@@ -82,7 +82,7 @@ module.exports = function() {
       .done(function(/*data*/) {
         // 成功，返回第一页
         host.getList({
-          offset: 0
+          $offset: 0
         });
 
         // 隐藏
