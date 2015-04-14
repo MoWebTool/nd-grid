@@ -63,6 +63,10 @@ module.exports = function() {
     }
   });
 
+  host.before('destroy', function() {
+    plugin.exports && plugin.exports.destroy();
+  });
+
   plugin.on('show', function(form) {
     // 通知就绪
     // plugin.ready();

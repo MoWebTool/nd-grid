@@ -62,6 +62,10 @@ module.exports = function() {
 
   });
 
+  host.before('destroy', function() {
+    plugin.exports && plugin.exports.destroy();
+  });
+
   // 通知就绪
   this.ready();
 };
