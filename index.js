@@ -76,10 +76,10 @@ var Grid = Widget.extend({
 
     proxy: ajax(),
 
-    params: {
-      $limit: 10,
-      $offset: 0
-    },
+    // 0: mysql or 1: mongodb
+    mode: 0,
+
+    params: null,
 
     // 服务端返回的原始数据
     gridData: null,
@@ -97,7 +97,7 @@ var Grid = Widget.extend({
     },
 
     //过滤数据
-    outFilter: function(data){
+    outFilter: function(data) {
       return data;
     }
   },
@@ -105,6 +105,14 @@ var Grid = Widget.extend({
   setup: function() {
     // 列表项操作按钮
     this.__actions = [];
+
+    this.set('params', this.get('mode') ? {
+      size: 10,
+      page: 0
+    } : {
+      $limit: 10,
+      $offset: 0
+    });
 
     // 取列表
     this.getList();
@@ -157,7 +165,9 @@ var Grid = Widget.extend({
         // offset 溢出
         if (data.count && !data.items.length) {
           // 到最后一页
-          that.getList({
+          that.getList(that.get('mode') ? {
+            page: (Math.ceil(data.count / params.size) - 1 )
+          } : {
             $offset: (Math.ceil(data.count / params.$limit) - 1 ) * params.$limit
           });
         } else {

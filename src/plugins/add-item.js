@@ -85,7 +85,9 @@ module.exports = function() {
     host.POST(data)
       .done(function(/*data*/) {
         // 成功，返回第一页
-        host.getList({
+        host.getList(host.get('mode') ? {
+          page: 0
+        } : {
           $offset: 0
         });
 

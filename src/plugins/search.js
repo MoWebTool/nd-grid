@@ -43,7 +43,11 @@ module.exports = function() {
       data || (data = {});
 
       // 重置为第一页
-      data.$offset = 0;
+      if (host.get('mode')) {
+        data.page = 0;
+      } else {
+        data.$offset = 0;
+      }
 
       host.getList(data);
     });
