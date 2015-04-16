@@ -54,13 +54,16 @@ module.exports = function() {
 
     // 刷新参数，重置表单
     host.on('change:params', function(params) {
-      var fields = plugin.exports.get('fields');
+      var form = plugin.exports;
+      var fields = form.get('fields');
+
+      params = form.get('inFilter').call(form, $.extend({}, params));
 
       $.each(fields, function(i, item) {
         var name = item.name,
           value = params && (name in params) ? params[name] : item.value;
 
-        plugin.exports.$('[name="' + name + '"]').val(value);
+        form.$('[name="' + name + '"]').val(value);
       });
     });
 
