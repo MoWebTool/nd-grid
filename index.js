@@ -79,13 +79,13 @@ var Grid = Widget.extend({
     // 0: mysql or 1: mongodb
     mode: 0,
 
-    params: null,
+    params: {},
 
     // 服务端返回的原始数据
-    gridData: null,
+    gridData: {},
 
     // 解析后的数据列表
-    itemList: null,
+    itemList: [],
 
     // 数据处理，放在 handlebars 中进行
     adapters: function(key, value) {

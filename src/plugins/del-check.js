@@ -15,9 +15,10 @@ var helpers = require('../helpers');
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
-    options = plugin.options || {};
+    options = plugin.options || {},
+    awaiting;
 
-  var delItem = function(id) {
+  var delItem = function(id, callback) {
     host.DELETE(id)
       .done(function(/*data*/) {
         host.deleteItem(id);
@@ -26,7 +27,8 @@ module.exports = function() {
       })
       .fail(function(error) {
         Alert.show(error);
-      });
+      })
+      .always(callback);
   };
 
   // helpers
@@ -70,10 +72,22 @@ module.exports = function() {
     },
 
     'click [data-role="del-check"]': function() {
+      if (awaiting) {
+        return;
+      }
       Confirm.show('确定删除选定？', function() {
+        awaiting = true;
         // TODO: batch delete?
-        $.each(getChecked(), function(i, item) {
-          delItem(item.value);
+        var items = getChecked();
+        var count = items.length;
+        var ready = 0;
+        function cb() {
+          if (++ready === count) {
+            awaiting = false;
+          }
+        }
+        $.each(items, function(i, item) {
+          delItem(item.value, cb);
         });
       });
     }

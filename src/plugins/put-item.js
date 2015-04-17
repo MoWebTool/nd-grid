@@ -14,7 +14,8 @@ module.exports = function() {
   var plugin = this,
     host = plugin.host,
     options = plugin.options || {},
-    uniqueId;
+    uniqueId,
+    awaiting;
 
   function makeForm(data) {
     var form = new FormExtra($.extend(true, {
@@ -52,7 +53,13 @@ module.exports = function() {
     'click [data-role="put-item"]': function(e) {
       uniqueId = host.getItemIdByTarget(e.currentTarget);
 
+      if (awaiting) {
+        return;
+      }
+
       if (!plugin.exports) {
+        // 添加用于阻止多次点击
+        awaiting = true;
         host.GET(uniqueId)
         .done(function(data) {
           plugin.exports = makeForm(data).render();
@@ -60,6 +67,9 @@ module.exports = function() {
         })
         .fail(function(error) {
           Alert.show(error);
+        })
+        .always(function() {
+          awaiting = false;
         });
       } else {
         plugin.trigger('show', plugin.exports);

@@ -56,7 +56,6 @@ module.exports = function() {
     'click [data-role="add-item"]': function() {
       if (!plugin.exports) {
         plugin.exports = makeForm().render();
-        // plugin.trigger('export', plugin.exports);
       }
 
       plugin.trigger('show', plugin.exports);
