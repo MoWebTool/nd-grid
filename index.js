@@ -66,7 +66,6 @@ var Grid = Widget.extend({
     // boolean, or array for sortable columns
     sortable: false,
 
-
     pluginCfg: {
       sort: {},
       check: {},
@@ -80,6 +79,8 @@ var Grid = Widget.extend({
     mode: 0,
 
     params: {},
+
+    autoload: true,
 
     // 服务端返回的原始数据
     gridData: {},
@@ -114,8 +115,10 @@ var Grid = Widget.extend({
       $offset: 0
     });
 
-    // 取列表
-    this.getList();
+    if (this.get('autoload')) {
+      // 取列表
+      this.getList();
+    }
   },
 
   initPlugins: function() {
