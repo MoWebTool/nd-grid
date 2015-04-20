@@ -22,10 +22,9 @@ module.exports = function() {
       name: 'grid-edit-item',
       // action: '',
       method: 'PATCH',
-
       // 表单数据
       formData: data,
-
+      proxy: host.get('proxy'),
       parentNode: host.get('parentNode')
     }, options))
     .on('formCancel', function() {

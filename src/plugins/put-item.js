@@ -22,10 +22,9 @@ module.exports = function() {
       name: 'grid-put-item',
       // action: '',
       method: 'PUT',
-
       // 表单数据
       formData: data,
-
+      proxy: host.get('proxy'),
       parentNode: host.get('parentNode')
     }, options))
     .on('formCancel', function() {

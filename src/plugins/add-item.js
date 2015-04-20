@@ -22,7 +22,7 @@ module.exports = function() {
       name: 'grid-add-item',
       // action: '',
       method: 'POST',
-
+      proxy: host.get('proxy'),
       parentNode: host.get('parentNode')
     }, options))
     .on('formCancel', function() {
