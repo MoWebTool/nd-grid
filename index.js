@@ -296,19 +296,27 @@ var Grid = Widget.extend({
       delete itemList.hacked;
     }
 
+    this.renderPartial(itemList);
+  },
+
+  renderPartial: function(itemList) {
     this.$('.content').html(
       this.get('partial').call(this, {
         uniqueId: this.get('uniqueId'),
         checkable: this.get('checkable'),
         labelMap: this.get('labelMap'),
         itemActions: this.getItemActions(),
-        itemList: itemList
+        itemList: itemList || this.get('itemList')
       })
     );
   },
 
-  addItemAction: function(options) {
-    this.__actions.push(options);
+  addItemAction: function(options, index) {
+    if (typeof index === 'undefined') {
+       this.__actions.push(options);
+    } else {
+      this.__actions.splice(index, 0, options);
+    }
   },
 
   getItemActions: function() {

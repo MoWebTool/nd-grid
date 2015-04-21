@@ -44,7 +44,12 @@ module.exports = function() {
   host.addItemAction($.extend({
     'role': 'edit-item',
     'text': '编辑'
-  }, options.button));
+  }, options.button), 0);
+
+  // 异步插件，需要刷新列表
+  if (plugin._async) {
+    host.renderPartial();
+  }
 
   host.delegateEvents({
     'click [data-role="edit-item"]': function(e) {
