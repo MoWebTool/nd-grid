@@ -346,6 +346,10 @@ var Grid = Widget.extend({
 
   getItemIdByTarget: function(target) {
     return this.getItemId(this.getItemByTarget(target));
+  },
+
+  getItemDataById: function(id) {
+    return this.get('itemList')[this.getItemById(id).index()];
   }
 
 });
