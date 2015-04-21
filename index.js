@@ -7,16 +7,14 @@
 
 var $ = require('jquery');
 
-var ajax = require('nd-ajax');
 var Alert = require('nd-alert');
 var Widget = require('nd-widget');
 var Template = require('nd-template');
-var RESTful = require('nd-restful');
 
 var Grid = Widget.extend({
 
   // 使用 handlebars
-  Implements: [Template, RESTful],
+  Implements: [Template],
 
   Plugins: require('./src/plugins'),
 
@@ -73,7 +71,7 @@ var Grid = Widget.extend({
       viewItem: {}
     },
 
-    proxy: ajax(),
+    // proxy: null,
 
     // 0: mysql or 1: mongodb
     mode: 0,
@@ -115,10 +113,44 @@ var Grid = Widget.extend({
       $offset: 0
     });
 
+    if (!this.get('proxy')) {
+      console.error('请设置数据源（proxy）');
+    }
+
     if (this.get('autoload')) {
       // 取列表
       this.getList();
     }
+  },
+
+  LIST: function() {
+    var proxy = this.get('proxy');
+    return proxy.LIST.apply(proxy, arguments);
+  },
+
+  GET: function() {
+    var proxy = this.get('proxy');
+    return proxy.GET.apply(proxy, arguments);
+  },
+
+  PUT: function() {
+    var proxy = this.get('proxy');
+    return proxy.PUT.apply(proxy, arguments);
+  },
+
+  PATCH: function() {
+    var proxy = this.get('proxy');
+    return proxy.PATCH.apply(proxy, arguments);
+  },
+
+  POST: function() {
+    var proxy = this.get('proxy');
+    return proxy.POST.apply(proxy, arguments);
+  },
+
+  DELETE: function() {
+    var proxy = this.get('proxy');
+    return proxy.DELETE.apply(proxy, arguments);
   },
 
   initPlugins: function() {
