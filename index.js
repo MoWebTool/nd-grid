@@ -83,10 +83,10 @@ var Grid = Widget.extend({
     autoload: true,
 
     // 服务端返回的原始数据
-    gridData: {},
+    gridData: null,
 
     // 解析后的数据列表
-    itemList: [],
+    itemList: null,
 
     // 数据处理，放在 handlebars 中进行
     adapters: function(key, value) {
@@ -211,7 +211,10 @@ var Grid = Widget.extend({
       uniqueId,
       entryKey,
       mergeKey,
-      itemList = [];
+      itemList = [0];
+
+    // 强制无数据时列表刷新
+    itemList.hacked = true;
 
     if (items && items.length) {
       labelMap = this.get('labelMap');
@@ -246,12 +249,21 @@ var Grid = Widget.extend({
 
         return _item;
       });
+
+      delete itemList.hacked;
     }
 
     this.set('itemList', itemList);
   },
 
   _onRenderItemList: function(itemList) {
+    if (itemList.hacked) {
+      // 重置
+      itemList = [];
+      // 清除 hack
+      delete itemList.hacked;
+    }
+
     this.$('.content').html(
       this.get('partial').call(this, {
         uniqueId: this.get('uniqueId'),
