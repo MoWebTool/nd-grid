@@ -44,10 +44,12 @@ module.exports = function() {
       count: gridData.count,
       parentNode: host.$('[data-role="footer"]')
     }, options)).on('goto', function(page) {
-      host.getList(mode ? {
-        page: page - 1
-      } : {
-        $offset: (page - 1) * params.$limit
+      host.getList({
+        data: mode ? {
+          page: page - 1
+        } : {
+          $offset: (page - 1) * params.$limit
+        }
       });
     }).render();
   });

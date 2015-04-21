@@ -49,7 +49,9 @@ module.exports = function() {
         data.$offset = 0;
       }
 
-      host.getList(data);
+      host.getList({
+        data: data
+      });
     });
 
     // 刷新参数，重置表单

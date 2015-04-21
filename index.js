@@ -180,30 +180,35 @@ var Grid = Widget.extend({
     Grid.superclass.initPlugins.call(this);
   },
 
-  getList: function(params, urlParams) {
+  getList: function(options) {
     var that = this;
 
-    if (params) {
-      this.set('params', params);
+    if (options) {
+      this.set('params', options.data);
+    } else {
+      options = {};
     }
 
-    params = $.extend({}, this.get('params'));
+    var params = options.data = $.extend({}, this.get('params'));
 
-    $.each(params, function(key, value) {
-      if (value === '') {
+    Object.keys(params).forEach(function(key) {
+      // 空字符串不提交查询
+      if (params[key] === '') {
         delete params[key];
       }
     });
 
-    this.LIST(params, urlParams)
+    this.LIST(options)
       .done(function(data) {
         // offset 溢出
         if (data.count && !data.items.length) {
           // 到最后一页
-          that.getList(that.get('mode') ? {
-            page: (Math.ceil(data.count / params.size) - 1 )
-          } : {
-            $offset: (Math.ceil(data.count / params.$limit) - 1 ) * params.$limit
+          that.getList({
+            data: that.get('mode') ? {
+              page: (Math.ceil(data.count / params.size) - 1 )
+            } : {
+              $offset: (Math.ceil(data.count / params.$limit) - 1 ) * params.$limit
+            }
           });
         } else {
           that.set('gridData', data);

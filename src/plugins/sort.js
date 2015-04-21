@@ -26,7 +26,9 @@ module.exports = function() {
         data.$orderby = key;
         // data.$order = order;
 
-        host.getList(data);
+        host.getList({
+          data: data
+        });
       }
     }
 

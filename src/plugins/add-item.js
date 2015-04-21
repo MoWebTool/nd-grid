@@ -81,7 +81,9 @@ module.exports = function() {
   });
 
   plugin.on('submit', function(data) {
-    host.POST(data)
+    host.POST({
+        data: data
+      })
       .done(function(/*data*/) {
         // 成功，返回第一页
         host.getList(host.get('mode') ? {
