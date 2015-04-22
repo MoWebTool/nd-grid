@@ -76,7 +76,9 @@ var Grid = Widget.extend({
     // 0: mysql or 1: mongodb
     mode: 0,
 
-    params: {},
+    params: {
+      $count: true
+    },
 
     autoload: true,
 
