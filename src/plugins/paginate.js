@@ -28,7 +28,7 @@ module.exports = function() {
     var mode = host.get('mode');
 
     if (mode) {
-      if (params.size * (params.page + 1) >= gridData.count) {
+      if (params.size >= gridData.count) {
         return;
       }
     } else {
@@ -39,7 +39,7 @@ module.exports = function() {
 
     plugin.exports = new Pagination($.extend(true, {
       theme: 'floating',
-      $offset: mode ? params.page : params.$offset,
+      $offset: mode ? (params.page * params.size) : params.$offset,
       $limit: mode ? params.size : params.$limit,
       count: gridData.count,
       parentNode: host.$('[data-role="footer"]')
