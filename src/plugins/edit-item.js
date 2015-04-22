@@ -48,7 +48,7 @@ module.exports = function() {
 
   // 异步插件，需要刷新列表
   if (plugin._async) {
-    host.renderPartial();
+    host._renderPartial();
   }
 
   host.delegateEvents({

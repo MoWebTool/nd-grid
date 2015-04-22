@@ -307,6 +307,10 @@ var Grid = Widget.extend({
   },
 
   renderPartial: function(itemList) {
+    this._renderPartial(itemList);
+  },
+
+  _renderPartial: function(itemList) {
     this.$('.content').html(
       this.get('partial').call(this, {
         uniqueId: this.get('uniqueId'),
