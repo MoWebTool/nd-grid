@@ -186,7 +186,9 @@ var Grid = Widget.extend({
     var that = this;
 
     if (options) {
-      this.set('params', options.data);
+      if (options.data) {
+        this.set('params', options.data);
+      }
     } else {
       options = {};
     }

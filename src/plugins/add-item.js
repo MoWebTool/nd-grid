@@ -28,6 +28,7 @@ module.exports = function() {
     .on('formCancel', function() {
       plugin.trigger('hide', this);
     })
+    // TODO: 此处过分耦合 form 逻辑
     .on('formSubmit', function() {
       var that = this;
       // 调用队列
@@ -86,10 +87,12 @@ module.exports = function() {
       })
       .done(function(/*data*/) {
         // 成功，返回第一页
-        host.getList(host.get('mode') ? {
-          page: 0
-        } : {
-          $offset: 0
+        host.getList({
+          data: host.get('mode') ? {
+            page: 0
+          } : {
+            $offset: 0
+          }
         });
 
         // 隐藏
