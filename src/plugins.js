@@ -2,14 +2,28 @@
 
 module.exports = [
   {
-    name: 'sort',
+    name: 'search',
     disabled: true,
-    starter: require('./plugins/sort')
+    starter: require('./plugins/search')
   },
   {
     name: 'delCheck',
     disabled: true,
     starter: require('./plugins/del-check')
+  },
+  {
+    name: 'reload',
+    starter: require('./plugins/reload')
+  },
+  {
+    name: 'addItem',
+    disabled: true,
+    starter: require('./plugins/add-item')
+  },
+  {
+    name: 'check',
+    disabled: true,
+    starter: require('./plugins/check')
   },
   {
     name: 'viewItem',
@@ -32,27 +46,12 @@ module.exports = [
     starter: require('./plugins/del-item')
   },
   {
-    name: 'addItem',
-    disabled: true,
-    starter: require('./plugins/add-item')
-  },
-  {
-    name: 'check',
-    disabled: true,
-    starter: require('./plugins/check')
-  },
-  {
-    name: 'reload',
-    starter: require('./plugins/reload')
-  },
-  {
     name: 'paginate',
-    // disabled: true,
     starter: require('./plugins/paginate')
   },
   {
-    name: 'search',
+    name: 'sort',
     disabled: true,
-    starter: require('./plugins/search')
+    starter: require('./plugins/sort')
   }
 ];
