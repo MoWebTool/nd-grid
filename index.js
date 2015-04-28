@@ -303,7 +303,7 @@ var Grid = Widget.extend({
       itemList = [];
       // 回设
       this.set('itemList', itemList, {
-        silenet: true
+        silent: true
       });
     }
 
