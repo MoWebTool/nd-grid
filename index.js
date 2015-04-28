@@ -301,8 +301,10 @@ var Grid = Widget.extend({
     if (itemList.hacked) {
       // 重置
       itemList = [];
-      // 清除 hack
-      delete itemList.hacked;
+      // 回设
+      this.set('itemList', itemList, {
+        silenet: true
+      });
     }
 
     this.renderPartial(itemList);
