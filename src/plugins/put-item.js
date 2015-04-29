@@ -54,8 +54,6 @@ module.exports = function() {
 
   host.delegateEvents({
     'click [data-role="put-item"]': function(e) {
-      uniqueId = host.getItemIdByTarget(e.currentTarget);
-
       if (awaiting) {
         return;
       }
@@ -63,6 +61,9 @@ module.exports = function() {
       if (!plugin.exports) {
         // 添加用于阻止多次点击
         awaiting = true;
+
+        uniqueId = host.getItemIdByTarget(e.currentTarget);
+
         host.GET(uniqueId)
         .done(function(data) {
           plugin.exports = makeForm(data).render();

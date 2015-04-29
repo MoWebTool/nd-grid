@@ -27,15 +27,15 @@ module.exports = function() {
   host.delegateEvents({
 
     'click [data-role="del-item"]': function(e) {
+      if (awaiting) {
+        return;
+      }
+
       Confirm.show('确定删除？', function() {
-        var id = host.getItemIdByTarget(e.currentTarget);
-
-        if (awaiting) {
-          return;
-        }
-
         // 添加用于阻止多次点击
         awaiting = true;
+
+        var id = host.getItemIdByTarget(e.currentTarget);
 
         host.DELETE(id)
           .done(function(/*data*/) {

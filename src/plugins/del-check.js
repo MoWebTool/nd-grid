@@ -75,6 +75,7 @@ module.exports = function() {
       if (awaiting) {
         return;
       }
+
       Confirm.show('确定删除选定？', function() {
         awaiting = true;
         // TODO: batch delete?
