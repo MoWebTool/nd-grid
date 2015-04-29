@@ -287,8 +287,6 @@ var Grid = Widget.extend({
 
         return _item;
       });
-
-      delete itemList.hacked;
     }
 
     this.set('itemList', itemList);
