@@ -104,9 +104,6 @@ var Grid = Widget.extend({
   },
 
   setup: function() {
-    // 列表项操作按钮
-    this.__actions = [];
-
     this.set('params', this.get('mode') ? {
       size: 10,
       page: 0
@@ -320,22 +317,20 @@ var Grid = Widget.extend({
         uniqueId: this.get('uniqueId'),
         checkable: this.get('checkable'),
         labelMap: this.get('labelMap'),
-        itemActions: this.getItemActions(),
+        itemActions: this.get('itemActions'),
         itemList: itemList || this.get('itemList')
       })
     );
   },
 
   addItemAction: function(options, index) {
-    if (typeof index === 'undefined') {
-       this.__actions.push(options);
-    } else {
-      this.__actions.splice(index, 0, options);
-    }
-  },
+    var itemActions = this.get('itemActions');
 
-  getItemActions: function() {
-    return this.__actions;
+    if (typeof index === 'undefined') {
+      itemActions.push(options);
+    } else {
+      itemActions.splice(index, 0, options);
+    }
   },
 
   getItems: function() {
