@@ -29,6 +29,7 @@ module.exports = function() {
         element.prependTo(parentNode);
       }
     }, options))
+    // TODO: 此处过分耦合 form 逻辑
     .on('formSubmit', function() {
       var that = this;
       // 调用队列

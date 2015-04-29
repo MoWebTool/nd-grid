@@ -14,18 +14,16 @@ module.exports = function() {
     host = plugin.host,
     options = plugin.options || {};
 
-  (function() {
-    // 添加按钮到顶部
-    host.$(helpers.makePlace(options.button)).append(
-      helpers.makeButton($.extend({
-        'role': 'reload',
-        'text': '刷新'
-      }, options.button))
-    );
+  // 添加按钮到顶部
+  host.$(helpers.makePlace(options.button)).append(
+    helpers.makeButton($.extend({
+      'role': 'reload',
+      'text': '刷新'
+    }, options.button))
+  );
 
-    // 移除参数
-    delete options.button;
-  })();
+  // 移除参数
+  delete options.button;
 
   host.delegateEvents({
     'click [data-role="reload"]': function() {

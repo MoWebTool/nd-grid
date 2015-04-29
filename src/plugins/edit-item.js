@@ -30,6 +30,7 @@ module.exports = function() {
     .on('formCancel', function() {
       plugin.trigger('hide', this);
     })
+    // TODO: 此处过分耦合 form 逻辑
     .on('formSubmit', function() {
       var that = this;
       // 调用队列
@@ -45,6 +46,9 @@ module.exports = function() {
     'role': 'edit-item',
     'text': '编辑'
   }, options.button), 0);
+
+  // 移除参数
+  delete options.button;
 
   // 异步插件，需要刷新列表
   if (plugin._async) {

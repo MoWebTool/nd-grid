@@ -30,6 +30,7 @@ module.exports = function() {
     .on('formCancel', function() {
       plugin.trigger('hide', this);
     })
+    // TODO: 此处过分耦合 form 逻辑
     .on('formSubmit', function() {
       var that = this;
       // 调用队列
@@ -47,6 +48,9 @@ module.exports = function() {
     'role': 'put-item',
     'text': '编辑'
   }, options.button));
+
+  // 移除参数
+  delete options.button;
 
   host.delegateEvents({
     'click [data-role="put-item"]': function(e) {

@@ -21,6 +21,9 @@ module.exports = function() {
     'text': '删除'
   }, options.button));
 
+  // 移除参数
+  delete options.button;
+
   host.delegateEvents({
 
     'click [data-role="del-item"]': function(e) {

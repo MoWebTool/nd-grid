@@ -40,18 +40,16 @@ module.exports = function() {
     });
   }
 
-  (function() {
-    // 添加按钮到顶部
-    host.$(helpers.makePlace(options.button)).append(
-      helpers.makeButton($.extend({
-        'role': 'add-item',
-        'text': '新增'
-      }, options.button))
-    );
+  // 添加按钮到顶部
+  host.$(helpers.makePlace(options.button)).append(
+    helpers.makeButton($.extend({
+      'role': 'add-item',
+      'text': '新增'
+    }, options.button))
+  );
 
-    // 移除参数
-    delete options.button;
-  })();
+  // 移除参数
+  delete options.button;
 
   host.delegateEvents({
     'click [data-role="add-item"]': function() {
