@@ -95,7 +95,7 @@ module.exports = function() {
 
   });
 
-  host.on('change:itemList', function(/*itemList*/) {
+  host.after('renderPartial', function() {
     getDelCheck().prop('disabled', !getChecked().length);
   });
 
