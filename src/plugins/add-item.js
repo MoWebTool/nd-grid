@@ -28,12 +28,10 @@ module.exports = function() {
     .on('formCancel', function() {
       plugin.trigger('hide', this);
     })
-    // TODO: 此处过分耦合 form 逻辑
     .on('formSubmit', function() {
-      var that = this;
       // 调用队列
-      this.queue.run(function() {
-        plugin.trigger('submit', that.get('dataParser').call(that));
+      this.submit(function(data) {
+        plugin.trigger('submit', data);
       });
       // 阻止默认事件发生
       return false;
