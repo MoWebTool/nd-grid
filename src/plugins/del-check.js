@@ -47,8 +47,9 @@ module.exports = function() {
       helpers.makeButton($.extend({
         'role': 'del-check',
         'text': '删除选定',
+        'tips': '确定删除选定？',
         'disabled': true
-      }, options.button))
+      }, options.button), options.button && options.button.index)
     );
 
     // 移除参数
@@ -71,12 +72,12 @@ module.exports = function() {
       }
     },
 
-    'click [data-role="del-check"]': function() {
+    'click [data-role="del-check"]': function(e) {
       if (awaiting) {
         return;
       }
 
-      Confirm.show('确定删除选定？', function() {
+      Confirm.show(e.currentTarget.getAttribute('data-tips'), function() {
         awaiting = true;
         // TODO: batch delete?
         var items = getChecked();

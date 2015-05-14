@@ -42,7 +42,7 @@ module.exports = function() {
   host.addItemAction($.extend({
     'role': 'edit-item',
     'text': '编辑'
-  }, options.button), 0);
+  }, options.button), options.button && options.button.index || 0);
 
   // 移除参数
   delete options.button;

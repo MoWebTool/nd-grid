@@ -19,7 +19,7 @@ module.exports = function() {
     helpers.makeButton($.extend({
       'role': 'reload',
       'text': '刷新'
-    }, options.button))
+    }, options.button), options.button && options.button.index)
   );
 
   // 移除参数

@@ -44,7 +44,7 @@ module.exports = function() {
   host.addItemAction($.extend({
     'role': 'put-item',
     'text': '编辑'
-  }, options.button));
+  }, options.button), options.button && options.button.index);
 
   // 移除参数
   delete options.button;

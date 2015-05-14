@@ -18,8 +18,9 @@ module.exports = function() {
 
   host.addItemAction($.extend({
     'role': 'del-item',
-    'text': '删除'
-  }, options.button));
+    'text': '删除',
+    'tips': '确定删除？'
+  }, options.button), options.button && options.button.index);
 
   // 移除参数
   delete options.button;
@@ -31,7 +32,7 @@ module.exports = function() {
         return;
       }
 
-      Confirm.show('确定删除？', function() {
+      Confirm.show(e.currentTarget.getAttribute('data-tips'), function() {
         // 添加用于阻止多次点击
         awaiting = true;
 
