@@ -73,7 +73,7 @@ var Grid = Widget.extend({
 
     // proxy: null,
 
-    // 0: mysql or 1: mongodb
+    // 0: mysql or 1: mongodb or 2: no pagination
     mode: 0,
 
     params: {
@@ -104,13 +104,26 @@ var Grid = Widget.extend({
   },
 
   setup: function() {
-    this.set('params', this.get('mode') ? {
-      size: 10,
-      page: 0
-    } : {
-      $limit: 10,
-      $offset: 0
-    });
+    var params;
+
+    switch (this.get('mode')) {
+      case 2:
+        params = {};
+        break;
+      case 1:
+        params = {
+          size: 10,
+          page: 0
+        };
+        break;
+      default:
+        params = {
+          $limit: 10,
+          $offset: 0
+        };
+    }
+
+    this.set('params', $.extend(params, this.get('params')));
 
     if (!this.get('proxy')) {
       console.error('请设置数据源（proxy）');
