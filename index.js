@@ -111,6 +111,19 @@ var Grid = Widget.extend({
     }
   },
 
+  initProps: function() {
+    var proxy = this.get('proxy');
+
+    if (!proxy) {
+      console.error('请设置数据源（proxy）');
+    } else {
+      ['LIST', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
+      .forEach(function(method) {
+        proxy[method] && (this[method] = proxy[method].bind(proxy));
+      }, this);
+    }
+  },
+
   initPlugins: function() {
     var labelMap = this.get('labelMap');
     var entryKey = this.get('entryKey');
@@ -159,17 +172,6 @@ var Grid = Widget.extend({
     }
 
     this.set('params', $.extend(params, this.get('params')));
-
-    var proxy = this.get('proxy');
-
-    if (!proxy) {
-      console.error('请设置数据源（proxy）');
-    } else {
-      ['LIST', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
-      .forEach(function(method) {
-        proxy[method] && (this[method] = proxy[method].bind(proxy));
-      }, this);
-    }
 
     if (this.get('autoload')) {
       // 取列表
