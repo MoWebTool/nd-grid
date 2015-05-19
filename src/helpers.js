@@ -8,8 +8,6 @@ exports.makeButton = function(options) {
     ' data-role="' + options.role + '"' +
     // tips
     ' data-tips="' + options.tips + '"' +
-    // interact
-    ' data-interact="' + options.interact + '"' +
     // disabled
     (options.disabled ? ' disabled' : '') +
     '>' + options.text + '</button>';
