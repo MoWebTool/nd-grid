@@ -14,8 +14,7 @@ var helpers = require('../helpers');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host,
-    options = plugin.options || {};
+    host = plugin.host;
 
   function makeForm() {
     return new FormExtra($.extend(true, {
@@ -24,7 +23,7 @@ module.exports = function() {
       method: 'POST',
       proxy: host.get('proxy'),
       parentNode: host.get('parentNode')
-    }, options))
+    }, plugin.getOptions('view')))
     .on('formCancel', function() {
       plugin.trigger('hide', this);
     })
@@ -39,16 +38,16 @@ module.exports = function() {
   }
 
   // 添加按钮到顶部
-  host.$(helpers.makePlace(options.button)).append(
-    helpers.makeButton($.extend({
-      'role': 'add-item',
-      'text': '新增'
-    }, options.button))
-  );
+  (function(button) {
+    host.$(helpers.makePlace(button)).append(
+      helpers.makeButton($.extend({
+        'role': 'add-item',
+        'text': '新增'
+      }, button))
+    );
+  })(plugin.getOptions('button'));
 
-  // 移除参数
-  delete options.button;
-
+  // 按钮事件
   host.delegateEvents({
     'click [data-role="add-item"]': function() {
       if (!plugin.exports) {
@@ -64,15 +63,18 @@ module.exports = function() {
   });
 
   plugin.on('show', function(form) {
-    // 通知就绪
-    // plugin.ready();
+    if (!this.getOptions('interact')) {
+      host.element.hide();
+    }
 
-    host.element.hide();
     form.element.show();
   });
 
   plugin.on('hide', function(form) {
-    host.element.show();
+    if (!this.getOptions('interact')) {
+      host.element.show();
+    }
+
     form.destroy();
     delete plugin.exports;
   });

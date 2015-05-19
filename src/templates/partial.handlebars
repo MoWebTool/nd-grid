@@ -49,7 +49,7 @@
       {{/each}}
       {{#if @root.itemActions}}
         <td>
-          {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}" data-tips="{{tips}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}>{{text}}</button>{{/each}}
+          {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}" data-tips="{{tips}}" data-interact="{{interact}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}>{{text}}</button>{{/each}}
         </td>
       {{/if}}
       </tr>

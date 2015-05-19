@@ -9,18 +9,25 @@ var $ = require('jquery');
 
 var Dialog = require('nd-dialog');
 var Alert = require('nd-alert');
+var Tip = require('nd-tip');
 
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
-    options = plugin.options || {},
     uniqueId,
     awaiting;
 
-  function makeDialog(data) {
-    return new Dialog($.extend(true, {
+  function makeDialog(data, trigger) {
+    var interact = plugin.getOptions('interact');
+    var UI = (interact && interact.type === 'tip') ? Tip : Dialog;
+
+    return new UI($.extend(true, {
 
       parentNode: host.get('parentNode'),
+
+      // for tip
+      trigger: trigger,
+      arrowPosition: 10,
 
       partial: function(data) {
         return data.toString ? data.toString() : data;
@@ -34,11 +41,12 @@ module.exports = function() {
         this.set('content', this.get('partial').call(this, data));
       }
 
-    }, options));
+    }, plugin.getOptions('view')));
   }
 
   host.delegateEvents({
-    'click [data-role=view-item]': function(e) {
+    'click [data-role="view-item"]': function(e) {
+      // e.stopPropagation();
       if (awaiting) {
         return;
       }
@@ -47,11 +55,13 @@ module.exports = function() {
         // 添加用于阻止多次点击
         awaiting = true;
 
-        uniqueId = host.getItemIdByTarget(e.currentTarget);
+        var trigger = e.currentTarget;
+
+        uniqueId = host.getItemIdByTarget(trigger);
 
         host.GET(uniqueId)
         .done(function(data) {
-          plugin.exports = makeDialog(data).render();
+          plugin.exports = makeDialog(data, trigger).render();
           plugin.trigger('show', plugin.exports);
         })
         .fail(function(error) {
@@ -71,9 +81,6 @@ module.exports = function() {
   });
 
   plugin.on('show', function(dialog) {
-    // 通知就绪
-    // plugin.ready();
-
     dialog.show();
   });
 

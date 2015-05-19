@@ -1,6 +1,7 @@
 /**
- * @module: nd-grid
- * @author: crossjs <liwenfu@crossjs.com> - 2015-02-27 13:47:55
+ * @module Grid
+ * @author crossjs <liwenfu@crossjs.com>
+ * @create 2015-02-27 13:47:55
  */
 
 'use strict';
@@ -10,11 +11,18 @@ var $ = require('jquery');
 var Alert = require('nd-alert');
 var Widget = require('nd-widget');
 var Template = require('nd-template');
+var RESTful = require('nd-restful');
 
+/**
+ * @class
+ * @extends {Widget}
+ * @implements {Template}
+ * @param  {config} [config]   attrs
+ */
 var Grid = Widget.extend({
 
   // 使用 handlebars
-  Implements: [Template],
+  Implements: [Template, RESTful],
 
   Plugins: require('./src/plugins'),
 
@@ -73,7 +81,7 @@ var Grid = Widget.extend({
 
     // proxy: null,
 
-    // 0: mysql or 1: mongodb or 2: no pagination
+    // 0: mysql or 1: mongodb
     mode: 0,
 
     params: {
@@ -103,68 +111,6 @@ var Grid = Widget.extend({
     }
   },
 
-  setup: function() {
-    var params;
-
-    switch (this.get('mode')) {
-      case 2:
-        params = {};
-        break;
-      case 1:
-        params = {
-          size: 10,
-          page: 0
-        };
-        break;
-      default:
-        params = {
-          $limit: 10,
-          $offset: 0
-        };
-    }
-
-    this.set('params', $.extend(params, this.get('params')));
-
-    if (!this.get('proxy')) {
-      console.error('请设置数据源（proxy）');
-    }
-
-    if (this.get('autoload')) {
-      // 取列表
-      this.getList();
-    }
-  },
-
-  LIST: function() {
-    var proxy = this.get('proxy');
-    return proxy.LIST.apply(proxy, arguments);
-  },
-
-  GET: function() {
-    var proxy = this.get('proxy');
-    return proxy.GET.apply(proxy, arguments);
-  },
-
-  PUT: function() {
-    var proxy = this.get('proxy');
-    return proxy.PUT.apply(proxy, arguments);
-  },
-
-  PATCH: function() {
-    var proxy = this.get('proxy');
-    return proxy.PATCH.apply(proxy, arguments);
-  },
-
-  POST: function() {
-    var proxy = this.get('proxy');
-    return proxy.POST.apply(proxy, arguments);
-  },
-
-  DELETE: function() {
-    var proxy = this.get('proxy');
-    return proxy.DELETE.apply(proxy, arguments);
-  },
-
   initPlugins: function() {
     var labelMap = this.get('labelMap');
     var entryKey = this.get('entryKey');
@@ -190,6 +136,46 @@ var Grid = Widget.extend({
     }
 
     Grid.superclass.initPlugins.call(this);
+  },
+
+  setup: function() {
+    var params;
+
+    switch (this.get('mode')) {
+      case 2:
+        params = {};
+        break;
+      case 1:
+        params = {
+          size: 10,
+          page: 0
+        };
+        break;
+      default:
+        params = {
+          $limit: 10,
+          $offset: 0
+        };
+    }
+
+    this.set('params', $.extend(params, this.get('params')));
+
+    var proxy = this.get('proxy');
+
+    if (!proxy) {
+      console.error('请设置数据源（proxy）');
+    } else {
+      ['LIST', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
+      .forEach(function(method) {
+        this[method] = proxy[method].bind(proxy);
+      }, this);
+
+    }
+
+    if (this.get('autoload')) {
+      // 取列表
+      this.getList();
+    }
   },
 
   getList: function(options) {

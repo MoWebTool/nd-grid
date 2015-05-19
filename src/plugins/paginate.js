@@ -11,8 +11,7 @@ var Pagination = require('nd-pagination');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host,
-    options = plugin.options || {};
+    host = plugin.host;
 
   host.on('change:gridData', function(gridData) {
     if (plugin.exports) {
@@ -43,7 +42,7 @@ module.exports = function() {
       $limit: mode ? params.size : params.$limit,
       count: gridData.count,
       parentNode: host.$('[data-role="footer"]')
-    }, options)).on('goto', function(page) {
+    }, plugin.getOptions('view'))).on('goto', function(page) {
       host.getList({
         data: mode ? {
           page: page - 1

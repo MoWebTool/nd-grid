@@ -53,5 +53,9 @@ module.exports = [
     name: 'sort',
     disabled: true,
     starter: require('./plugins/sort')
+  },
+  {
+    name: 'interact',
+    starter: require('./plugins/interact')
   }
 ];

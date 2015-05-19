@@ -13,7 +13,6 @@ var FormExtra = require('nd-form-extra');
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
-    options = plugin.options || {},
     uniqueId,
     awaiting;
 
@@ -26,7 +25,7 @@ module.exports = function() {
       formData: data,
       proxy: host.get('proxy'),
       parentNode: host.get('parentNode')
-    }, options))
+    }, plugin.getOptions('view')))
     .on('formCancel', function() {
       plugin.trigger('hide', this);
     })
@@ -41,13 +40,12 @@ module.exports = function() {
     return form;
   }
 
-  host.addItemAction($.extend({
-    'role': 'put-item',
-    'text': '编辑'
-  }, options.button), options.button && options.button.index);
-
-  // 移除参数
-  delete options.button;
+  (function(button) {
+    host.addItemAction($.extend({
+      'role': 'put-item',
+      'text': '编辑'
+    }, button), button && button.index || 0);
+  })(plugin.getOptions('button'));
 
   host.delegateEvents({
     'click [data-role="put-item"]': function(e) {

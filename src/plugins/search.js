@@ -11,8 +11,7 @@ var FormExtra = require('nd-form-extra');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host,
-    options = plugin.options || {};
+    host = plugin.host;
 
   host.after('render', function() {
 
@@ -28,7 +27,7 @@ module.exports = function() {
       insertInto: function(element, parentNode) {
         element.prependTo(parentNode);
       }
-    }, options))
+    }, plugin.getOptions('view')))
     .on('formSubmit', function() {
       this.submit(function(data) {
         plugin.trigger('submit', data);

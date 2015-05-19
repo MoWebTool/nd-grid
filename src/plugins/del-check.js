@@ -15,7 +15,6 @@ var helpers = require('../helpers');
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
-    options = plugin.options || {},
     awaiting;
 
   var delItem = function(id, callback) {
@@ -41,20 +40,17 @@ module.exports = function() {
     return host.$('[data-role="del-check"]');
   }
 
-  (function() {
-    // 添加按钮到顶部
-    host.$(helpers.makePlace(options.button)).append(
+  // 添加按钮到顶部
+  (function(button) {
+    host.$(helpers.makePlace(button)).append(
       helpers.makeButton($.extend({
         'role': 'del-check',
         'text': '删除选定',
         'tips': '确定删除选定？',
         'disabled': true
-      }, options.button), options.button && options.button.index)
+      }, button))
     );
-
-    // 移除参数
-    delete options.button;
-  })();
+  })(plugin.getOptions('button'));
 
   host.delegateEvents({
 

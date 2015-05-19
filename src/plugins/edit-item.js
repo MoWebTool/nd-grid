@@ -13,7 +13,6 @@ var FormExtra = require('nd-form-extra');
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
-    options = plugin.options || {},
     uniqueId,
     awaiting;
 
@@ -26,7 +25,7 @@ module.exports = function() {
       formData: data,
       proxy: host.get('proxy'),
       parentNode: host.get('parentNode')
-    }, options))
+    }, plugin.getOptions('view')))
     .on('formCancel', function() {
       plugin.trigger('hide', this);
     })
@@ -39,13 +38,12 @@ module.exports = function() {
     });
   }
 
-  host.addItemAction($.extend({
-    'role': 'edit-item',
-    'text': '编辑'
-  }, options.button), options.button && options.button.index || 0);
-
-  // 移除参数
-  delete options.button;
+  (function(button) {
+    host.addItemAction($.extend({
+      'role': 'edit-item',
+      'text': '编辑'
+    }, button), button && button.index || 0);
+  })(plugin.getOptions('button'));
 
   // 异步插件，需要刷新列表
   if (plugin._async) {
@@ -86,15 +84,18 @@ module.exports = function() {
   });
 
   plugin.on('show', function(form) {
-    // 通知就绪
-    // plugin.ready();
+    if (!this.getOptions('interact')) {
+      host.element.hide();
+    }
 
-    host.element.hide();
     form.element.show();
   });
 
   plugin.on('hide', function(form) {
-    host.element.show();
+    if (!this.getOptions('interact')) {
+      host.element.show();
+    }
+
     form.destroy();
     delete plugin.exports;
   });

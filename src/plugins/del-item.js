@@ -13,17 +13,15 @@ var Alert = require('nd-alert');
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
-    options = plugin.options || {},
     awaiting;
 
-  host.addItemAction($.extend({
-    'role': 'del-item',
-    'text': '删除',
-    'tips': '确定删除？'
-  }, options.button), options.button && options.button.index);
-
-  // 移除参数
-  delete options.button;
+  (function(button) {
+    host.addItemAction($.extend({
+      'role': 'del-item',
+      'text': '删除',
+      'tips': '确定删除？'
+    }, button), button && button.index);
+  })(plugin.getOptions('button'));
 
   host.delegateEvents({
 

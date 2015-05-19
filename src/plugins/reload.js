@@ -11,19 +11,17 @@ var helpers = require('../helpers');
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host,
-    options = plugin.options || {};
+    host = plugin.host;
 
   // 添加按钮到顶部
-  host.$(helpers.makePlace(options.button)).append(
-    helpers.makeButton($.extend({
-      'role': 'reload',
-      'text': '刷新'
-    }, options.button), options.button && options.button.index)
-  );
-
-  // 移除参数
-  delete options.button;
+  (function(button) {
+    host.$(helpers.makePlace(button)).append(
+      helpers.makeButton($.extend({
+        'role': 'reload',
+        'text': '刷新'
+      }, button))
+    );
+  })(plugin.getOptions('button'));
 
   host.delegateEvents({
     'click [data-role="reload"]': function() {
