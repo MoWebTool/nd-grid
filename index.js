@@ -167,9 +167,8 @@ var Grid = Widget.extend({
     } else {
       ['LIST', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
       .forEach(function(method) {
-        this[method] = proxy[method].bind(proxy);
+        proxy[method] && (this[method] = proxy[method].bind(proxy));
       }, this);
-
     }
 
     if (this.get('autoload')) {
