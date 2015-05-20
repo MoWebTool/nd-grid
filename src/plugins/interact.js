@@ -29,20 +29,27 @@ module.exports = function() {
 
     if (interact.type === 'dialog') {
       plugin.setOptions('view', {
-        className: 'ui-form-dialog',
+        className: 'ui-view-dialog',
         beforeRender: function() {
-          var form = this;
+          var view = this;
 
-          form.dialog = new Alert({
-            closeTpl: '',
+          view.dialog = new Alert({
+            // closeTpl: '',
             confirmTpl: '',
             message: '',
             title: interact.title,
-            hideOnKeyEscape: false
+            hideOnKeyEscape: false,
+            events: {
+              // override
+              'click [data-role=close]': function(e) {
+                e.preventDefault();
+                plugin.trigger('hide', view);
+              }
+            }
           }).render();
 
           // change parentNode
-          form.set('parentNode', form.dialog.$('[data-role="message"]'));
+          view.set('parentNode', view.dialog.$('[data-role="message"]'));
         },
         afterRender: function() {
           this.dialog.show();
