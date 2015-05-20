@@ -34,23 +34,24 @@ module.exports = function() {
         // 添加用于阻止多次点击
         awaiting = true;
 
-        var id = host.getItemIdByTarget(e.currentTarget);
-
-        host.DELETE(id)
-          .done(function(/*data*/) {
-            host.deleteItem(id);
-          })
-          .fail(function(error) {
-            Alert.show(error);
-          })
-          .always(function() {
-            awaiting = false;
-          });
-
+        plugin.trigger('submit', host.getItemIdByTarget(e.currentTarget));
       });
     }
 
   });
+
+  plugin.on('submit', function(id) {
+    host.DELETE(id)
+      .done(function(/*data*/) {
+        host.deleteItem(id);
+      })
+      .fail(function(error) {
+        Alert.show(error);
+      })
+      .always(function() {
+        awaiting = false;
+      });
+    });
 
   // 通知就绪
   this.ready();

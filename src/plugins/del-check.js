@@ -75,21 +75,29 @@ module.exports = function() {
 
       Confirm.show(e.currentTarget.getAttribute('data-tips'), function() {
         awaiting = true;
-        // TODO: batch delete?
-        var items = getChecked();
-        var count = items.length;
-        var ready = 0;
-        function cb() {
-          if (++ready === count) {
-            awaiting = false;
-          }
-        }
-        $.each(items, function(i, item) {
-          delItem(item.value, cb);
-        });
+
+        plugin.trigger('submit', $.map(getChecked(), function(item) {
+          return item.value;
+        }));
       });
     }
 
+  });
+
+  plugin.on('submit', function(ids) {
+    // TODO: batch delete?
+    var count = ids.length;
+    var ready = 0;
+
+    function cb() {
+      if (++ready === count) {
+        awaiting = false;
+      }
+    }
+
+    ids.forEach(function(id) {
+      delItem(id, cb);
+    });
   });
 
   host.after('renderPartial', function() {
