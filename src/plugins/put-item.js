@@ -95,6 +95,13 @@ module.exports = function() {
   });
 
   plugin.on('submit', function(data) {
+    if (awaiting) {
+      return;
+    }
+
+    // 添加用于阻止多次点击
+    awaiting = true;
+
     host.PUT(uniqueId, data)
       .done(function(/*data*/) {
         // 成功，刷新当前页
@@ -104,6 +111,9 @@ module.exports = function() {
       })
       .fail(function(error) {
         Alert.show(error);
+      })
+      .always(function() {
+        awaiting = false;
       });
   });
 
