@@ -8,7 +8,7 @@
 var $ = require('jquery');
 
 var FormExtra = require('nd-form-extra');
-var Alert = require('nd-alert');
+// var Alert = require('nd-alert');
 
 module.exports = function() {
   var plugin = this,
@@ -24,23 +24,23 @@ module.exports = function() {
           type: 'submit',
           role: 'form-submit'
         }],
-        pluginCfg: {
-          // alias: Valiator.listeners.[start, starter, ready]
-          Validator: [function() {
-            this.setOptions('config', {
-              triggerType: 'submit',
-              stopOnError: true,
-              showMessage: function(message, element) {
-                Alert.show(message, function() {
-                  element.focus();
-                });
-              },
-              hideMessage: function( /*message, element*/ ) {
-                Alert.hide();
-              }
-            });
-          }]
-        },
+        // pluginCfg: {
+        //   // alias: Valiator.listeners.[start, starter, ready]
+        //   Validator: [function() {
+        //     this.setOptions('config', {
+        //       triggerType: 'submit',
+        //       stopOnError: true,
+        //       showMessage: function(message, element) {
+        //         Alert.show(message, function() {
+        //           element.focus();
+        //         });
+        //       },
+        //       hideMessage: function( /*message, element*/ ) {
+        //         Alert.hide();
+        //       }
+        //     });
+        //   }]
+        // },
         parentNode: host.element,
         insertInto: function(element, parentNode) {
           element.prependTo(parentNode);
