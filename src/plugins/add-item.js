@@ -42,8 +42,8 @@ module.exports = function() {
   (function(button) {
     host.$(helpers.makePlace(button)).append(
       helpers.makeButton($.extend({
-        'role': 'add-item',
-        'text': '新增'
+        role: 'add-item',
+        text: '新增'
       }, button))
     );
   })(plugin.getOptions('button'));

@@ -8,6 +8,7 @@
 var $ = require('jquery');
 
 var FormExtra = require('nd-form-extra');
+var Alert = require('nd-alert');
 
 module.exports = function() {
   var plugin = this,
@@ -16,25 +17,41 @@ module.exports = function() {
   host.after('render', function() {
 
     plugin.exports = new FormExtra($.extend(true, {
-      name: 'grid-search',
-      className: 'ui-form-search',
-      buttons: [{
-        label: '搜索',
-        type: 'submit',
-        role: 'form-submit'
-      }],
-      parentNode: host.element,
-      insertInto: function(element, parentNode) {
-        element.prependTo(parentNode);
-      }
-    }, plugin.getOptions('view')))
-    .on('formSubmit', function() {
-      this.submit(function(data) {
-        plugin.trigger('submit', data);
-      });
-      // 阻止默认事件发生
-      return false;
-    }).render();
+        name: 'grid-search',
+        className: 'ui-form-search',
+        buttons: [{
+          label: '搜索',
+          type: 'submit',
+          role: 'form-submit'
+        }],
+        pluginCfg: {
+          // alias: Valiator.listeners.[start, starter, ready]
+          Validator: [function() {
+            this.setOptions('config', {
+              triggerType: 'submit',
+              showMessage: function(message, element) {
+                Alert.show(message, function() {
+                  element.focus();
+                });
+              },
+              hideMessage: function( /*message, element*/ ) {
+                Alert.hide();
+              }
+            });
+          }]
+        },
+        parentNode: host.element,
+        insertInto: function(element, parentNode) {
+          element.prependTo(parentNode);
+        }
+      }, plugin.getOptions('view')))
+      .on('formSubmit', function() {
+        this.submit(function(data) {
+          plugin.trigger('submit', data);
+        });
+        // 阻止默认事件发生
+        return false;
+      }).render();
 
     plugin.on('submit', function(data) {
       data || (data = {});

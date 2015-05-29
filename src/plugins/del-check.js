@@ -44,10 +44,10 @@ module.exports = function() {
   (function(button) {
     host.$(helpers.makePlace(button)).append(
       helpers.makeButton($.extend({
-        'role': 'del-check',
-        'text': '删除选定',
-        'tips': '确定删除选定？',
-        'disabled': true
+        role: 'del-check',
+        text: '删除选定',
+        tips: '确定删除选定？',
+        disabled: true
       }, button))
     );
   })(plugin.getOptions('button'));

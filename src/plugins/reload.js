@@ -17,8 +17,9 @@ module.exports = function() {
   (function(button) {
     host.$(helpers.makePlace(button)).append(
       helpers.makeButton($.extend({
-        'role': 'reload',
-        'text': '刷新'
+        role: 'reload',
+        text: '刷新',
+        disabled: true
       }, button))
     );
   })(plugin.getOptions('button'));
@@ -27,6 +28,10 @@ module.exports = function() {
     'click [data-role="reload"]': function() {
       host.getList();
     }
+  });
+
+  host.after('renderPartial', function() {
+    host.$('[data-role="reload"]').prop('disabled', false);
   });
 
   // 通知就绪
