@@ -29,6 +29,7 @@ module.exports = function() {
           Validator: [function() {
             this.setOptions('config', {
               triggerType: 'submit',
+              stopOnError: true,
               showMessage: function(message, element) {
                 Alert.show(message, function() {
                   element.focus();
