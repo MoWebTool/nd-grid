@@ -47,6 +47,11 @@ module.exports = function() {
     }, button), button && button.index || 0);
   })(plugin.getOptions('button'));
 
+  // 异步插件，需要刷新列表
+  if (plugin._async) {
+    host._renderPartial();
+  }
+
   host.delegateEvents({
     'click [data-role="put-item"]': function(e) {
       if (awaiting) {
