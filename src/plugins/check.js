@@ -7,6 +7,8 @@
 
 var $ = require('jquery');
 
+var helpers = require('../helpers');
+
 module.exports = function() {
   var plugin = this,
     host = plugin.host;
@@ -35,7 +37,7 @@ module.exports = function() {
 
     // 全选
     'change [data-role="check-all"]': function(e) {
-      getCheckItems().prop('checked', e.currentTarget.checked);
+      getCheckItems().prop('checked', e.currentTarget.checked).trigger('change');
     },
 
     // 选中行
@@ -43,7 +45,8 @@ module.exports = function() {
       var checked = e.currentTarget.checked,
         checkAll = getCheckAll();
 
-      host.getItemByTarget(e.currentTarget).toggleClass('selected', checked);
+      host.getItemByTarget(e.currentTarget)
+          .toggleClass('selected', checked);
 
       if (checked) {
         if (getChecked().length === host.get('itemList').length) {
@@ -57,6 +60,28 @@ module.exports = function() {
     }
 
   });
+
+  // 卡片式
+  if (host.get('theme') === 'card') {
+    // 添加按钮到顶部
+    (function(button) {
+      host.$(helpers.makePlace(button)).append(
+        helpers.makeButton($.extend({
+          role: 'check-all-button',
+          text: '<input data-role="check-all" type="checkbox" title="全选">全选'
+        }, button))
+      );
+    })(plugin.getOptions('button'));
+
+    host.delegateEvents({
+      // 全选
+      'click [data-role="check-all-button"]': function(e) {
+        if (e.target.tagName !== 'INPUT') {
+          $(e.currentTarget).find('input').trigger('click');
+        }
+      }
+    });
+  }
 
   // 未全部选中的状态下，
   // 将未选中项全部删除后，

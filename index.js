@@ -13,6 +13,11 @@ var Widget = require('nd-widget');
 var Template = require('nd-template');
 var RESTful = require('nd-restful');
 
+var partials = {
+  grid: require('./src/templates/partial-grid.handlebars'),
+  card: require('./src/templates/partial-card.handlebars')
+};
+
 /**
  * @class
  * @extends {Widget}
@@ -34,18 +39,23 @@ var Grid = Widget.extend({
     template: require('./src/templates/grid.handlebars'),
 
     partial: function(data) {
-      var template = require('./src/templates/partial.handlebars');
+      var labelMap = this.get('labelMap');
 
-      return template(data, {
+      return partials[this.get('theme')](data, {
         helpers: {
           uniqueId: function(uniqueId) {
             return this[uniqueId].value;
+          },
+          getLabel: function(key) {
+            return labelMap[key];
           },
           adapters: this.get('adapters'),
           isDisabled: this.get('isDisabled')
         }
       });
     },
+
+    theme: 'grid',
 
     // 行处理
     itemActions: [],
@@ -172,6 +182,9 @@ var Grid = Widget.extend({
     }
 
     this.set('params', $.extend(params, this.get('params')));
+
+    // classname
+    this.set('className', this.get('classPrefix') + '-' + this.get('theme'));
 
     if (this.get('autoload')) {
       // 取列表
@@ -318,6 +331,7 @@ var Grid = Widget.extend({
         checkable: this.get('checkable'),
         labelMap: this.get('labelMap'),
         itemActions: this.get('itemActions'),
+        theme: this.get('theme'),
         itemList: itemList || this.get('itemList')
       })
     );

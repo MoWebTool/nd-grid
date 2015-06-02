@@ -1,0 +1,37 @@
+{{#if itemList}}
+<ul class="cards">
+  {{#each itemList}}
+  {{!-- ROWS --}}
+    <li class="card">
+    <div data-role="item" data-id="{{uniqueId @root.uniqueId}}">
+    {{#if @root.checkable}}<label><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"></label>{{/if}}
+
+    {{#each this}}
+
+    {{#if visible}}
+    {{!-- COLS --}}
+    <div data-key="{{../key}}" data-role="cell">
+      <label data-role="cell-label">{{getLabel ../key}}</label>
+      <span data-role="cell-value">
+      {{#if isEntry}}
+        <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
+      {{else}}
+        {{adapters ../../key ../../value}}
+      {{/if}}
+      </span>
+    </div>
+    {{/if}}
+
+    {{/each}}
+    {{#if @root.itemActions}}
+      <div data-role="actions">
+        {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}" data-tips="{{tips}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}><span>{{text}}</span></button>{{/each}}
+      </div>
+    {{/if}}
+    </div>
+    </li>
+  {{/each}}
+</ul>
+{{else}}
+  <p class="list-empty">没有数据啦！</p>
+{{/if}}

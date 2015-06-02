@@ -7,6 +7,11 @@ module.exports = [
     starter: require('./plugins/search')
   },
   {
+    name: 'check',
+    disabled: true,
+    starter: require('./plugins/check')
+  },
+  {
     name: 'delCheck',
     disabled: true,
     starter: require('./plugins/del-check')
@@ -19,11 +24,6 @@ module.exports = [
     name: 'addItem',
     disabled: true,
     starter: require('./plugins/add-item')
-  },
-  {
-    name: 'check',
-    disabled: true,
-    starter: require('./plugins/check')
   },
   {
     name: 'viewItem',

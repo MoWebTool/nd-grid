@@ -11,7 +11,7 @@
     {{#each itemList}}
     {{!-- ROWS --}}
       <tr data-role="item" data-id="{{uniqueId @root.uniqueId}}">
-      {{#if @root.checkable}}<td><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"></td>{{/if}}
+      {{#if @root.checkable}}<td data-role="cell"><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"></td>{{/if}}
       {{#each this}}
 
       {{#if visible}}
@@ -20,25 +20,20 @@
 
         {{#if index}}
         {{else}}
-          <td rowspan="{{count}}">
-
+          <td data-role="cell" rowspan="{{count}}">
             {{#if isEntry}}
               <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
             {{else}}
-
               <span>{{adapters ../../key ../../value}}</span>
             {{/if}}
           </td>
-
         {{/if}}
 
         {{else}}
-          <td>
-
+          <td data-role="cell">
           {{#if isEntry}}
             <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
           {{else}}
-
             <span>{{adapters ../../key ../../value}}</span>
           {{/if}}
           </td>
@@ -48,8 +43,8 @@
 
       {{/each}}
       {{#if @root.itemActions}}
-        <td>
-          {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}" data-tips="{{tips}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}>{{text}}</button>{{/each}}
+        <td data-role="cell">
+          {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}" data-tips="{{tips}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}><span>{{text}}</span></button>{{/each}}
         </td>
       {{/if}}
       </tr>
