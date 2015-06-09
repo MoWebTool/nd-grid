@@ -34,13 +34,15 @@ module.exports = function() {
         // 添加用于阻止多次点击
         awaiting = true;
 
-        plugin.trigger('submit', host.getItemIdByTarget(e.currentTarget));
+        plugin.trigger('submit', host.getItemIdByTarget(e.currentTarget), function() {
+          awaiting = false;
+        });
       });
     }
 
   });
 
-  plugin.on('submit', function(id) {
+  plugin.on('submit', function(id, done) {
     host.DELETE(id)
       .done(function(/*data*/) {
         host.deleteItem(id);
@@ -48,9 +50,7 @@ module.exports = function() {
       .fail(function(error) {
         Alert.show(error);
       })
-      .always(function() {
-        awaiting = false;
-      });
+      .always(done);
     });
 
   // 通知就绪

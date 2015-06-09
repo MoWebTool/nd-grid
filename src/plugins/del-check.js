@@ -78,20 +78,22 @@ module.exports = function() {
 
         plugin.trigger('submit', $.map(getChecked(), function(item) {
           return item.value;
-        }));
+        }), function() {
+          awaiting = false;
+        });
       });
     }
 
   });
 
-  plugin.on('submit', function(ids) {
+  plugin.on('submit', function(ids, done) {
     // TODO: batch delete?
     var count = ids.length;
     var ready = 0;
 
     function cb() {
       if (++ready === count) {
-        awaiting = false;
+        done();
       }
     }
 

@@ -31,7 +31,9 @@ module.exports = function() {
     })
     .on('formSubmit', function() {
       this.submit(function(data) {
-        plugin.trigger('submit', data);
+        plugin.trigger('submit', data, function() {
+          awaiting = false;
+        });
       });
       // 阻止默认事件发生
       return false;
@@ -99,7 +101,7 @@ module.exports = function() {
     delete plugin.exports;
   });
 
-  plugin.on('submit', function(data) {
+  plugin.on('submit', function(data, done) {
     if (awaiting) {
       return;
     }
@@ -117,9 +119,7 @@ module.exports = function() {
       .fail(function(error) {
         Alert.show(error);
       })
-      .always(function() {
-        awaiting = false;
-      });
+      .always(done);
   });
 
   // 通知就绪
