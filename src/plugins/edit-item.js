@@ -1,6 +1,6 @@
 /**
- * @module: nd-grid
- * @author: crossjs <liwenfu@crossjs.com> - 2015-02-27 13:47:55
+ * @module Grid
+ * @author crossjs <liwenfu@crossjs.com>
  */
 
 'use strict';
@@ -62,6 +62,14 @@ module.exports = function() {
 
         uniqueId = host.getItemIdByTarget(e.currentTarget);
 
+        var detail = plugin.getOptions('detail');
+        if (detail && detail.useLocal) {
+          plugin.exports = makeForm(host.getItemDataById(uniqueId, true)).render();
+          plugin.trigger('show', plugin.exports);
+          awaiting = false;
+          return;
+        }
+
         host.GET(uniqueId)
         .done(function(data) {
           plugin.exports = makeForm(data).render();
@@ -108,7 +116,7 @@ module.exports = function() {
     // 添加用于阻止多次点击
     awaiting = true;
 
-    host.PATCH(uniqueId, data)
+    host[plugin.exports.get('method')](uniqueId, data)
       .done(function(/*data*/) {
         // 成功，刷新当前页
         host.getList();

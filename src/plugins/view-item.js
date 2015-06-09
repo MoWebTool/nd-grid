@@ -1,6 +1,6 @@
 /**
- * @module: nd-grid
- * @author: crossjs <liwenfu@crossjs.com> - 2015-02-27 13:47:55
+ * @module Grid
+ * @author crossjs <liwenfu@crossjs.com>
  */
 
 'use strict';
@@ -58,6 +58,14 @@ module.exports = function() {
         var trigger = e.currentTarget;
 
         uniqueId = host.getItemIdByTarget(trigger);
+
+        var detail = plugin.getOptions('detail');
+        if (detail && detail.useLocal) {
+          plugin.exports = makeDialog(host.getItemDataById(uniqueId, true), trigger).render();
+          plugin.trigger('show', plugin.exports);
+          awaiting = false;
+          return;
+        }
 
         host.GET(uniqueId)
         .done(function(data) {

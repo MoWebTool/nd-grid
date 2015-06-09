@@ -8,7 +8,6 @@
 var $ = require('jquery');
 
 var FormExtra = require('nd-form-extra');
-// var Alert = require('nd-alert');
 
 module.exports = function() {
   var plugin = this,
@@ -24,23 +23,6 @@ module.exports = function() {
           type: 'submit',
           role: 'form-submit'
         }],
-        // pluginCfg: {
-        //   // alias: Valiator.listeners.[start, starter, ready]
-        //   Validator: [function() {
-        //     this.setOptions('config', {
-        //       triggerType: 'submit',
-        //       stopOnError: true,
-        //       showMessage: function(message, element) {
-        //         Alert.show(message, function() {
-        //           element.focus();
-        //         });
-        //       },
-        //       hideMessage: function( /*message, element*/ ) {
-        //         Alert.hide();
-        //       }
-        //     });
-        //   }]
-        // },
         parentNode: host.element,
         insertInto: function(element, parentNode) {
           element.prependTo(parentNode);
@@ -58,10 +40,14 @@ module.exports = function() {
       data || (data = {});
 
       // 重置为第一页
-      if (host.get('mode')) {
-        data.page = 0;
-      } else {
-        data.$offset = 0;
+      switch (host.get('mode')) {
+        case 2:
+          break;
+        case 1:
+          data.page = 0;
+          break;
+        default:
+          data.$offset = 0;
       }
 
       host.getList({

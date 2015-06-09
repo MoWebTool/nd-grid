@@ -1,6 +1,6 @@
 /**
- * @module: nd-grid
- * @author: crossjs <liwenfu@crossjs.com> - 2015-02-27 13:47:55
+ * @module Grid
+ * @author crossjs <liwenfu@crossjs.com>
  */
 
 'use strict';
@@ -88,7 +88,7 @@ module.exports = function() {
     // 添加用于阻止多次点击
     awaiting = true;
 
-    host.POST({
+    host[plugin.exports.get('method')]({
         data: data
       })
       .done(function(/*data*/) {

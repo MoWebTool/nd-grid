@@ -13,45 +13,126 @@ module.exports = function() {
   var plugin = this,
     host = plugin.host;
 
-  host.on('change:gridData', function(gridData) {
-    if (plugin.exports) {
-      plugin.exports.destroy();
-    }
+  var viewOption = plugin.getOptions('view');
 
-    if (!gridData.count) {
-      return;
-    }
-
-    var params = host.get('params');
-
-    var mode = host.get('mode');
-
-    if (mode) {
-      if (params.size >= gridData.count) {
-        return;
+  if (viewOption && viewOption.theme === 'none') {
+    host.on('change:gridData', function(gridData) {
+      if (plugin.exports) {
+        plugin.exports.destroy();
       }
-    } else {
-      if (params.$limit >= gridData.count) {
-        return;
-      }
-    }
 
-    plugin.exports = new Pagination($.extend(true, {
-      theme: 'floating',
-      $offset: mode ? (params.page * params.size) : params.$offset,
-      $limit: mode ? params.size : params.$limit,
-      count: gridData.count,
-      parentNode: host.$('[data-role="footer"]')
-    }, plugin.getOptions('view'))).on('goto', function(page) {
-      host.getList({
-        data: mode ? {
-          page: page - 1
-        } : {
-          $offset: (page - 1) * params.$limit
+      var params = host.get('params');
+
+      // 0: mysql or 1: mongodb or 2: no pagination
+      var mode = host.get('mode');
+
+      var _params = (function(mode) {
+        switch (mode) {
+          case 2:
+            return {};
+          case 1:
+            return {
+              $offset: params.page * params.size,
+              $limit: params.size
+            };
+          default:
+            return {
+              $offset: params.$offset,
+              $limit: params.$limit
+            };
         }
-      });
-    }).render();
-  });
+      })(mode);
+
+      plugin.exports = new Pagination($.extend({
+        parentNode: host.$('[data-role="footer"]'),
+        isLastPage: gridData.items === null
+      }, _params, viewOption)).on('goto', function(page) {
+        host.getList({
+          data: (function(mode) {
+            switch (mode) {
+              case 2:
+                return {};
+              case 1:
+                return {
+                  page: page - 1
+                };
+              default:
+                return {
+                  $offset: (page - 1) * params.$limit
+                };
+            }
+          })(mode)
+        });
+      }).render();
+    });
+  } else {
+    host.on('change:gridData', function(gridData) {
+      if (plugin.exports) {
+        plugin.exports.destroy();
+      }
+
+      if (!gridData.count) {
+        return;
+      }
+
+      var params = host.get('params');
+
+      // 0: mysql or 1: mongodb or 2: no pagination
+      var mode = host.get('mode');
+
+      if (gridData.count) {
+        if (mode === 1) {
+          if (params.size >= gridData.count) {
+            return;
+          }
+        } else if (mode === 0) {
+          if (params.$limit >= gridData.count) {
+            return;
+          }
+        }
+      }
+
+      var _params = (function(mode) {
+        switch (mode) {
+          case 2:
+            return {};
+          case 1:
+            return {
+              $offset: params.page * params.size,
+              $limit: params.size
+            };
+          default:
+            return {
+              $offset: params.$offset,
+              $limit: params.$limit
+            };
+        }
+      })(mode);
+
+      plugin.exports = new Pagination($.extend({
+        theme: 'floating',
+        count: gridData.count,
+        parentNode: host.$('[data-role="footer"]')
+      }, _params, viewOption)).on('goto', function(page) {
+        host.getList({
+          data: (function(mode) {
+            switch (mode) {
+              case 2:
+                return {};
+              case 1:
+                return {
+                  page: page - 1
+                };
+              default:
+                return {
+                  $offset: (page - 1) * params.$limit
+                };
+            }
+          })(mode)
+        });
+      }).render();
+    });
+  }
 
   host.before('destroy', function() {
     plugin.exports && plugin.exports.destroy();

@@ -7,6 +7,11 @@ module.exports = [
     starter: require('./plugins/search')
   },
   {
+    name: 'back',
+    disabled: true,
+    starter: require('./plugins/back')
+  },
+  {
     name: 'check',
     disabled: true,
     starter: require('./plugins/check')

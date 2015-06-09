@@ -1,7 +1,6 @@
 /**
  * @module Grid
  * @author crossjs <liwenfu@crossjs.com>
- * @create 2015-02-27 13:47:55
  */
 
 'use strict';
@@ -91,7 +90,7 @@ var Grid = Widget.extend({
 
     // proxy: null,
 
-    // 0: mysql or 1: mongodb
+    // 0: mysql or 1: mongodb or 2: no pagination
     mode: 0,
 
     params: {
@@ -162,26 +161,22 @@ var Grid = Widget.extend({
   },
 
   setup: function() {
-    var params;
-
-    switch (this.get('mode')) {
-      case 2:
-        params = {};
-        break;
-      case 1:
-        params = {
-          size: 10,
-          page: 0
-        };
-        break;
-      default:
-        params = {
-          $limit: 10,
-          $offset: 0
-        };
-    }
-
-    this.set('params', $.extend(params, this.get('params')));
+    this.set('params', $.extend((function() {
+      switch (this.get('mode')) {
+        case 2:
+          return {};
+        case 1:
+          return {
+            size: 10,
+            page: 0
+          };
+        default:
+          return {
+            $limit: 10,
+            $offset: 0
+          };
+      }
+    })(), this.get('params')));
 
     // classname
     this.set('className', this.get('classPrefix') + '-' + this.get('theme'));
@@ -218,11 +213,20 @@ var Grid = Widget.extend({
         if (data.count && !data.items.length) {
           // 到最后一页
           that.getList({
-            data: that.get('mode') ? {
-              page: (Math.ceil(data.count / params.size) - 1 )
-            } : {
-              $offset: (Math.ceil(data.count / params.$limit) - 1 ) * params.$limit
-            }
+            data: (function(mode) {
+              switch (mode) {
+                case 2:
+                  return {};
+                case 1:
+                  return {
+                    page: Math.ceil(data.count / params.size) - 1
+                  };
+                default:
+                  return {
+                    $offset: (Math.ceil(data.count / params.$limit) - 1) * params.$limit
+                  };
+              }
+            })(that.get('mode'))
           });
         } else {
           that.set('gridData', data);
@@ -277,7 +281,7 @@ var Grid = Widget.extend({
         // 仅取 labelMap 中定义的字段
         var _item = {};
 
-        $.each(labelMap, function(key/*, value*/) {
+        $.each(labelMap, function(key /*, value*/ ) {
           _item[key] = {
             key: key,
             value: item[key],
@@ -285,7 +289,7 @@ var Grid = Widget.extend({
             isEntry: key === entryKey,
             isMerge: key === mergeKey,
             count: item.count,
-            index:item.index
+            index: item.index
           };
         });
 
@@ -367,8 +371,18 @@ var Grid = Widget.extend({
     return this.getItemId(this.getItemByTarget(target));
   },
 
-  getItemDataById: function(id) {
-    return this.get('itemList')[this.getItemById(id).index()];
+  getItemDataById: function(id, purify) {
+    var data = this.get('itemList')[this.getItemById(id).index()];
+
+    if (purify) {
+      var _data = {};
+      Object.keys(data).forEach(function(key) {
+        _data[key] = data[key].value;
+      });
+      return _data;
+    }
+
+    return data;
   }
 
 });

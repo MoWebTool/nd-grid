@@ -1,6 +1,6 @@
 /**
- * @module: nd-grid
- * @author: crossjs <liwenfu@crossjs.com> - 2015-02-27 13:47:55
+ * @module Grid
+ * @author crossjs <liwenfu@crossjs.com>
  */
 
 'use strict';
@@ -46,6 +46,11 @@ module.exports = function() {
       'text': '编辑'
     }, button), button && button.index || 0);
   })(plugin.getOptions('button'));
+
+  // 异步插件，需要刷新列表
+  if (plugin._async) {
+    host._renderPartial();
+  }
 
   host.delegateEvents({
     'click [data-role="put-item"]': function(e) {
@@ -102,7 +107,7 @@ module.exports = function() {
     // 添加用于阻止多次点击
     awaiting = true;
 
-    host.PUT(uniqueId, data)
+    host[plugin.exports.get('method')](uniqueId, data)
       .done(function(/*data*/) {
         // 成功，刷新当前页
         host.getList();

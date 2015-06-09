@@ -1,6 +1,6 @@
 /**
- * @module: nd-grid
- * @author: crossjs <liwenfu@crossjs.com> - 2015-02-27 13:47:55
+ * @module Grid
+ * @author crossjs <liwenfu@crossjs.com>
  */
 
 'use strict';
@@ -64,14 +64,14 @@ module.exports = function() {
   // 卡片式
   if (host.get('theme') === 'card') {
     // 添加按钮到顶部
-    (function(button) {
+    (function(button, titleText) {
       host.$(helpers.makePlace(button)).append(
         helpers.makeButton($.extend({
           role: 'check-all-button',
-          text: '<input data-role="check-all" type="checkbox" title="全选">全选'
+          text: '<input data-role="check-all" type="checkbox" title="' + titleText + '">' + titleText
         }, button))
       );
-    })(plugin.getOptions('button'));
+    })(plugin.getOptions('button'), '全选');
 
     host.delegateEvents({
       // 全选
