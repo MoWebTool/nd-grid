@@ -161,8 +161,8 @@ var Grid = Widget.extend({
   },
 
   setup: function() {
-    this.set('params', $.extend((function() {
-      switch (this.get('mode')) {
+    this.set('params', $.extend((function(mode) {
+      switch (mode) {
         case 2:
           return {};
         case 1:
@@ -176,7 +176,7 @@ var Grid = Widget.extend({
             $offset: 0
           };
       }
-    })(), this.get('params')));
+    })(this.get('mode')), this.get('params')));
 
     // classname
     this.set('className', this.get('classPrefix') + '-' + this.get('theme'));
