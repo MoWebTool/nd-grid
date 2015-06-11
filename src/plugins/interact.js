@@ -28,9 +28,7 @@ module.exports = function() {
     if (interact.type === 'dialog') {
       plugin.setOptions('view', {
         className: 'ui-view-dialog',
-        setup: function() {
-          this.constructor.superclass.setup.apply(this);
-
+        beforeSetup: function() {
           this.before('render', function() {
             var view = this;
 
