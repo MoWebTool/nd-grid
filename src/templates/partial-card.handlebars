@@ -5,9 +5,7 @@
     <li class="card">
     <div data-role="item" data-id="{{uniqueId @root.uniqueId}}">
     {{#if @root.checkable}}<label><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"></label>{{/if}}
-
     {{#each this}}
-
     {{#if visible}}
     {{!-- COLS --}}
     <div data-key="{{../key}}" data-role="cell">
@@ -21,7 +19,6 @@
       </span>
     </div>
     {{/if}}
-
     {{/each}}
     {{#if @root.itemActions}}
       <div data-role="actions">

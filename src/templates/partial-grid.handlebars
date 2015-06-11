@@ -16,10 +16,8 @@
 
       {{#if visible}}
       {{!-- COLS --}}
-        {{#if isMerge}}
-
-        {{#if index}}
-        {{else}}
+      {{#if isMerge}}
+        {{#unless index}}
           <td data-role="cell" rowspan="{{count}}">
             {{#if isEntry}}
               <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
@@ -27,20 +25,17 @@
               <span>{{adapters ../../key ../../value}}</span>
             {{/if}}
           </td>
-        {{/if}}
-
+        {{/unless}}
+      {{else}}
+        <td data-role="cell">
+        {{#if isEntry}}
+          <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
         {{else}}
-          <td data-role="cell">
-          {{#if isEntry}}
-            <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
-          {{else}}
-            <span>{{adapters ../../key ../../value}}</span>
-          {{/if}}
-          </td>
+          <span>{{adapters ../../key ../../value}}</span>
         {{/if}}
-
+        </td>
       {{/if}}
-
+      {{/if}}
       {{/each}}
       {{#if @root.itemActions}}
         <td data-role="cell">
