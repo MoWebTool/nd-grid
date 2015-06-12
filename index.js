@@ -120,6 +120,14 @@ var Grid = Widget.extend({
     }
   },
 
+  initAttrs: function(config) {
+    Grid.superclass.initAttrs.call(this, config);
+
+    this.set('model', {
+      theme: this.get('theme')
+    });
+  },
+
   initProps: function() {
     var proxy = this.get('proxy');
 
@@ -177,9 +185,6 @@ var Grid = Widget.extend({
           };
       }
     })(this.get('mode')), this.get('params')));
-
-    // classname
-    this.set('className', this.get('classPrefix') + '-' + this.get('theme'));
 
     if (this.get('autoload')) {
       // 取列表
