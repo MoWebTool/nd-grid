@@ -93,14 +93,23 @@ module.exports = function() {
     host[plugin.exports.get('method')]({
         data: data
       })
-      .done(function(/*data*/) {
+      .done(function( /*data*/ ) {
         // 成功，返回第一页
         host.getList({
-          data: host.get('mode') ? {
-            page: 0
-          } : {
-            $offset: 0
-          }
+          data: (function(mode) {
+            switch (mode) {
+              case 2:
+                return {};
+              case 1:
+                return {
+                  page: 0
+                };
+              default:
+                return {
+                  $offset: 0
+                };
+            }
+          })(host.get('mode'))
         });
 
         // 隐藏
