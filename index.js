@@ -38,19 +38,27 @@ var Grid = Widget.extend({
     template: require('./src/templates/grid.handlebars'),
 
     partial: function(data) {
-      var labelMap = this.get('labelMap');
+      var helpers = {
+        uniqueId: function(uniqueId) {
+          return this[uniqueId].value;
+        },
+        adapters: this.get('adapters'),
+        isDisabled: this.get('isDisabled')
+      };
 
-      return partials[this.get('theme')](data, {
-        helpers: {
-          uniqueId: function(uniqueId) {
-            return this[uniqueId].value;
-          },
-          getLabel: function(key) {
-            return labelMap[key];
-          },
-          adapters: this.get('adapters'),
-          isDisabled: this.get('isDisabled')
-        }
+      var theme = this.get('theme');
+
+      if (theme === 'card') {
+        data.hasHeader = !!(data.checkable || (data.itemActions && data.itemActions.length));
+
+        var labelMap = this.get('labelMap');
+        helpers.getLabel = function(key) {
+          return labelMap[key];
+        };
+      }
+
+      return partials[theme](data, {
+        helpers: helpers
       });
     },
 
@@ -250,8 +258,11 @@ var Grid = Widget.extend({
     // 从 model 中移除
     itemList.splice(index, 1);
 
-    // 从 DOM 中移除
-    item.remove();
+    // 动画
+    item.fadeOut(function() {
+      // 从 DOM 中移除
+      item.remove();
+    });
 
     // 判断当前行数
     if (!itemList.length) {
