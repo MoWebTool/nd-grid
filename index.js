@@ -101,9 +101,7 @@ var Grid = Widget.extend({
     // 0: mysql or 1: mongodb or 2: no pagination
     mode: 0,
 
-    params: {
-      $count: true
-    },
+    params: {},
 
     autoload: true,
 
@@ -183,11 +181,13 @@ var Grid = Widget.extend({
           return {};
         case 1:
           return {
+            $count: true,
             size: 10,
             page: 0
           };
         default:
           return {
+            $count: true,
             $limit: 10,
             $offset: 0
           };
