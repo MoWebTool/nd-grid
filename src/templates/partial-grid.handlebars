@@ -11,9 +11,8 @@
     {{#each itemList}}
     {{!-- ROWS --}}
       <tr data-role="item" data-id="{{uniqueId @root.uniqueId}}">
-      {{#if @root.checkable}}<td data-role="cell"><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"></td>{{/if}}
+      {{#if @root.checkable}}<td data-role="cell"><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"{{#if checked}} checked{{/if}}></td>{{/if}}
       {{#each this}}
-
       {{#if visible}}
       {{!-- COLS --}}
       {{#if isMerge}}
