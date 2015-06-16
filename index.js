@@ -93,7 +93,8 @@ var Grid = Widget.extend({
       sort: {},
       check: {},
       delCheck: {},
-      viewItem: {}
+      viewItem: {},
+      paginate: {}
     },
 
     // proxy: null,
@@ -152,6 +153,7 @@ var Grid = Widget.extend({
     var entryKey = this.get('entryKey');
     var checkable = this.get('checkable');
     var sortable = this.get('sortable');
+    var mode = this.get('mode');
 
     var pluginCfg = this.get('pluginCfg');
 
@@ -165,6 +167,10 @@ var Grid = Widget.extend({
 
     if (!labelMap[entryKey]) {
       pluginCfg.viewItem.disabled = true;
+    }
+
+    if (mode === 2) {
+      pluginCfg.paginate.disabled = true;
     }
 
     if (pluginCfg.viewItem.disabled) {
