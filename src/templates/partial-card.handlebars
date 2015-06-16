@@ -2,7 +2,7 @@
 <ul class="cards">
   {{#each itemList}}
   {{!-- ROWS --}}
-    <li class="card" data-role="item" data-id="{{uniqueId @root.uniqueId}}">
+    <li class="card{{#if checked}} selected{{/if}}" data-role="item" data-id="{{uniqueId @root.uniqueId}}">
     <div class="card-wrapper">
     {{#if @root.hasHeader}}
     <div class="card-header">
