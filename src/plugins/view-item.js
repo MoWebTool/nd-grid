@@ -28,6 +28,7 @@ module.exports = function() {
       // for tip
       trigger: trigger,
       arrowPosition: 10,
+      inViewport: true,
 
       partial: function(data) {
         return data.toString ? data.toString() : data;
