@@ -45,6 +45,7 @@ module.exports = function() {
       var checked = e.currentTarget.checked,
         checkAll = getCheckAll();
 
+      // li|tr
       host.getItemByTarget(e.currentTarget)
           .toggleClass('selected', checked);
 

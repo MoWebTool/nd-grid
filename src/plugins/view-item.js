@@ -8,7 +8,7 @@
 var $ = require('jquery');
 
 var Dialog = require('nd-dialog');
-var Alert = require('nd-alert');
+var debug = require('nd-debug');
 var Tip = require('nd-tip');
 
 module.exports = function() {
@@ -74,7 +74,7 @@ module.exports = function() {
           plugin.trigger('show', plugin.exports);
         })
         .fail(function(error) {
-          Alert.show(error);
+          debug.error(error);
         })
         .always(function() {
           awaiting = false;

@@ -2,7 +2,7 @@
 <table>
   <thead>
     <tr>
-      {{#if checkable}}<th><input data-role="check-all" type="checkbox" title="全选"></th>{{/if}}
+      {{#if checkable}}<th><label class="check-all"><input data-role="check-all" type="checkbox" title="全选"{{#if checked}} checked{{/if}}></label></th>{{/if}}
       {{#each labelMap}}<th data-key="{{@key}}">{{this}}</th>{{/each}}
       {{#if itemActions}}<th>操作</th>{{/if}}
     </tr>
@@ -11,7 +11,7 @@
     {{#each itemList}}
     {{!-- ROWS --}}
       <tr data-role="item" data-id="{{uniqueId @root.uniqueId}}"{{#if checked}} class="selected"{{/if}}>
-      {{#if @root.checkable}}<td data-role="cell"><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"{{#if checked}} checked{{/if}}></td>{{/if}}
+      {{#if @root.checkable}}<td data-role="cell"><label class="check-item"><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"{{#if checked}} checked{{/if}}></label></td>{{/if}}
       {{#each this}}
       {{#if visible}}
       {{!-- COLS --}}

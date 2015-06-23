@@ -7,7 +7,7 @@
 
 var $ = require('jquery');
 
-var Alert = require('nd-alert');
+var debug = require('nd-debug');
 var Confirm = require('nd-confirm');
 
 var helpers = require('../helpers');
@@ -25,7 +25,7 @@ module.exports = function() {
         getDelCheck().prop('disabled', !getChecked().length);
       })
       .fail(function(error) {
-        Alert.show(error);
+        debug.error(error);
       })
       .always(callback);
   };

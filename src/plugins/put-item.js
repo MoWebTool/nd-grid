@@ -7,7 +7,7 @@
 
 var $ = require('jquery');
 
-var Alert = require('nd-alert');
+var debug = require('nd-debug');
 var FormExtra = require('nd-form-extra');
 
 module.exports = function() {
@@ -19,13 +19,10 @@ module.exports = function() {
   function makeForm(data) {
     var form = new FormExtra($.extend(true, {
       name: 'grid-put-item',
-      // action: '',
       method: 'PUT',
-      // 表单数据
-      formData: data,
       proxy: host.get('proxy'),
       parentNode: host.get('parentNode')
-    }, plugin.getOptions('view')))
+    }, plugin.getOptions('view'), { formData: data }))
     .on('formCancel', function() {
       plugin.trigger('hide', this);
     })
@@ -72,7 +69,7 @@ module.exports = function() {
           plugin.trigger('show', plugin.exports);
         })
         .fail(function(error) {
-          Alert.show(error);
+          debug.error(error);
         })
         .always(function() {
           awaiting = false;
@@ -117,7 +114,7 @@ module.exports = function() {
         plugin.trigger('hide', plugin.exports);
       })
       .fail(function(error) {
-        Alert.show(error);
+        debug.error(error);
       })
       .always(done);
   });

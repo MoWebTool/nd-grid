@@ -7,7 +7,7 @@
 
 var $ = require('jquery');
 
-var Alert = require('nd-alert');
+var debug = require('nd-debug');
 var FormExtra = require('nd-form-extra');
 
 var helpers = require('../helpers');
@@ -19,25 +19,24 @@ module.exports = function() {
 
   function makeForm() {
     return new FormExtra($.extend(true, {
-      name: 'grid-add-item',
-      // action: '',
-      method: 'POST',
-      proxy: host.get('proxy'),
-      parentNode: host.get('parentNode')
-    }, plugin.getOptions('view')))
-    .on('formCancel', function() {
-      plugin.trigger('hide', this);
-    })
-    .on('formSubmit', function() {
-      // 调用队列
-      this.submit(function(data) {
-        plugin.trigger('submit', data, function() {
-          awaiting = false;
+        name: 'grid-add-item',
+        method: 'POST',
+        proxy: host.get('proxy'),
+        parentNode: host.get('parentNode')
+      }, plugin.getOptions('view')))
+      .on('formCancel', function() {
+        plugin.trigger('hide', this);
+      })
+      .on('formSubmit', function() {
+        // 调用队列
+        this.submit(function(data) {
+          plugin.trigger('submit', data, function() {
+            awaiting = false;
+          });
         });
+        // 阻止默认事件发生
+        return false;
       });
-      // 阻止默认事件发生
-      return false;
-    });
   }
 
   // 添加按钮到顶部
@@ -116,7 +115,7 @@ module.exports = function() {
         plugin.trigger('hide', plugin.exports);
       })
       .fail(function(error) {
-        Alert.show(error);
+        debug.error(error);
       })
       .always(done);
   });

@@ -8,7 +8,7 @@
     <div class="card-header">
     {{/if}}
     {{#if @root.checkable}}
-      <label><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"{{#if checked}} checked{{/if}}></label>
+      <label class="check-item"><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"{{#if checked}} checked{{/if}}></label>
     {{/if}}
     {{#if @root.itemActions}}
       <div data-role="actions">

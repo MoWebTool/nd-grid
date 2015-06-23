@@ -8,7 +8,7 @@
 var $ = require('jquery');
 
 var Confirm = require('nd-confirm');
-var Alert = require('nd-alert');
+var debug = require('nd-debug');
 
 module.exports = function() {
   var plugin = this,
@@ -48,7 +48,7 @@ module.exports = function() {
         host.deleteItem(id);
       })
       .fail(function(error) {
-        Alert.show(error);
+        debug.error(error);
       })
       .always(done);
     });

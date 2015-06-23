@@ -7,7 +7,7 @@
 
 var $ = require('jquery');
 
-var Alert = require('nd-alert');
+var debug = require('nd-debug');
 var Widget = require('nd-widget');
 var Template = require('nd-template');
 var RESTful = require('nd-restful');
@@ -139,7 +139,7 @@ var Grid = Widget.extend({
     var proxy = this.get('proxy');
 
     if (!proxy) {
-      console.error('请设置数据源（proxy）');
+      debug.error('请设置数据源（proxy）');
     } else {
       ['LIST', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
       .forEach(function(method) {
@@ -252,7 +252,7 @@ var Grid = Widget.extend({
         }
       })
       .fail(function(error) {
-        Alert.show(error);
+        debug.error(error);
       });
   },
 
@@ -355,6 +355,8 @@ var Grid = Widget.extend({
       this.get('partial').call(this, {
         uniqueId: this.get('uniqueId'),
         checkable: this.get('checkable'),
+        // if check all
+        checked: this.get('checked'),
         labelMap: this.get('labelMap'),
         itemActions: this.get('itemActions'),
         theme: this.get('theme'),
