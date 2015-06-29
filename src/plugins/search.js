@@ -66,7 +66,10 @@ module.exports = function() {
         var name = item.name,
           value = params && (name in params) ? params[name] : item.value;
 
-        form.getField(name).val(value);
+        // BUG #6578
+        // http://pms.sdp.nd/index.php?m=bug&f=view&ID=6578
+        // add blur()
+        form.getField(name).val(value).blur();
       });
     });
 
