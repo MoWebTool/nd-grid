@@ -50,7 +50,7 @@ module.exports = function() {
           .toggleClass('selected', checked);
 
       if (checked) {
-        if (getChecked().length === host.get('itemList').length) {
+        if (getChecked().length === getCheckItems().length) {
           checkAll.prop('checked', true);
         }
       } else {
@@ -88,7 +88,7 @@ module.exports = function() {
   // 将未选中项全部删除后，
   // 需要重新设置全选按钮（checkbox）状态
   host.after('deleteItem', function() {
-    getCheckAll().prop('checked', getChecked().length === host.get('itemList').length);
+    getCheckAll().prop('checked', getChecked().length === getCheckItems().length);
   });
 
   // 通知就绪

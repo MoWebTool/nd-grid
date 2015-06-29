@@ -118,7 +118,10 @@ var Grid = Widget.extend({
     },
 
     isDisabled: function(itemData, options) {
-      return this.disabled ? options.fn(this) : options.inverse(this);
+      // 2015/6/29 15:12:44
+      // 增加整行禁止
+      return (this.disabled === true || itemData.disabled === true) ?
+        options.fn(this) : options.inverse(this);
     },
 
     //过滤数据

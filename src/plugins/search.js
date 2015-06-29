@@ -66,7 +66,7 @@ module.exports = function() {
         var name = item.name,
           value = params && (name in params) ? params[name] : item.value;
 
-        form.$('[name="' + name + '"]').val(value);
+        form.getField(name).val(value);
       });
     });
 

@@ -11,7 +11,7 @@
     {{#each itemList}}
     {{!-- ROWS --}}
       <tr data-role="item" data-id="{{uniqueId @root.uniqueId}}"{{#if checked}} class="selected"{{/if}}>
-      {{#if @root.checkable}}<td data-role="cell"><label class="check-item"><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"{{#if checked}} checked{{/if}}></label></td>{{/if}}
+      {{#if @root.checkable}}<td data-role="cell">{{#unless disabled}}<label class="check-item"><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"{{#if checked}} checked{{/if}}></label>{{/unless}}</td>{{/if}}
       {{#each this}}
       {{#if visible}}
       {{!-- COLS --}}
