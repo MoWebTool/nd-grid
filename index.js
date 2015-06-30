@@ -30,6 +30,10 @@ var Grid = Widget.extend({
 
   Plugins: require('./src/plugins'),
 
+  Statics: {
+    helpers: require('./src/helpers')
+  },
+
   attrs: {
     // 统一样式前缀
     classPrefix: 'ui-grid',
