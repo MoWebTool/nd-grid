@@ -17,6 +17,21 @@ var partials = {
   card: require('./src/templates/partial-card.handlebars')
 };
 
+var buttonTpl = require('./src/templates/button.handlebars');
+
+function makePlace(place) {
+  // 位置
+  if (!place) {
+    return '[data-role="header"]';
+  } else {
+    if (place === 'both') {
+      return '[data-role="header"],[data-role="footer"]';
+    } else {
+      return '[data-role="' + place + '"]';
+    }
+  }
+}
+
 /**
  * @class
  * @extends {Widget}
@@ -29,10 +44,6 @@ var Grid = Widget.extend({
   Implements: [Template, RESTful],
 
   Plugins: require('./src/plugins'),
-
-  Statics: {
-    helpers: require('./src/helpers')
-  },
 
   attrs: {
     // 统一样式前缀
@@ -370,6 +381,13 @@ var Grid = Widget.extend({
         itemList: itemList || this.get('itemList')
       })
     );
+  },
+
+  addGridAction: function(options, fn, prepend) {
+    this.$(makePlace(options.place))[prepend ? 'prepend' : 'append']
+      (buttonTpl(options));
+
+    this.delegateEvents('click [data-role="' + options.role + '"]', fn);
   },
 
   addItemAction: function(options, index) {

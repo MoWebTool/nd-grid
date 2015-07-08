@@ -10,8 +10,6 @@ var $ = require('jquery');
 var debug = require('nd-debug');
 var Confirm = require('nd-confirm');
 
-var helpers = require('../helpers');
-
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
@@ -19,7 +17,7 @@ module.exports = function() {
 
   var delItem = function(id, callback) {
     host.DELETE(id)
-      .done(function(/*data*/) {
+      .done(function( /*data*/ ) {
         host.deleteItem(id);
 
         getDelCheck().prop('disabled', !getChecked().length);
@@ -40,17 +38,26 @@ module.exports = function() {
     return host.$('[data-role="del-check"]');
   }
 
-  // 添加按钮到顶部
-  (function(button) {
-    host.$(helpers.makePlace(button)).append(
-      helpers.makeButton($.extend({
-        role: 'del-check',
-        text: '删除选定',
-        tips: '确定删除选定？',
-        disabled: true
-      }, button))
-    );
-  })(plugin.getOptions('button'));
+  host.addGridAction($.extend({
+    role: 'del-check',
+    text: '删除选定',
+    tips: '确定删除选定？',
+    disabled: true
+  }, plugin.getOptions('button')), function(e) {
+    if (awaiting) {
+      return;
+    }
+
+    Confirm.show(e.currentTarget.getAttribute('data-tips'), function() {
+      awaiting = true;
+
+      plugin.trigger('submit', $.map(getChecked(), function(item) {
+        return item.value;
+      }), function() {
+        awaiting = false;
+      });
+    });
+  });
 
   host.delegateEvents({
 
@@ -66,22 +73,6 @@ module.exports = function() {
       } else {
         getDelCheck().prop('disabled', !getChecked().length);
       }
-    },
-
-    'click [data-role="del-check"]': function(e) {
-      if (awaiting) {
-        return;
-      }
-
-      Confirm.show(e.currentTarget.getAttribute('data-tips'), function() {
-        awaiting = true;
-
-        plugin.trigger('submit', $.map(getChecked(), function(item) {
-          return item.value;
-        }), function() {
-          awaiting = false;
-        });
-      });
     }
 
   });

@@ -10,8 +10,6 @@ var $ = require('jquery');
 var debug = require('nd-debug');
 var FormExtra = require('nd-form-extra');
 
-var helpers = require('../helpers');
-
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
@@ -39,25 +37,15 @@ module.exports = function() {
       });
   }
 
-  // 添加按钮到顶部
-  (function(button) {
-    host.$(helpers.makePlace(button)).append(
-      helpers.makeButton($.extend({
-        role: 'add-item',
-        text: '新增'
-      }, button))
-    );
-  })(plugin.getOptions('button'));
-
-  // 按钮事件
-  host.delegateEvents({
-    'click [data-role="add-item"]': function() {
-      if (!plugin.exports) {
-        plugin.exports = makeForm().render();
-      }
-
-      plugin.trigger('show', plugin.exports);
+  host.addGridAction($.extend({
+    role: 'add-item',
+    text: '新增'
+  }, plugin.getOptions('button')), function() {
+    if (!plugin.exports) {
+      plugin.exports = makeForm().render();
     }
+
+    plugin.trigger('show', plugin.exports);
   });
 
   host.before('destroy', function() {

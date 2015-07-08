@@ -7,8 +7,6 @@
 
 var $ = require('jquery');
 
-var helpers = require('../helpers');
-
 module.exports = function() {
   var plugin = this,
     host = plugin.host;
@@ -47,7 +45,7 @@ module.exports = function() {
 
       // li|tr
       host.getItemByTarget(e.currentTarget)
-          .toggleClass('selected', checked);
+        .toggleClass('selected', checked);
 
       if (checked) {
         if (getChecked().length === getCheckItems().length) {
@@ -65,21 +63,12 @@ module.exports = function() {
   // 卡片式
   if (host.get('theme') === 'card') {
     // 添加按钮到顶部
-    (function(button, titleText) {
-      host.$(helpers.makePlace(button)).append(
-        helpers.makeButton($.extend({
-          role: 'check-all-button',
-          text: '<input data-role="check-all" type="checkbox" title="' + titleText + '">' + titleText
-        }, button))
-      );
-    })(plugin.getOptions('button'), '全选');
-
-    host.delegateEvents({
-      // 全选
-      'click [data-role="check-all-button"]': function(e) {
-        if (e.target.tagName !== 'INPUT') {
-          $(e.currentTarget).find('input').trigger('click');
-        }
+    host.addGridAction($.extend({
+      role: 'check-all-button',
+      text: '<input data-role="check-all" type="checkbox" title="全选">全选'
+    }, plugin.getOptions('button')), function(e) {
+      if (e.target.tagName !== 'INPUT') {
+        $(e.currentTarget).find('input').trigger('click');
       }
     });
   }
