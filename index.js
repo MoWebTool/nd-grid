@@ -276,22 +276,52 @@ var Grid = Widget.extend({
 
   deleteItem: function(id) {
     var item = this.getItemById(id),
-      index = item.index(),
+      index, that = this,
       itemList = this.get('itemList');
-
-    // 从 model 中移除
-    itemList.splice(index, 1);
 
     // 动画
     item.fadeOut(function() {
+      item.find('[name="check-item"]').prop('checked',false).trigger('change');
+
+      index = item.index();
+      //仅考虑mergeKey只有一个的情况
+      if (that.get('mergeKey')) {
+        //被删除行中的td为rowspan头部
+        if(item.find('td[rowspan]:not([rowspan=1])').length) {
+          var mergeTd = item.find('td[rowspan]:not([rowspan=1])');
+          var mergeTdClone = mergeTd.clone();
+          var mergeTdIndex = mergeTd.index();
+          var mergeTdRowspan = mergeTd.attr('rowspan');
+          var realTdLength = item.find('td').length;
+          //最后一个td为mergeKey
+          if( mergeTdIndex === realTdLength-1 ) {
+            item.next().append(mergeTdClone.attr('rowspan',mergeTdRowspan-1));
+          }
+          else {
+            item.next().find('td:eq('+ mergeTdIndex +')').before(mergeTdClone.attr('rowspan',mergeTdRowspan-1));
+          }
+        }
+        //被删除行不是rowspan头部
+        else {
+          var mergeTr = item.prevAll(':has(td[rowspan]:not([rowspan=1]))').first();
+          var mergeTrIndex = mergeTr.index();
+          var mergeTd = mergeTr.find('td[rowspan]:not([rowspan=1])');
+          var mergeTdRowspan = mergeTd.attr('rowspan');
+          //被删除行受rowspan影响
+          if (index - mergeTrIndex < mergeTdRowspan) {
+            mergeTd.attr('rowspan',mergeTdRowspan-1);
+          }
+        }    
+      }
       // 从 DOM 中移除
       item.remove();
+      // 从 model 中移除
+      itemList.splice(index, 1);
+      // 判断当前行数
+      if (!itemList.length) {
+        that.getList();
+      }
     });
-
-    // 判断当前行数
-    if (!itemList.length) {
-      this.getList();
-    }
   },
 
   _onRenderGridData: function(gridData) {
