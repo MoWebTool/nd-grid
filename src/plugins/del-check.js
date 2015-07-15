@@ -96,6 +96,11 @@ module.exports = function() {
   host.after('renderPartial', function() {
     getDelCheck().prop('disabled', !getChecked().length);
   });
+  
+  //删除item后重新判断是否disabled
+  host.on('deleteItemDone', function() {
+    getDelCheck().prop('disabled', !getChecked().length);
+  });
 
   // 通知就绪
   this.ready();
