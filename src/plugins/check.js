@@ -76,7 +76,7 @@ module.exports = function() {
   // 未全部选中的状态下，
   // 将未选中项全部删除后，
   // 需要重新设置全选按钮（checkbox）状态
-  host.after('deleteItem', function() {
+  host.on('deleteItemDone', function() {
     getCheckAll().prop('checked', getChecked().length === getCheckItems().length);
   });
 
