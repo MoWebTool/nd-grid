@@ -290,6 +290,7 @@ var Grid = Widget.extend({
 
       // 从 model 中移除
       itemList.splice(index, 1);
+
       //页面还有数据
       if (itemList.length) {
         //仅考虑mergeKey只有一个的情况
@@ -310,8 +311,7 @@ var Grid = Widget.extend({
         }
         // 从 DOM 中移除
         item.remove();
-      }
-      else {
+      } else {
         that.getList();
       }
     });
