@@ -66,7 +66,11 @@ module.exports = function() {
     }
 
     if (plugin._async) {
-      plugin.on('ready', inject);
+      if (plugin._ready) {
+        inject();
+      } else {
+        plugin.on('ready', inject);
+      }
     } else {
       inject();
     }
