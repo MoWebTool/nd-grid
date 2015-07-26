@@ -410,17 +410,19 @@ var Grid = Widget.extend({
     this.$(makePlace(options.place))[prepend ? 'prepend' : 'append']
       (buttonTpl(options));
 
-    this.delegateEvents('click [data-role="' + options.role + '"]', fn);
+    fn && this.delegateEvents('click [data-role="' + options.role + '"]', fn);
   },
 
-  addItemAction: function(options, index) {
+  addItemAction: function(options, index, fn) {
     var itemActions = this.get('itemActions');
 
-    if (isNaN(index)) {
+    if (typeof index !== 'number') {
       itemActions.push(options);
     } else {
       itemActions.splice(index, 0, options);
     }
+
+    fn && this.delegateEvents('click [data-role="' + options.role + '"]', fn);
   },
 
   getItems: function() {
