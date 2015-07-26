@@ -61,6 +61,7 @@ module.exports = function() {
         uniqueId = host.getItemIdByTarget(trigger);
 
         var detail = plugin.getOptions('detail');
+
         if (detail && detail.useLocal) {
           plugin.exports = makeDialog(host.getItemDataById(uniqueId, true), trigger).render();
           plugin.trigger('show', plugin.exports);

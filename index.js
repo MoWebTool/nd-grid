@@ -324,45 +324,46 @@ var Grid = Widget.extend({
     gridData = this.get('outFilter').call(this, $.extend(true, {}, gridData));
 
     var items = gridData.items,
-      labelMap,
-      uniqueId,
       entryKey,
       mergeKey,
+      visKeys,
+      extKeys,
+      allKeys,
       itemList = [0];
 
     // 强制无数据时列表刷新
     itemList.hacked = true;
 
     if (items && items.length) {
-      labelMap = this.get('labelMap');
-      uniqueId = this.get('uniqueId');
       entryKey = this.get('entryKey');
       mergeKey = this.get('mergeKey');
 
-      itemList = $.map(items, function(item) {
-        // 仅取 labelMap 中定义的字段
+      // keys that visible
+      visKeys = Object.keys(this.get('labelMap'));
+
+      // keys that invisible
+      extKeys = Object.keys(items[0]).filter(function(key) {
+        return visKeys.indexOf(key) === -1;
+      });
+
+      // sort keys by visibility
+      allKeys = visKeys.concat(extKeys);
+
+      itemList = items.map(function(item) {
         var _item = {};
 
-        $.each(labelMap, function(key /*, value*/ ) {
+        allKeys.forEach(function(key) {
           _item[key] = {
             key: key,
             value: item[key],
-            visible: true,
+            visible: visKeys.indexOf(key) !== -1,
             isEntry: key === entryKey,
             isMerge: key === mergeKey,
             count: item.count,
-            index: item.index
+            index: item.index,
+            item: item
           };
         });
-
-        // 如果 uniqueId 不在 labelMap 中
-        // 加入隐藏的 uniqueId
-        if (!(uniqueId in labelMap)) {
-          _item[uniqueId] = {
-            key: uniqueId,
-            value: item[uniqueId]
-          };
-        }
 
         return _item;
       });

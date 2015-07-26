@@ -17,7 +17,7 @@ module.exports = function() {
     awaiting;
 
   function makeForm(data) {
-    var form = new FormExtra($.extend(true, {
+    return new FormExtra($.extend(true, {
       name: 'grid-put-item',
       method: 'PUT',
       proxy: host.get('proxy'),
@@ -35,15 +35,49 @@ module.exports = function() {
       // 阻止默认事件发生
       return false;
     });
+  }
 
-    return form;
+  function delegate(e) {
+    if (awaiting) {
+      return;
+    }
+
+    if (!plugin.exports) {
+      // 添加用于阻止多次点击
+      awaiting = true;
+
+      uniqueId = host.getItemIdByTarget(e.currentTarget);
+
+      var detail = plugin.getOptions('detail');
+
+      if (detail && detail.useLocal) {
+        plugin.exports = makeForm(host.getItemDataById(uniqueId, true)).render();
+        plugin.trigger('show', plugin.exports);
+        awaiting = false;
+        return;
+      }
+
+      host.GET(uniqueId)
+      .done(function(data) {
+        plugin.exports = makeForm(data).render();
+        plugin.trigger('show', plugin.exports);
+      })
+      .fail(function(error) {
+        debug.error(error);
+      })
+      .always(function() {
+        awaiting = false;
+      });
+    } else {
+      plugin.trigger('show', plugin.exports);
+    }
   }
 
   (function(button) {
     host.addItemAction($.extend({
       'role': 'put-item',
       'text': '编辑'
-    }, button), button && button.index || 0);
+    }, button), button && button.index || 0, delegate);
   })(plugin.getOptions('button'));
 
   // 异步插件，需要刷新列表
@@ -51,49 +85,23 @@ module.exports = function() {
     host._renderPartial();
   }
 
-  host.delegateEvents({
-    'click [data-role="put-item"]': function(e) {
-      if (awaiting) {
-        return;
-      }
-
-      if (!plugin.exports) {
-        // 添加用于阻止多次点击
-        awaiting = true;
-
-        uniqueId = host.getItemIdByTarget(e.currentTarget);
-
-        host.GET(uniqueId)
-        .done(function(data) {
-          plugin.exports = makeForm(data).render();
-          plugin.trigger('show', plugin.exports);
-        })
-        .fail(function(error) {
-          debug.error(error);
-        })
-        .always(function() {
-          awaiting = false;
-        });
-      } else {
-        plugin.trigger('show', plugin.exports);
-      }
-    }
-  });
-
   host.before('destroy', function() {
     plugin.exports && plugin.exports.destroy();
   });
 
   plugin.on('show', function(form) {
-    // 通知就绪
-    // plugin.ready();
+    if (!this.getOptions('interact')) {
+      host.element.hide();
+    }
 
-    host.element.hide();
     form.element.show();
   });
 
   plugin.on('hide', function(form) {
-    host.element.show();
+    if (!this.getOptions('interact')) {
+      host.element.show();
+    }
+
     form.destroy();
     delete plugin.exports;
   });

@@ -37,54 +37,53 @@ module.exports = function() {
     });
   }
 
+  function delegate(e) {
+    if (awaiting) {
+      return;
+    }
+
+    if (!plugin.exports) {
+      // 添加用于阻止多次点击
+      awaiting = true;
+
+      uniqueId = host.getItemIdByTarget(e.currentTarget);
+
+      var detail = plugin.getOptions('detail');
+
+      if (detail && detail.useLocal) {
+        plugin.exports = makeForm(host.getItemDataById(uniqueId, true)).render();
+        plugin.trigger('show', plugin.exports);
+        awaiting = false;
+        return;
+      }
+
+      host.GET(uniqueId)
+      .done(function(data) {
+        plugin.exports = makeForm(data).render();
+        plugin.trigger('show', plugin.exports);
+      })
+      .fail(function(error) {
+        debug.error(error);
+      })
+      .always(function() {
+        awaiting = false;
+      });
+    } else {
+      plugin.trigger('show', plugin.exports);
+    }
+  }
+
   (function(button) {
     host.addItemAction($.extend({
       'role': 'edit-item',
       'text': '编辑'
-    }, button), button && button.index || 0);
+    }, button), button && button.index || 0, delegate);
   })(plugin.getOptions('button'));
 
   // 异步插件，需要刷新列表
   if (plugin._async) {
     host._renderPartial();
   }
-
-  host.delegateEvents({
-    'click [data-role="edit-item"]': function(e) {
-      if (awaiting) {
-        return;
-      }
-
-      if (!plugin.exports) {
-        // 添加用于阻止多次点击
-        awaiting = true;
-
-        uniqueId = host.getItemIdByTarget(e.currentTarget);
-
-        var detail = plugin.getOptions('detail');
-        if (detail && detail.useLocal) {
-          plugin.exports = makeForm(host.getItemDataById(uniqueId, true)).render();
-          plugin.trigger('show', plugin.exports);
-          awaiting = false;
-          return;
-        }
-
-        host.GET(uniqueId)
-        .done(function(data) {
-          plugin.exports = makeForm(data).render();
-          plugin.trigger('show', plugin.exports);
-        })
-        .fail(function(error) {
-          debug.error(error);
-        })
-        .always(function() {
-          awaiting = false;
-        });
-      } else {
-        plugin.trigger('show', plugin.exports);
-      }
-    }
-  });
 
   host.before('destroy', function() {
     plugin.exports && plugin.exports.destroy();
