@@ -416,7 +416,7 @@ var Grid = Widget.extend({
   addItemAction: function(options, index) {
     var itemActions = this.get('itemActions');
 
-    if (typeof index === 'undefined') {
+    if (isNaN(index)) {
       itemActions.push(options);
     } else {
       itemActions.splice(index, 0, options);
