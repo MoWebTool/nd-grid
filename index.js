@@ -246,6 +246,9 @@ var Grid = Widget.extend({
 
     this.LIST(options)
       .done(function(data) {
+        if (typeof data.count === 'undefined') {
+          data.total && (data.count = data.total);
+        }
         // offset 溢出
         if (data.count && !data.items.length) {
           // 到最后一页
