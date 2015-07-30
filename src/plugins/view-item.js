@@ -7,9 +7,9 @@
 
 var $ = require('jquery');
 
-var Dialog = require('nd-dialog');
 var debug = require('nd-debug');
-var Tip = require('nd-tip');
+
+var View = require('../modules/view');
 
 module.exports = function() {
   var plugin = this,
@@ -17,37 +17,27 @@ module.exports = function() {
     uniqueId,
     awaiting;
 
-  function makeDialog(data, trigger) {
-    var interact = plugin.getOptions('interact');
-    var UI = (interact && interact.type === 'tip') ? Tip : Dialog;
-
-    return new UI($.extend(true, {
+  function makeView(data, trigger) {
+    return new View($.extend(true, {
 
       parentNode: host.get('parentNode'),
 
-      // for tip
       trigger: trigger,
-      arrowPosition: 10,
-      inViewport: true,
 
-      partial: function(data) {
-        return data.toString ? data.toString() : data;
+      events: {
+        'click [data-role="back"]': function() {
+          plugin.trigger('hide', this);
+        }
       },
 
-      afterHide: function() {
-        plugin.trigger('hide', this);
-      },
-
-      afterRender: function() {
-        this.set('content', this.get('partial').call(this, data));
-      }
+      labelMap: {},
+      valueMap: data
 
     }, plugin.getOptions('view')));
   }
 
   host.delegateEvents({
     'click [data-role="view-item"]': function(e) {
-      // e.stopPropagation();
       if (awaiting) {
         return;
       }
@@ -63,7 +53,7 @@ module.exports = function() {
         var detail = plugin.getOptions('detail');
 
         if (detail && detail.useLocal) {
-          plugin.exports = makeDialog(host.getItemDataById(uniqueId, true), trigger).render();
+          plugin.exports = makeView(host.getItemDataById(uniqueId, true), trigger).render();
           plugin.trigger('show', plugin.exports);
           awaiting = false;
           return;
@@ -71,7 +61,7 @@ module.exports = function() {
 
         host.GET(uniqueId)
         .done(function(data) {
-          plugin.exports = makeDialog(data, trigger).render();
+          plugin.exports = makeView(data, trigger).render();
           plugin.trigger('show', plugin.exports);
         })
         .fail(function(error) {
@@ -90,12 +80,20 @@ module.exports = function() {
     plugin.exports && plugin.exports.destroy();
   });
 
-  plugin.on('show', function(dialog) {
-    dialog.show();
+  plugin.on('show', function(view) {
+    if (!this.getOptions('interact')) {
+      host.element.hide();
+    }
+
+    view.element.show();
   });
 
-  plugin.on('hide', function(dialog) {
-    dialog.destroy();
+  plugin.on('hide', function(view) {
+    if (!this.getOptions('interact')) {
+      host.element.show();
+    }
+
+    view.destroy();
     delete plugin.exports;
   });
 

@@ -6,6 +6,7 @@
 'use strict';
 
 var Alert = require('nd-alert');
+var Tip = require('nd-tip');
 
 module.exports = function() {
   var plugin = this,
@@ -34,7 +35,7 @@ module.exports = function() {
               var view = this;
 
               view.dialog = new Alert({
-                width: 360,
+                // width: 360,
                 // closeTpl: '',
                 confirmTpl: '',
                 message: '',
@@ -59,6 +60,37 @@ module.exports = function() {
 
             this.before('destroy', function() {
               this.dialog.hide();
+            });
+          }
+        });
+      } else if (interact.type === 'tip') {
+        plugin.setOptions('view', {
+          className: 'ui-view-tip',
+          beforeSetup: function() {
+            this.before('render', function() {
+              var view = this;
+
+              view.tip = new Tip({
+                trigger: this.get('trigger'),
+                triggerType: 'click',
+                content: '',
+                arrowPosition: 10,
+                inViewport: true,
+                afterHide: function() {
+                  plugin.trigger('hide', view);
+                }
+              }).render();
+
+              // change parentNode
+              view.set('parentNode', view.tip.$('[data-role="content"]'));
+            });
+
+            this.after('render', function() {
+              this.tip.show();
+            });
+
+            this.before('destroy', function() {
+              this.tip.destroy();
             });
           }
         });
