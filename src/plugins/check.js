@@ -42,6 +42,8 @@ module.exports = function() {
     'change [name="check-item"]': function(e) {
       var checked = e.currentTarget.checked,
         checkAll = getCheckAll();
+        
+      host.getItemDataById(e.currentTarget.value).checked = checked;
 
       // li|tr
       host.getItemByTarget(e.currentTarget)
