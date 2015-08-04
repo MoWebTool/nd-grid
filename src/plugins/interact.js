@@ -34,7 +34,7 @@ module.exports = function() {
               var view = this;
 
               view.dialog = new Alert({
-                width: 360,
+                width: interact.width||360,
                 // closeTpl: '',
                 confirmTpl: '',
                 message: '',
