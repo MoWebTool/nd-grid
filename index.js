@@ -162,6 +162,10 @@ var Grid = Widget.extend({
     this.set('model', {
       theme: this.get('theme')
     });
+
+    if (this.get('mode') === 2) {
+      this.set('initialParams', null);
+    }
   },
 
   initProps: function() {
