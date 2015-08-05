@@ -39,19 +39,8 @@ module.exports = function() {
     plugin.on('submit', function(data) {
       data || (data = {});
 
-      // 重置为第一页
-      switch (host.get('mode')) {
-        case 2:
-          break;
-        case 1:
-          data.page = 0;
-          break;
-        default:
-          data.$offset = 0;
-      }
-
       host.getList({
-        data: data
+        data: $.extend(data, host.get('initialParams'))
       });
     });
 
@@ -63,13 +52,19 @@ module.exports = function() {
       params = form.get('inFilter').call(form, $.extend({}, params));
 
       $.each(fields, function(i, item) {
-        var name = item.name,
-          value = params && (name in params) ? params[name] : item.value;
+        var name = item.name;
+        var value = item.value;
+
+        if (params && params.hasOwnProperty(name)) {
+          value = params[name];
+        }
 
         // BUG #6578
         // http://pms.sdp.nd/index.php?m=bug&f=view&ID=6578
         // add blur()
-        form.getField(name).val(value).blur();
+        if (typeof value !== 'undefined') {
+          form.getField(name).val(value).blur();
+        }
       });
     });
 

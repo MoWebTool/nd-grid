@@ -83,20 +83,7 @@ module.exports = function() {
       .done(function( /*data*/ ) {
         // 成功，返回第一页
         host.getList({
-          data: (function(mode) {
-            switch (mode) {
-              case 2:
-                return {};
-              case 1:
-                return {
-                  page: 0
-                };
-              default:
-                return {
-                  $offset: 0
-                };
-            }
-          })(host.get('mode'))
+          data: host.get('initialParams')
         });
 
         // 隐藏

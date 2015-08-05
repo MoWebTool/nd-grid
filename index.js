@@ -117,6 +117,12 @@ var Grid = Widget.extend({
     // 0: mysql or 1: mongodb or 2: no pagination
     mode: 0,
 
+    initialParams: {
+      $offset: 0,
+      $limit: 10,
+      $count: true
+    },
+
     params: {},
 
     autoload: true,
@@ -137,6 +143,11 @@ var Grid = Widget.extend({
       // 增加整行禁止
       return (this.disabled === true || itemData.disabled === true) ?
         options.fn(this) : options.inverse(this);
+    },
+
+    //过滤数据
+    inFilter: function(data) {
+      return data;
     },
 
     //过滤数据
@@ -199,24 +210,11 @@ var Grid = Widget.extend({
   },
 
   setup: function() {
-    this.set('params', $.extend((function(mode) {
-      switch (mode) {
-        case 2:
-          return {};
-        case 1:
-          return {
-            $count: true,
-            size: 10,
-            page: 0
-          };
-        default:
-          return {
-            $count: true,
-            $limit: 10,
-            $offset: 0
-          };
-      }
-    })(this.get('mode')), this.get('params')));
+    // 保存原始状态
+    this.set('initialParams', this.get('params'));
+
+    // 设置最终状态
+    this.set('params', this.get('initialParams'));
 
     if (this.get('autoload')) {
       // 取列表
@@ -235,7 +233,9 @@ var Grid = Widget.extend({
       options = {};
     }
 
-    var params = options.data = $.extend({}, this.get('params'));
+    var params = options.data =
+        // 开放给外部处理
+        this.get('inFilter').call(this, $.extend({}, this.get('params')));
 
     Object.keys(params).forEach(function(key) {
       // 空字符串不提交查询
@@ -246,27 +246,15 @@ var Grid = Widget.extend({
 
     this.LIST(options)
       .done(function(data) {
-        if (typeof data.count === 'undefined') {
-          data.total && (data.count = data.total);
-        }
+        // 开放给外部处理
+        data = that.get('outFilter').call(that, data);
         // offset 溢出
         if (data.count && !data.items.length) {
           // 到最后一页
           that.getList({
-            data: (function(mode) {
-              switch (mode) {
-                case 2:
-                  return {};
-                case 1:
-                  return {
-                    page: Math.ceil(data.count / params.size) - 1
-                  };
-                default:
-                  return {
-                    $offset: (Math.ceil(data.count / params.$limit) - 1) * params.$limit
-                  };
-              }
-            })(that.get('mode'))
+            data: {
+              $offset: (Math.ceil(data.count / params.$limit) - 1) * params.$limit
+            }
           });
         } else {
           that.set('gridData', data);
@@ -324,7 +312,7 @@ var Grid = Widget.extend({
     this.set('originData', gridData);
 
     // 拷贝一份数据给 filter
-    gridData = this.get('outFilter').call(this, $.extend(true, {}, gridData));
+    gridData = $.extend(true, {}, gridData);
 
     var items = gridData.items,
       entryKey,
