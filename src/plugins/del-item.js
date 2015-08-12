@@ -39,15 +39,20 @@ module.exports = function() {
   })(plugin.getOptions('button'));
 
   plugin.on('submit', function(id, done) {
-    host.DELETE(id)
-      .done(function(/*data*/) {
-        host.deleteItem(id);
-      })
-      .fail(function(error) {
-        debug.error(error);
-      })
-      .always(done);
-    });
+
+    var actionDelete = plugin.getOptions('DELETE') || function(id) {
+      return host.DELETE(id);
+    };
+
+    actionDelete(id)
+    .done(function(/*data*/) {
+      host.deleteItem(id);
+    })
+    .fail(function(error) {
+      debug.error(error);
+    })
+    .always(done);
+  });
 
   // 通知就绪
   this.ready();

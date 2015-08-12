@@ -77,22 +77,24 @@ module.exports = function() {
     // 添加用于阻止多次点击
     awaiting = true;
 
-    host[plugin.exports.get('method')]({
-        data: data
-      })
-      .done(function( /*data*/ ) {
-        // 成功，返回第一页
-        host.getList({
-          data: host.get('initialParams')
-        });
+    var actionPost = plugin.getOptions('POST') || function(data) {
+      return host[plugin.exports.get('method')]({data: data});
+    };
 
-        // 隐藏
-        plugin.trigger('hide', plugin.exports);
-      })
-      .fail(function(error) {
-        debug.error(error);
-      })
-      .always(done);
+    actionPost(data)
+    .done(function( /*data*/ ) {
+      // 成功，返回第一页
+      host.getList({
+        data: host.get('initialParams')
+      });
+
+      // 隐藏
+      plugin.trigger('hide', plugin.exports);
+    })
+    .fail(function(error) {
+      debug.error(error);
+    })
+    .always(done);
   });
 
   // 通知就绪

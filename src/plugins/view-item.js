@@ -50,16 +50,19 @@ module.exports = function() {
 
         uniqueId = host.getItemIdByTarget(trigger);
 
-        var detail = plugin.getOptions('detail');
+        var actionFetch = plugin.getOptions('GET') || function(uniqueId) {
+          return host.GET(uniqueId);
+        };
 
-        if (detail && detail.useLocal) {
-          plugin.exports = makeView(host.getItemDataById(uniqueId, true), trigger).render();
-          plugin.trigger('show', plugin.exports);
-          awaiting = false;
-          return;
+        if (actionFetch === 'LOCAL') {
+          actionFetch = function(uniqueId) {
+            var defer = $.Deferred();
+            defer.resolve(host.getItemDataById(uniqueId, true));
+            return defer.promise();
+          };
         }
 
-        host.GET(uniqueId)
+        actionFetch(uniqueId)
         .done(function(data) {
           plugin.exports = makeView(data, trigger).render();
           plugin.trigger('show', plugin.exports);

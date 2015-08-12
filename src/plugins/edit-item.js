@@ -48,16 +48,19 @@ module.exports = function() {
 
       uniqueId = host.getItemIdByTarget(e.currentTarget);
 
-      var detail = plugin.getOptions('detail');
+      var actionFetch = plugin.getOptions('GET') || function(uniqueId) {
+        return host.GET(uniqueId);
+      };
 
-      if (detail && detail.useLocal) {
-        plugin.exports = makeForm(host.getItemDataById(uniqueId, true)).render();
-        plugin.trigger('show', plugin.exports);
-        awaiting = false;
-        return;
+      if (actionFetch === 'LOCAL') {
+        actionFetch = function(uniqueId) {
+          var defer = $.Deferred();
+          defer.resolve(host.getItemDataById(uniqueId, true));
+          return defer.promise();
+        };
       }
 
-      host.GET(uniqueId)
+      actionFetch(uniqueId)
       .done(function(data) {
         plugin.exports = makeForm(data).render();
         plugin.trigger('show', plugin.exports);
@@ -114,17 +117,21 @@ module.exports = function() {
     // 添加用于阻止多次点击
     awaiting = true;
 
-    host[plugin.exports.get('method')](uniqueId, data)
-      .done(function(/*data*/) {
-        // 成功，刷新当前页
-        host.getList();
+    var actionPatch = plugin.getOptions('PATCH') || function(uniqueId, data) {
+      return host[plugin.exports.get('method')](uniqueId, data);
+    };
 
-        plugin.trigger('hide', plugin.exports);
-      })
-      .fail(function(error) {
-        debug.error(error);
-      })
-      .always(done);
+    actionPatch(uniqueId, data)
+    .done(function(/*data*/) {
+      // 成功，刷新当前页
+      host.getList();
+
+      plugin.trigger('hide', plugin.exports);
+    })
+    .fail(function(error) {
+      debug.error(error);
+    })
+    .always(done);
   });
 
   // 通知就绪

@@ -139,9 +139,15 @@ var Grid = Widget.extend({
     },
 
     isDisabled: function(itemData, options) {
-      // 2015/6/29 15:12:44
-      // 增加整行禁止
-      return (this.disabled === true || itemData.disabled === true) ?
+      var disabled = this.disabled;
+
+      if (typeof disabled === 'function') {
+        disabled = disabled(itemData);
+      }
+
+      return (disabled === true ||
+        // 整行禁止
+        itemData.disabled === true) ?
         options.fn(this) : options.inverse(this);
     },
 

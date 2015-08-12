@@ -16,16 +16,20 @@ module.exports = function() {
     awaiting;
 
   var delItem = function(id, callback) {
-    host.DELETE(id)
-      .done(function( /*data*/ ) {
-        host.deleteItem(id);
+    var actionDelete = plugin.getOptions('DELETE') || function(id) {
+      return host.DELETE(id);
+    };
 
-        getDelCheck().prop('disabled', !getChecked().length);
-      })
-      .fail(function(error) {
-        debug.error(error);
-      })
-      .always(callback);
+    actionDelete(id)
+    .done(function( /*data*/ ) {
+      host.deleteItem(id);
+
+      getDelCheck().prop('disabled', !getChecked().length);
+    })
+    .fail(function(error) {
+      debug.error(error);
+    })
+    .always(callback);
   };
 
   // helpers
@@ -96,7 +100,7 @@ module.exports = function() {
   host.after('renderPartial', function() {
     getDelCheck().prop('disabled', !getChecked().length);
   });
-  
+
   //删除item后重新判断是否disabled
   host.on('deleteItemDone', function() {
     getDelCheck().prop('disabled', !getChecked().length);
