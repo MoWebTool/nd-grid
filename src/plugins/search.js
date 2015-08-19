@@ -9,6 +9,8 @@ var $ = require('jquery');
 
 var FormExtra = require('nd-form-extra');
 
+var uid = 0;
+
 module.exports = function() {
   var plugin = this,
     host = plugin.host;
@@ -16,7 +18,7 @@ module.exports = function() {
   host.after('render', function() {
 
     plugin.exports = new FormExtra($.extend(true, {
-        name: 'grid-search',
+        name: 'grid-search-' + (++uid),
         className: 'ui-form-search',
         buttons: [{
           label: '搜索',

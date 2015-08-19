@@ -10,6 +10,8 @@ var $ = require('jquery');
 var debug = require('nd-debug');
 var FormExtra = require('nd-form-extra');
 
+var uid = 0;
+
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
@@ -18,7 +20,7 @@ module.exports = function() {
 
   function makeForm(data) {
     return new FormExtra($.extend(true, {
-      name: 'grid-put-item',
+      name: 'grid-put-item-' + (++uid),
       method: 'PUT',
       proxy: host.get('proxy'),
       parentNode: host.get('parentNode')

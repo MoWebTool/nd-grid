@@ -12,25 +12,7 @@ var Widget = require('nd-widget');
 var Template = require('nd-template');
 var RESTful = require('nd-restful');
 
-var partials = {
-  grid: require('./src/templates/partial-grid.handlebars'),
-  card: require('./src/templates/partial-card.handlebars')
-};
-
-var buttonTpl = require('./src/templates/button.handlebars');
-
-function makePlace(place) {
-  // 位置
-  if (!place) {
-    return '[data-role="header"]';
-  } else {
-    if (place === 'both') {
-      return '[data-role="header"],[data-role="footer"]';
-    } else {
-      return '[data-role="' + place + '"]';
-    }
-  }
-}
+// var buttonTpl = require('./src/templates/button.handlebars');
 
 /**
  * @class
@@ -45,6 +27,15 @@ var Grid = Widget.extend({
 
   Plugins: require('./src/plugins'),
 
+  templatePartials: {
+    header: require('./src/templates/partial-header.handlebars'),
+    grid: require('./src/templates/partial-grid.handlebars'),
+    card: require('./src/templates/partial-card.handlebars'),
+    content: function(model, templateOptions) {
+      return templateOptions.partials[this.get('theme')](model, templateOptions);
+    }
+  },
+
   attrs: {
     // 统一样式前缀
     classPrefix: 'ui-grid',
@@ -52,29 +43,22 @@ var Grid = Widget.extend({
     // 模板
     template: require('./src/templates/grid.handlebars'),
 
-    partial: function(data) {
-      var helpers = {
-        uniqueId: function(uniqueId) {
-          return this[uniqueId].value;
-        },
-        adapters: this.get('adapters'),
-        isDisabled: this.get('isDisabled')
-      };
-
-      var theme = this.get('theme');
-
-      if (theme === 'card') {
-        data.hasHeader = !!(data.checkable || (data.itemActions && data.itemActions.length));
-
+    templateHelpers: {
+      value: null,
+      getter: function() {
         var labelMap = this.get('labelMap');
-        helpers.getLabel = function(key) {
-          return labelMap[key];
+
+        return {
+          uniqueId: function(uniqueId) {
+            return this[uniqueId].value;
+          },
+          adapters: this.get('adapters'),
+          isDisabled: this.get('isDisabled'),
+          getLabel: function(key) {
+            return labelMap[key];
+          }
         };
       }
-
-      return partials[theme](data, {
-        helpers: helpers
-      });
     },
 
     theme: 'grid',
@@ -393,25 +377,40 @@ var Grid = Widget.extend({
   },
 
   _renderPartial: function(itemList) {
-    this.$('.content').html(
-      this.get('partial').call(this, {
-        uniqueId: this.get('uniqueId'),
-        checkable: this.get('checkable'),
-        // if check all
-        checked: this.get('checked'),
-        labelMap: this.get('labelMap'),
-        itemActions: this.get('itemActions'),
-        theme: this.get('theme'),
-        itemList: itemList || this.get('itemList')
-      })
-    );
+    this.renderPartialTemplate('content', {
+      uniqueId: this.get('uniqueId'),
+      checkable: this.get('checkable'),
+      // if check all
+      checked: this.get('checked'),
+      labelMap: this.get('labelMap'),
+      itemActions: this.get('itemActions'),
+      theme: this.get('theme'),
+      itemList: itemList || this.get('itemList')
+    });
   },
 
   addGridAction: function(options, fn, prepend) {
-    this.$(makePlace(options.place))[prepend ? 'prepend' : 'append']
-      (buttonTpl(options));
+    var gridActions = this.get('gridActions');
+
+    prepend ? gridActions.unshift(options) : gridActions.push(options);
+
+    this._renderGridAction(gridActions);
 
     fn && this.delegateEvents('click [data-role="' + options.role + '"]', fn);
+  },
+
+  _renderGridAction: function(gridActions) {
+    var that = this;
+
+    if (that._timeoutGridAction) {
+      clearTimeout(that._timeoutGridAction);
+    }
+
+    that._timeoutGridAction = setTimeout(function() {
+      that.renderPartialTemplate('header', {
+        buttons: gridActions
+      });
+    }, 0);
   },
 
   addItemAction: function(options, index, fn) {
