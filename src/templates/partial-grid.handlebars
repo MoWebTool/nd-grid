@@ -17,20 +17,20 @@
       {{!-- COLS --}}
       {{#if isMerge}}
         {{#unless index}}
-          <td data-role="cell" rowspan="{{count}}">
+          <td data-key="{{key}}" data-role="cell" rowspan="{{count}}">
             {{#if isEntry}}
-              <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
+              <a href="javascript:;" data-role="view-item">{{adapters key value}}</a>
             {{else}}
-              <span>{{adapters ../../key ../../value}}</span>
+              <span>{{adapters key value}}</span>
             {{/if}}
           </td>
         {{/unless}}
       {{else}}
-        <td data-role="cell">
+        <td data-key="{{key}}" data-role="cell">
         {{#if isEntry}}
-          <a href="javascript:;" data-role="view-item">{{adapters ../../key ../../value}}</a>
+          <a href="javascript:;" data-role="view-item">{{adapters key value}}</a>
         {{else}}
-          <span>{{adapters ../../key ../../value}}</span>
+          <span>{{adapters key value}}</span>
         {{/if}}
         </td>
       {{/if}}
