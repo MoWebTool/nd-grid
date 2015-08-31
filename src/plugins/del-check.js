@@ -9,6 +9,7 @@ var $ = require('jquery');
 
 var debug = require('nd-debug');
 var Confirm = require('nd-confirm');
+var Queue = require('nd-queue');
 
 module.exports = function() {
   var plugin = this,
@@ -19,10 +20,13 @@ module.exports = function() {
     var actionDelete = plugin.getOptions('DELETE') || function(id) {
       return host.DELETE(id);
     };
+    var doneCallback = plugin.getOptions('callback') || function(id) {
+      host.deleteItem(id);
+    };
 
     actionDelete(id)
-    .done(function( /*data*/ ) {
-      host.deleteItem(id);
+    .done(function(data) {
+      doneCallback(id, data);
 
       getDelCheck().prop('disabled', !getChecked().length);
     })
@@ -82,26 +86,27 @@ module.exports = function() {
   });
 
   plugin.on('submit', function(ids, done) {
-    // TODO: batch delete?
-    var count = ids.length;
-    var ready = 0;
+    // batch delete
+    if (plugin.getOptions('multiple')) {
+      delItem(ids, done);
+    } else {
+      var queue = new Queue();
 
-    function cb() {
-      if (++ready === count) {
-        done();
-      }
+      ids.forEach(function(id) {
+        queue.use(function(next) {
+          delItem(id, next);
+        });
+      });
+
+      queue.all(done);
     }
-
-    ids.forEach(function(id) {
-      delItem(id, cb);
-    });
   });
 
   host.after('renderPartial', function() {
     getDelCheck().prop('disabled', !getChecked().length);
   });
 
-  //删除item后重新判断是否disabled
+  // 删除 item 后重新判断是否 disabled
   host.on('deleteItemDone', function() {
     getDelCheck().prop('disabled', !getChecked().length);
   });
