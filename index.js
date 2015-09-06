@@ -131,7 +131,7 @@ var Grid = Widget.extend({
 
       return (disabled === true ||
         // 整行禁止
-        itemData.disabled === true) ?
+        (itemData.disabled && (itemData.disabled === true || itemData.disabled.value === true))) ?
         options.fn(this) : options.inverse(this);
     },
 
