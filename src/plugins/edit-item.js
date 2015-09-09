@@ -107,7 +107,7 @@ module.exports = function() {
       host.element.show();
     }
 
-    form.destroy();
+    form && form.destroy();
     delete plugin.exports;
   });
 
