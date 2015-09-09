@@ -12,8 +12,6 @@ var Widget = require('nd-widget');
 var Template = require('nd-template');
 var RESTful = require('nd-restful');
 
-// var buttonTpl = require('./src/templates/button.handlebars');
-
 /**
  * @class
  * @extends {Widget}
@@ -172,8 +170,6 @@ var Grid = Widget.extend({
   },
 
   initPlugins: function() {
-    var labelMap = this.get('labelMap');
-    var entryKey = this.get('entryKey');
     var checkable = this.get('checkable');
     var sortable = this.get('sortable');
     var mode = this.get('mode');
@@ -188,16 +184,8 @@ var Grid = Widget.extend({
       pluginCfg.delCheck.disabled = true;
     }
 
-    if (!labelMap[entryKey]) {
-      pluginCfg.viewItem.disabled = true;
-    }
-
     if (mode === 2) {
       pluginCfg.paginate.disabled = true;
-    }
-
-    if (pluginCfg.viewItem.disabled) {
-      this.set('entryKey', null);
     }
 
     Grid.superclass.initPlugins.call(this);

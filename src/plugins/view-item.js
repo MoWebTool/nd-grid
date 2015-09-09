@@ -36,33 +36,32 @@ module.exports = function() {
     }, plugin.getOptions('view')));
   }
 
-  host.delegateEvents({
-    'click [data-role="view-item"]': function(e) {
-      if (awaiting) {
-        return;
+  function delegate(e) {
+    if (awaiting) {
+      return;
+    }
+
+    if (!plugin.exports) {
+      // 添加用于阻止多次点击
+      awaiting = true;
+
+      var trigger = e.currentTarget;
+
+      uniqueId = host.getItemIdByTarget(trigger);
+
+      var actionFetch = plugin.getOptions('GET') || function(uniqueId) {
+        return host.GET(uniqueId);
+      };
+
+      if (actionFetch === 'LOCAL') {
+        actionFetch = function(uniqueId) {
+          var defer = $.Deferred();
+          defer.resolve(host.getItemDataById(uniqueId, true));
+          return defer.promise();
+        };
       }
 
-      if (!plugin.exports) {
-        // 添加用于阻止多次点击
-        awaiting = true;
-
-        var trigger = e.currentTarget;
-
-        uniqueId = host.getItemIdByTarget(trigger);
-
-        var actionFetch = plugin.getOptions('GET') || function(uniqueId) {
-          return host.GET(uniqueId);
-        };
-
-        if (actionFetch === 'LOCAL') {
-          actionFetch = function(uniqueId) {
-            var defer = $.Deferred();
-            defer.resolve(host.getItemDataById(uniqueId, true));
-            return defer.promise();
-          };
-        }
-
-        actionFetch(uniqueId)
+      actionFetch(uniqueId)
         .done(function(data) {
           plugin.exports = makeView(data, trigger).render();
           plugin.trigger('show', plugin.exports);
@@ -73,11 +72,23 @@ module.exports = function() {
         .always(function() {
           awaiting = false;
         });
-      } else {
-        plugin.trigger('show', plugin.exports);
-      }
+    } else {
+      plugin.trigger('show', plugin.exports);
     }
-  });
+  }
+
+  (function(button) {
+    if (!button) {
+      return host.delegateEvents({
+        'click [data-role="view-item"]': delegate
+      });
+    }
+
+    host.addItemAction($.extend({
+      'role': 'view-item',
+      'text': '查看详情'
+    }, button), button && button.index, delegate);
+  })(plugin.getOptions('button'));
 
   host.before('destroy', function() {
     plugin.exports && plugin.exports.destroy();
@@ -96,7 +107,7 @@ module.exports = function() {
       host.element.show();
     }
 
-    view.destroy();
+    view && view.destroy();
     delete plugin.exports;
   });
 

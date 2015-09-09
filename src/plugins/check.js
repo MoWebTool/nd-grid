@@ -62,10 +62,11 @@ module.exports = function() {
 
   // 卡片式
   if (host.get('theme') === 'card') {
+    var label = '全选';
     // 添加按钮到顶部
     host.addGridAction($.extend({
       role: 'check-all-button',
-      text: '<input data-role="check-all" type="checkbox" title="全选">全选'
+      text: '<input data-role="check-all" type="checkbox" title="' + label + '">' + label
     }, plugin.getOptions('button')), function(e) {
       if (e.target.tagName !== 'INPUT') {
         $(e.currentTarget).find('input').trigger('click');
