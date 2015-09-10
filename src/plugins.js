@@ -42,11 +42,11 @@ module.exports = [{
 }, {
   name: 'paginate',
   starter: require('./plugins/paginate')
-}, {
+}, /*{
   name: 'sort',
   disabled: true,
   starter: require('./plugins/sort')
-}, {
+}, */{
   name: 'interact',
   priority: 0,
   starter: require('./plugins/interact')

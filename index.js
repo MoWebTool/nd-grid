@@ -96,12 +96,13 @@ var Grid = Widget.extend({
 
     // proxy: null,
 
-    // 0: mysql or 1: mongodb or 2: no pagination
+    // 0: mysql/mongodb
+    // 2: no pagination
     mode: 0,
 
     initialParams: {
       $offset: 0,
-      $limit: 10,
+      $limit: 20,
       $count: true
     },
 
@@ -228,8 +229,15 @@ var Grid = Widget.extend({
 
     this.LIST(options)
       .done(function(data) {
+        var outFilter = that.get('outFilter');
+
+        // maybe destroyed
+        if (!outFilter) {
+          return;
+        }
+
         // 开放给外部处理
-        data = that.get('outFilter').call(that, data);
+        data = outFilter.call(that, data);
         // offset 溢出
         if (data.count && !data.items.length) {
           // 到最后一页
