@@ -30,12 +30,8 @@ module.exports = function() {
           element.prependTo(parentNode);
         }
       }, plugin.getOptions('view')))
-      .on('formSubmit', function() {
-        this.submit(function(data) {
-          plugin.trigger('submit', data);
-        });
-        // 阻止默认事件发生
-        return false;
+      .on('formSubmit', function(data) {
+        plugin.trigger('submit', data);
       }).render();
 
     plugin.on('submit', function(data) {

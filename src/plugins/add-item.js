@@ -27,15 +27,10 @@ module.exports = function() {
       .on('formCancel', function() {
         plugin.trigger('hide', this);
       })
-      .on('formSubmit', function() {
-        // 调用队列
-        this.submit(function(data) {
-          plugin.trigger('submit', data, function() {
-            awaiting = false;
-          });
+      .on('formSubmit', function(data) {
+        plugin.trigger('submit', data, function() {
+          awaiting = false;
         });
-        // 阻止默认事件发生
-        return false;
       });
   }
 
