@@ -95,17 +95,21 @@ module.exports = function() {
   });
 
   plugin.on('show', function(view) {
-    if (!this.getOptions('interact')) {
+    if (!plugin.getOptions('interact')) {
       host.element.hide();
     }
+
+    host.set('activePlugin', plugin);
 
     view.element.show();
   });
 
   plugin.on('hide', function(view) {
-    if (!this.getOptions('interact')) {
+    if (!plugin.getOptions('interact')) {
       host.element.show();
     }
+
+    host.set('activePlugin', null);
 
     view && view.destroy();
     delete plugin.exports;

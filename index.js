@@ -70,6 +70,9 @@ var Grid = Widget.extend({
     // 分页处按钮
     pageActions: [],
 
+    // 当前显示的类 modal 模式的插件
+    activePlugin: null,
+
     // 数据
     model: {},
     mergeKey: '',
@@ -217,8 +220,8 @@ var Grid = Widget.extend({
     }
 
     var params = options.data =
-        // 开放给外部处理
-        this.get('inFilter').call(this, $.extend({}, this.get('params')));
+      // 开放给外部处理
+      this.get('inFilter').call(this, $.extend({}, this.get('params')));
 
     Object.keys(params).forEach(function(key) {
       // 空字符串不提交查询
@@ -290,8 +293,7 @@ var Grid = Widget.extend({
         // 从 DOM 中移除
         item.remove();
         that.trigger('deleteItemDone');
-      }
-      else {
+      } else {
         that.getList();
       }
     });

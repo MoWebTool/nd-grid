@@ -22,7 +22,6 @@ module.exports = function() {
     return new FormExtra($.extend(true, {
       name: 'grid-edit-item-' + (++uid),
       method: 'PATCH',
-      // proxy: host.get('proxy'),
       parentNode: host.get('parentNode')
     }, plugin.getOptions('view'), { formData: data }))
     .on('formCancel', function() {
@@ -91,17 +90,21 @@ module.exports = function() {
   });
 
   plugin.on('show', function(form) {
-    if (!this.getOptions('interact')) {
+    if (!plugin.getOptions('interact')) {
       host.element.hide();
     }
+
+    host.set('activePlugin', plugin);
 
     form.element.show();
   });
 
   plugin.on('hide', function(form) {
-    if (!this.getOptions('interact')) {
+    if (!plugin.getOptions('interact')) {
       host.element.show();
     }
+
+    host.set('activePlugin', null);
 
     form && form.destroy();
     delete plugin.exports;
