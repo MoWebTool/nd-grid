@@ -22,17 +22,14 @@
     "dependencies": {
       "handlebars-runtime": "3.0.1",
       "jquery": "1.11.1",
-      "nd-ajax": "1.0.0",
-      "nd-alert": "1.0.1",
       "nd-confirm": "1.0.1",
-      "nd-dialog": "1.0.0",
       "nd-debug": "1.0.0",
       "nd-form-extra": "1.0.1",
+      "nd-interact": "1.0.0",
       "nd-pagination": "1.0.1",
       "nd-queue": "1.0.0",
       "nd-restful": "1.0.0",
       "nd-template": "1.0.0",
-      "nd-tip": "1.0.0",
       "nd-widget": "1.0.0"
     },
     "devDependencies": {

@@ -45,12 +45,16 @@ var Grid = Widget.extend({
       value: null,
       getter: function() {
         var labelMap = this.get('labelMap');
+        var sortable = this.get('sortable');
 
         return {
           uniqueId: function(uniqueId) {
             return this[uniqueId].value;
           },
           adapters: this.get('adapters'),
+          isSortKey: function(key, options) {
+            return (typeof sortable === 'boolean' ? sortable :sortable.indexOf(key) !== -1) ? options.fn(this) : options.inverse(this);
+          },
           isDisabled: this.get('isDisabled'),
           getLabel: function(key) {
             return labelMap[key];

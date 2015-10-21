@@ -5,6 +5,10 @@ module.exports = [{
   disabled: true,
   starter: require('./plugins/search')
 }, {
+  name: 'sort',
+  disabled: true,
+  starter: require('./plugins/sort')
+}, {
   name: 'back',
   disabled: true,
   starter: require('./plugins/back')
@@ -42,12 +46,8 @@ module.exports = [{
 }, {
   name: 'paginate',
   starter: require('./plugins/paginate')
-}, /*{
-  name: 'sort',
-  disabled: true,
-  starter: require('./plugins/sort')
-}, */{
+}, {
   name: 'interact',
   priority: 0,
-  starter: require('./plugins/interact')
+  starter: require('nd-interact')
 }];

@@ -7,31 +7,38 @@
 
 var $ = require('jquery');
 
+var SORT_ASC = 'asc';
+var SORT_DESC = 'desc';
+
 module.exports = function() {
   var plugin = this,
     host = plugin.host;
 
+  var key;
+  var sort;
+
   host.delegateEvents({
 
-    'click [data-key]': function(e) {
-      var sortable = this.get('sortable');
-      var key = e.target.getAttribute('data-key');
-      // var order = e.target.getAttribute('data-order') || 'desc';
-      if (typeof sortable === 'boolean' || $.inArray(key, sortable) !== -1) {
-        var data = {};
+    'click [data-sort]': function(e) {
+      key = e.target.getAttribute('data-key');
+      sort = e.target.getAttribute('data-sort');
 
-        // TODO: add arrows
+      sort = sort === SORT_ASC ? SORT_DESC : SORT_ASC;
 
+      host.getList({
         // 重置为第一页
-        data.$orderby = key;
-        // data.$order = order;
-
-        host.getList({
-          data: data
-        });
-      }
+        data: $.extend({
+          $orderby: [key, sort].join(' ')
+        }, host.get('initialParams'))
+      });
     }
 
+  });
+
+  host.after('renderPartial', function() {
+    key && sort &&
+      this.$('[data-sort][data-key="' + key + '"]')
+      .attr('data-sort', sort);
   });
 
   // 通知就绪
