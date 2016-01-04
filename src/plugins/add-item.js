@@ -17,24 +17,38 @@ module.exports = function() {
     host = plugin.host,
     awaiting;
 
+  var SUB_ACTION = 'add';
+  var FORM_METHOD = 'POST';
+
+  function resetAwaiting() {
+    awaiting = false;
+  }
+
   function makeForm() {
     return new FormExtra($.extend(true, {
-        name: 'grid-add-item-' + (++uid),
-        method: 'POST',
+        name: 'grid-' + SUB_ACTION + '-item-' + (++uid),
+        method: FORM_METHOD,
         parentNode: host.get('parentNode')
       }, plugin.getOptions('view')))
       .on('formCancel', function() {
         plugin.trigger('hide', this);
       })
       .on('formSubmit', function(data) {
-        plugin.trigger('submit', data, function() {
-          awaiting = false;
-        });
+        plugin.trigger('submit', data, resetAwaiting);
       });
   }
 
+  /**
+   * 获取数据
+   */
+  function startup() {
+    plugin.exports && plugin.exports.destroy();
+    plugin.exports = makeForm().render();
+  }
+
+  // 插入按钮，并绑定事件代理
   host.addGridAction($.extend({
-    role: 'add-item',
+    role: SUB_ACTION + '-item',
     text: '新增'
   }, plugin.getOptions('button')), function() {
     if (!plugin.exports) {
@@ -42,6 +56,23 @@ module.exports = function() {
     }
 
     plugin.trigger('show', plugin.exports);
+  });
+
+  // 渲染完成后，检查二级路由并发起请求
+  host.after('renderPartial', function() {
+    if (awaiting) {
+      return;
+    }
+
+    function change(sub) {
+      if (sub && sub.act === SUB_ACTION) {
+        startup();
+      }
+    }
+
+    change(host.get('sub'));
+
+    host.on('change:sub', change);
   });
 
   host.before('destroy', function() {
@@ -53,7 +84,16 @@ module.exports = function() {
       host.element.hide();
     }
 
+    // DEPRECATED. 将在下一版本移除
     host.set('activePlugin', plugin);
+
+    host.set('sub', {
+      id: 0,
+      act: SUB_ACTION
+    }, {
+      override: true,
+      silent: true
+    });
 
     form.element.show();
   });
@@ -63,7 +103,13 @@ module.exports = function() {
       host.element.show();
     }
 
+    // DEPRECATED. 将在下一版本移除
     host.set('activePlugin', null);
+
+    host.set('sub', null, {
+      override: true,
+      silent: true
+    });
 
     form && form.destroy();
     delete plugin.exports;
@@ -77,9 +123,10 @@ module.exports = function() {
     // 添加用于阻止多次点击
     awaiting = true;
 
-    var actionPost = plugin.getOptions('POST') || function(data) {
-      return host[plugin.exports.get('method')]({data: data});
-    };
+    var actionPost = plugin.getOptions(FORM_METHOD) ||
+      function(data) {
+        return host[plugin.exports.get('method')]({data: data});
+      };
 
     actionPost(data)
     .done(function( /*data*/ ) {

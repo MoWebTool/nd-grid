@@ -18,46 +18,53 @@ module.exports = function() {
     uniqueId,
     awaiting;
 
-  function makeForm(data) {
-    return new FormExtra($.extend(true, {
-      name: 'grid-edit-item-' + (++uid),
-      method: 'PATCH',
-      parentNode: host.get('parentNode')
-    }, plugin.getOptions('view'), { formData: data }))
-    .on('formCancel', function() {
-      plugin.trigger('hide', this);
-    })
-    .on('formSubmit', function(data) {
-      plugin.trigger('submit', data, function() {
-        awaiting = false;
-      });
-    });
+  var SUB_ACTION = 'edit';
+  var FORM_METHOD = 'PATCH';
+
+  function resetAwaiting() {
+    awaiting = false;
   }
 
-  function delegate(e) {
-    if (awaiting) {
-      return;
-    }
+  /**
+   * 生成表单
+   */
+  function makeForm(data) {
+    return new FormExtra($.extend(true, {
+        name: 'grid-' + SUB_ACTION + '-item-' + (++uid),
+        method: FORM_METHOD,
+        parentNode: host.get('parentNode')
+      }, plugin.getOptions('view'), {
+        formData: data
+      }))
+      .on('formCancel', function() {
+        plugin.trigger('hide', this);
+      })
+      .on('formSubmit', function(data) {
+        plugin.trigger('submit', data, resetAwaiting);
+      });
+  }
 
-    if (!plugin.exports) {
-      // 添加用于阻止多次点击
-      awaiting = true;
-
-      uniqueId = host.getItemIdByTarget(e.currentTarget);
-
-      var actionFetch = plugin.getOptions('GET') || function(uniqueId) {
+  /**
+   * 获取数据
+   */
+  function startup(id, done) {
+    var actionFetch = plugin.getOptions('GET') ||
+      function(uniqueId) {
         return host.GET(uniqueId);
       };
 
-      if (actionFetch === 'LOCAL') {
-        actionFetch = function(uniqueId) {
-          var defer = $.Deferred();
-          defer.resolve(host.getItemDataById(uniqueId, true));
-          return defer.promise();
-        };
-      }
+    // 从本地（GRID）获取数据
+    if (actionFetch === 'LOCAL') {
+      actionFetch = function(uniqueId) {
+        var defer = $.Deferred();
+        defer.resolve(host.getItemDataById(uniqueId, true));
+        return defer.promise();
+      };
+    }
 
-      actionFetch(uniqueId)
+    plugin.exports && plugin.exports.destroy();
+
+    actionFetch(uniqueId)
       .done(function(data) {
         plugin.exports = makeForm(data).render();
         plugin.trigger('show', plugin.exports);
@@ -65,25 +72,51 @@ module.exports = function() {
       .fail(function(error) {
         debug.error(error);
       })
-      .always(function() {
-        awaiting = false;
-      });
-    } else {
-      plugin.trigger('show', plugin.exports);
-    }
+      .always(done || resetAwaiting);
   }
 
+  // 插入按钮，并绑定事件代理
   (function(button) {
     host.addItemAction($.extend({
-      'role': 'edit-item',
+      'role': SUB_ACTION + '-item',
       'text': '编辑'
-    }, button), button && button.index || 0, delegate);
+    }, button), button && button.index || 0, function(e) {
+      if (awaiting) {
+        return;
+      }
+
+      if (!plugin.exports) {
+        // 添加用于阻止多次点击
+        awaiting = true;
+        startup((uniqueId = host.getItemIdByTarget(e.currentTarget)));
+      } else {
+        plugin.trigger('show', plugin.exports);
+      }
+    });
   })(plugin.getOptions('button'));
 
   // 异步插件，需要刷新列表
   if (plugin._async) {
     host._renderPartial();
   }
+
+  // 渲染完成后，检查二级路由并发起请求
+  host.after('renderPartial', function() {
+    if (awaiting) {
+      return;
+    }
+
+    function change(sub) {
+      if (sub && sub.act === SUB_ACTION) {
+        awaiting = true;
+        startup((uniqueId = sub.id));
+      }
+    }
+
+    change(host.get('sub'));
+
+    host.on('change:sub', change);
+  });
 
   host.before('destroy', function() {
     plugin.exports && plugin.exports.destroy();
@@ -94,7 +127,16 @@ module.exports = function() {
       host.element.hide();
     }
 
+    // DEPRECATED. 将在下一版本移除
     host.set('activePlugin', plugin);
+
+    host.set('sub', {
+      id: uniqueId,
+      act: SUB_ACTION
+    }, {
+      override: true,
+      silent: true
+    });
 
     form.element.show();
   });
@@ -104,7 +146,13 @@ module.exports = function() {
       host.element.show();
     }
 
+    // DEPRECATED. 将在下一版本移除
     host.set('activePlugin', null);
+
+    host.set('sub', null, {
+      override: true,
+      silent: true
+    });
 
     form && form.destroy();
     delete plugin.exports;
@@ -118,21 +166,22 @@ module.exports = function() {
     // 添加用于阻止多次点击
     awaiting = true;
 
-    var actionPatch = plugin.getOptions('PATCH') || function(uniqueId, data) {
-      return host[plugin.exports.get('method')](uniqueId, data);
-    };
+    var action = plugin.getOptions(FORM_METHOD) ||
+      function(uniqueId, data) {
+        return host[plugin.exports.get('method')](uniqueId, data);
+      };
 
-    actionPatch(uniqueId, data)
-    .done(function(/*data*/) {
-      // 成功，刷新当前页
-      host.getList();
+    action(uniqueId, data)
+      .done(function( /*data*/ ) {
+        // 成功，刷新当前页
+        host.getList();
 
-      plugin.trigger('hide', plugin.exports);
-    })
-    .fail(function(error) {
-      debug.error(error);
-    })
-    .always(done);
+        plugin.trigger('hide', plugin.exports);
+      })
+      .fail(function(error) {
+        debug.error(error);
+      })
+      .always(done);
   });
 
   // 通知就绪

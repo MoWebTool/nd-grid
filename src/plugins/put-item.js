@@ -12,11 +12,16 @@ var FormExtra = require('nd-form-extra');
 
 var uid = 0;
 
+/**
+ * DEPRECATED. 将在下一版本移除
+ */
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
     uniqueId,
     awaiting;
+
+  console.warn('不建议使用 put-item 插件，将在后续版本移除，请使用 edit-item。');
 
   function makeForm(data) {
     return new FormExtra($.extend(true, {

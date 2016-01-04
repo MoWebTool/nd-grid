@@ -41,11 +41,24 @@ var View = Widget.extend({
       hasBack: this.get('hasBack'),
       items: Object.keys(labelMap).map(function(key) {
         return {
+          key: key,
           label: labelMap[key],
           value: adapters(key, valueMap[key])
         };
       })
     });
+  },
+
+  getItem: function(key) {
+    return this.$('[data-key="' + key + '"]');
+  },
+
+  getValue: function(key) {
+    return this.get('valueMap')[key];
+  },
+
+  setValue: function(key, value) {
+    this.getItem(key).find('.value').html(value)
   }
 
 });

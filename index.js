@@ -10,7 +10,6 @@ var $ = require('jquery');
 var debug = require('nd-debug');
 var Widget = require('nd-widget');
 var Template = require('nd-template');
-var RESTful = require('nd-restful');
 
 /**
  * @class
@@ -21,7 +20,7 @@ var RESTful = require('nd-restful');
 var Grid = Widget.extend({
 
   // 使用 handlebars
-  Implements: [Template, RESTful],
+  Implements: [Template],
 
   Plugins: require('./src/plugins'),
 
