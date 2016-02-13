@@ -1,48 +1,115 @@
 # nd-grid
 
-[![spm version](http://spmjs.io/badge/nd-grid)](http://spmjs.io/package/nd-grid)
+[![Travis](https://img.shields.io/travis/ndfront/nd-grid.svg?style=flat-square)](https://github.com/ndfront/nd-grid)
+[![Coveralls](https://img.shields.io/coveralls/ndfront/nd-grid.svg?style=flat-square)](https://github.com/ndfront/nd-grid)
+[![NPM version](https://img.shields.io/npm/v/nd-grid.svg?style=flat-square)](https://npmjs.org/package/nd-grid)
 
 > 基于模板的数据表格
+
+![](grid.png)
 
 ## 安装
 
 ```bash
-$ spm install nd-grid --save
+$ npm install nd-grid --save
 ```
 
 ## 使用
 
 ```js
 var Grid = require('nd-grid');
-// use Grid
-```
-## 开发
-
-### 本地 Web 服务
-
-```bash
-grunt
 ```
 
-浏览器中访问 http://127.0.0.1:8851
+### 简单运用
 
-### 生成/查看 API 文档
-
-```bash
-grunt doc
-grunt
+```js
+new Grid({
+  parentNode: '#main',
+  // RESETful
+  proxy: new RbacRoleModel(),
+  // no pagination
+  mode: 2,
+  labelMap: {
+    'role_name': '名称',
+    'remarks': '备注',
+    'updated_at': '更新时间'
+  }
+}).render();
 ```
 
-浏览器中访问 http://127.0.0.1:8851/doc
+### 复杂运用
 
-### 代码检查与单元测试
+```js
+new Grid({
+  parentNode: '#main',
+  // RESETful
+  proxy: new RbacRoleModel(),
+  // 处理待发送到服务端的请求数据
+  inFilter: function(data) {
+    data.size = data.$limit;
+    delete data.$limit;
 
-```bash
-grunt test
-```
+    data.page = data.$offset / data.size;
+    delete data.$offset;
 
-### 发布组件到 SPM 源
+    return data;
+  },
+  // 处理服务端返回的数据
+  outFilter: function(data) {
+    data &&
+    data.items &&
+    data.items.forEach(function(item, index) {
+      item.id = index + 1;
+    });
 
-```bash
-grunt publish
+    return data;
+  },
+  // 指定 uniqueId
+  uniqueId: 'role_id',
+  // 隐藏查看详情入口
+  entryKey: null,
+  labelMap: {
+    // 'role_id': 'ID',
+    'role_name': '名称',
+    'remarks': '备注',
+    'updated_at': '更新时间'
+  },
+  // 单元格数据转换
+  adapters: function(key, value) {
+    if (key === 'updated_at') {
+      return value ? datetime(value).format() : '-';
+    }
+
+    return value;
+  },
+  // 自定义插件
+  plugins: [{
+    name: 'roleUser',
+    starter: require('./user/starter')
+  }, {
+    name: 'roleAuth',
+    starter: require('./auth/starter')
+  }],
+  // 预置与自定义插件的选项
+  pluginCfg: {
+    addItem: {
+      disabled: false,
+      listeners: {
+        start: require('./add/start')
+      }
+    },
+    editItem: {
+      disabled: false,
+      listeners: {
+        start: require('./edit/start')
+      }
+    },
+    delItem: {
+      disabled: false,
+      listeners: {
+        start: require('./del/start')
+      }
+    }
+  }
+}).render();
 ```

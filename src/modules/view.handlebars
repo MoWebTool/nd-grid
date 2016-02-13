@@ -1,0 +1,13 @@
+<div class="{{classPrefix}}">
+  <div class="html" data-role="html">
+    <ul>
+    {{#each items}}
+      <li data-key="{{key}}">
+        <div class="label">{{label}}</div>
+        <div class="value">{{value}}</div>
+      </li>
+    {{/each}}
+    </ul>
+  </div>
+  {{#if hasBack}}<button class="back" data-role="back">返回</button>{{/if}}
+</div>
