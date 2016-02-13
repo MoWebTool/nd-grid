@@ -2,9 +2,9 @@
 <table>
   <thead>
     <tr>
-      {{#if checkable}}<th><label class="check-all"><input data-role="check-all" type="checkbox" title="全选"{{#if checked}} checked{{/if}}></label></th>{{/if}}
+      {{#if checkable}}<th><label class="check-all"><input data-role="check-all" type="checkbox" title="{{__ '全选'}}"{{#if checked}} checked{{/if}}></label></th>{{/if}}
       {{#each labelMap}}<th data-key="{{@key}}"{{#isSortKey @key}} data-sort{{/isSortKey}}>{{this}}</th>{{/each}}
-      {{#if itemActions}}<th>操作</th>{{/if}}
+      {{#if itemActions}}<th>{{__ '操作'}}</th>{{/if}}
     </tr>
   </thead>
   <tbody>
@@ -19,18 +19,18 @@
         {{#unless index}}
           <td data-key="{{key}}" data-role="cell" rowspan="{{count}}">
             {{#if isEntry}}
-              <a href="javascript:;" data-role="view-item">{{adapters key value}}</a>
+              <a href="javascript:;" data-role="view-item">{{adapter}}</a>
             {{else}}
-              <span>{{adapters key value}}</span>
+              <span>{{adapter}}</span>
             {{/if}}
           </td>
         {{/unless}}
       {{else}}
         <td data-key="{{key}}" data-role="cell">
         {{#if isEntry}}
-          <a href="javascript:;" data-role="view-item">{{adapters key value}}</a>
+          <a href="javascript:;" data-role="view-item">{{adapter}}</a>
         {{else}}
-          <span>{{adapters key value}}</span>
+          <span>{{adapter}}</span>
         {{/if}}
         </td>
       {{/if}}
@@ -38,7 +38,7 @@
       {{/each}}
       {{#if @root.itemActions}}
         <td data-role="cell">
-          {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}" data-tips="{{tips}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}><span>{{text}}</span></button>{{/each}}
+          {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}" data-tips="{{tips}}"{{#isDisabled ../this}} disabled{{/isDisabled}}><span>{{text}}</span></button>{{/each}}
         </td>
       {{/if}}
       </tr>
@@ -46,5 +46,5 @@
   </tbody>
 </table>
 {{else}}
-  <p class="list-empty">没有数据啦！</p>
+  <p class="list-empty">{{__ '没有数据啦！'}}</p>
 {{/if}}

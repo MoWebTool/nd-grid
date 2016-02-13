@@ -7,6 +7,8 @@
 
 var $ = require('jquery');
 
+var __ = require('nd-i18n');
+
 var FormExtra = require('nd-form-extra');
 
 var uid = 0;
@@ -21,7 +23,7 @@ module.exports = function() {
         name: 'grid-search-' + (++uid),
         className: 'ui-form-search',
         buttons: [{
-          label: '搜索',
+          label: __('搜索'),
           type: 'submit',
           role: 'form-submit'
         }],

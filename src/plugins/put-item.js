@@ -7,6 +7,7 @@
 
 var $ = require('jquery');
 
+var __ = require('nd-i18n');
 var debug = require('nd-debug');
 var FormExtra = require('nd-form-extra');
 
@@ -81,7 +82,7 @@ module.exports = function() {
   (function(button) {
     host.addItemAction($.extend({
       'role': 'put-item',
-      'text': '编辑'
+      'text': __('编辑')
     }, button), button && button.index || 0, delegate);
   })(plugin.getOptions('button'));
 

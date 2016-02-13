@@ -1,6 +1,8 @@
 # nd-grid
 
-[![spm version](http://spm.crossjs.com/badge/nd-grid)](http://spm.crossjs.com/package/nd-grid)
+[![Travis](https://img.shields.io/travis/ndfront/nd-grid.svg?style=flat-square)](https://github.com/ndfront/nd-grid)
+[![Coveralls](https://img.shields.io/coveralls/ndfront/nd-grid.svg?style=flat-square)](https://github.com/ndfront/nd-grid)
+[![NPM version](https://img.shields.io/npm/v/nd-grid.svg?style=flat-square)](https://npmjs.org/package/nd-grid)
 
 > 基于模板的数据表格
 
@@ -9,7 +11,7 @@
 ## 安装
 
 ```bash
-$ spm install nd-grid --save
+$ npm install nd-grid --save
 ```
 
 ## 使用

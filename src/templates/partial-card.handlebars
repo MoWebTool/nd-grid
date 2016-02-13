@@ -12,7 +12,7 @@
     {{/if}}
     {{#if @root.itemActions}}
       <div data-role="actions">
-        {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}" data-tips="{{tips}}"{{#isDisabled ../../this}} disabled{{/isDisabled}}><span>{{text}}</span></button>{{/each}}
+        {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}" data-tips="{{tips}}"{{#isDisabled ../this}} disabled{{/isDisabled}}><span>{{text}}</span></button>{{/each}}
       </div>
     {{/if}}
     {{#if @root.hasHeader}}
@@ -26,9 +26,9 @@
       <div data-role="cell-key">{{getLabel key}}</div>
       <div data-role="cell-value">
       {{#if isEntry}}
-        <a href="javascript:;" data-role="view-item">{{adapters key value}}</a>
+        <a href="javascript:;" data-role="view-item">{{adapter}}</a>
       {{else}}
-        {{adapters key value}}
+        {{adapter}}
       {{/if}}
       </div>
     </div>
@@ -40,5 +40,5 @@
   {{/each}}
 </ul>
 {{else}}
-  <p class="list-empty">没有数据啦！</p>
+  <p class="list-empty">{{__ '没有数据啦！'}}</p>
 {{/if}}

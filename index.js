@@ -10,6 +10,7 @@ var $ = require('jquery');
 var debug = require('nd-debug');
 var Widget = require('nd-widget');
 var Template = require('nd-template');
+var Promise = require('nd-promise');
 
 /**
  * @class
@@ -50,7 +51,6 @@ var Grid = Widget.extend({
           uniqueId: function(uniqueId) {
             return this[uniqueId].value;
           },
-          adapters: this.get('adapters'),
           isSortKey: function(key, options) {
             return (typeof sortable === 'boolean' ? sortable :sortable.indexOf(key) !== -1) ? options.fn(this) : options.inverse(this);
           },
@@ -87,6 +87,10 @@ var Grid = Widget.extend({
     },
     labelMap: {},
 
+    // 未在 labelMap 中定义的字段，
+    // 如果需要被存储，请设置 extKeys = [x, y, z]
+    extKeys: null,
+
     checkable: false,
     // 是否可按字段排序
     // boolean, or array for sortable columns
@@ -122,7 +126,7 @@ var Grid = Widget.extend({
     // 解析后的数据列表
     itemList: null,
 
-    // 数据处理，放在 handlebars 中进行
+    // 数据处理
     adapters: function(key, value) {
       return value;
     },
@@ -164,10 +168,16 @@ var Grid = Widget.extend({
   },
 
   initProps: function() {
+    var i18n = this.get('i18n');
+
+    if (i18n) {
+      this.i18n = i18n;
+    }
+
     var proxy = this.get('proxy');
 
     if (!proxy) {
-      debug.error('请设置数据源（proxy）');
+      debug.error(this.__('请设置数据源（proxy）'));
     } else {
       ['LIST', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
       .forEach(function(method) {
@@ -242,19 +252,27 @@ var Grid = Widget.extend({
           return;
         }
 
-        // 开放给外部处理
-        data = outFilter.call(that, data);
-        // offset 溢出
-        if (data.count && !data.items.length) {
-          // 到最后一页
-          that.getList({
-            data: {
-              $offset: (Math.ceil(data.count / params.$limit) - 1) * params.$limit
-            }
-          });
-        } else {
-          that.set('gridData', data);
-        }
+        new Promise(function(resolve) {
+          // 开放给外部处理
+          if (outFilter.length === 2) {
+            outFilter.call(that, data, resolve);
+          } else {
+            resolve(outFilter.call(that, data));
+          }
+        })
+        .then(function(data) {
+          // offset 溢出
+          if (data.count && !data.items.length) {
+            // 到最后一页
+            that.getList({
+              data: {
+                $offset: (Math.ceil(data.count / params.$limit) - 1) * params.$limit
+              }
+            });
+          } else {
+            that.set('gridData', data);
+          }
+        });
       })
       .fail(function(error) {
         debug.error(error);
@@ -328,12 +346,14 @@ var Grid = Widget.extend({
       visKeys = Object.keys(this.get('labelMap'));
 
       // keys that invisible
-      extKeys = Object.keys(items[0]).filter(function(key) {
+      extKeys = this.get('extKeys') || Object.keys(items[0]).filter(function(key) {
         return visKeys.indexOf(key) === -1;
       });
 
       // sort keys by visibility
       allKeys = visKeys.concat(extKeys);
+
+      var adapters = this.get('adapters');
 
       itemList = items.map(function(item) {
         var _item = {};
@@ -342,6 +362,7 @@ var Grid = Widget.extend({
           _item[key] = {
             key: key,
             value: item[key],
+            adapter: adapters(key, item[key]),
             visible: visKeys.indexOf(key) !== -1,
             isEntry: key === entryKey,
             isMerge: key === mergeKey,

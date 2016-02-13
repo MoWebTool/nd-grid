@@ -7,13 +7,15 @@
 
 var $ = require('jquery');
 
+var __ = require('nd-i18n');
+
 module.exports = function() {
   var plugin = this,
     host = plugin.host;
 
   host.addGridAction($.extend({
     role: 'history-back',
-    text: '返回'
+    text: __('返回')
   }, plugin.getOptions('button')), function() {
     host.trigger('hide');
   });

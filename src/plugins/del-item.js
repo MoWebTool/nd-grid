@@ -7,8 +7,9 @@
 
 var $ = require('jquery');
 
-var Confirm = require('nd-confirm');
+var __ = require('nd-i18n');
 var debug = require('nd-debug');
+var Confirm = require('nd-confirm');
 
 module.exports = function() {
   var plugin = this,
@@ -33,8 +34,8 @@ module.exports = function() {
   (function(button) {
     host.addItemAction($.extend({
       'role': 'del-item',
-      'text': '删除',
-      'tips': '确定删除？'
+      'text': __('删除'),
+      'tips': __('确定删除？')
     }, button), button && button.index, delegate);
   })(plugin.getOptions('button'));
 

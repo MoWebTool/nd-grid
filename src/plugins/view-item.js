@@ -7,6 +7,7 @@
 
 var $ = require('jquery');
 
+var __ = require('nd-i18n');
 var debug = require('nd-debug');
 
 var View = require('../modules/view');
@@ -86,7 +87,7 @@ module.exports = function() {
 
     host.addItemAction($.extend({
       'role': 'view-item',
-      'text': '查看详情'
+      'text': __('查看详情')
     }, button), button && button.index, delegate);
   })(plugin.getOptions('button'));
 

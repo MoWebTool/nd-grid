@@ -7,6 +7,8 @@
 
 var $ = require('jquery');
 
+var __ = require('nd-i18n');
+
 module.exports = function() {
   var plugin = this,
     host = plugin.host;
@@ -62,7 +64,7 @@ module.exports = function() {
 
   // 卡片式
   if (host.get('theme') === 'card') {
-    var label = '全选';
+    var label = __('全选');
     // 添加按钮到顶部
     host.addGridAction($.extend({
       role: 'check-all-button',

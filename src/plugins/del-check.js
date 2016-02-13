@@ -7,6 +7,7 @@
 
 var $ = require('jquery');
 
+var __ = require('nd-i18n');
 var debug = require('nd-debug');
 var Confirm = require('nd-confirm');
 var Queue = require('nd-queue');
@@ -48,8 +49,8 @@ module.exports = function() {
 
   host.addGridAction($.extend({
     role: 'del-check',
-    text: '删除选定',
-    tips: '确定删除选定？',
+    text: __('删除选定'),
+    tips: __('确定删除选定？'),
     disabled: true
   }, plugin.getOptions('button')), function(e) {
     if (awaiting) {

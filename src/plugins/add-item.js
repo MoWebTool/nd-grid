@@ -7,6 +7,7 @@
 
 var $ = require('jquery');
 
+var __ = require('nd-i18n');
 var debug = require('nd-debug');
 var FormExtra = require('nd-form-extra');
 
@@ -49,7 +50,7 @@ module.exports = function() {
   // 插入按钮，并绑定事件代理
   host.addGridAction($.extend({
     role: SUB_ACTION + '-item',
-    text: '新增'
+    text: __('新增')
   }, plugin.getOptions('button')), function() {
     if (!plugin.exports) {
       plugin.exports = makeForm().render();
