@@ -49,6 +49,11 @@ module.exports = function() {
    * 获取数据
    */
   function startup(id, done) {
+    // host.set('sub', {
+    //   id: uniqueId,
+    //   act: SUB_ACTION
+    // });
+
     var actionFetch = plugin.getOptions('GET') ||
       function(uniqueId) {
         return host.GET(uniqueId);
@@ -107,8 +112,12 @@ module.exports = function() {
       return;
     }
 
+    function valid(sub) {
+      return sub && sub.act === SUB_ACTION && sub.id && sub.id !== '0' && !sub.instance;
+    }
+
     function change(sub) {
-      if (sub && sub.act === SUB_ACTION) {
+      if (valid(sub)) {
         awaiting = true;
         startup((uniqueId = sub.id));
       }
@@ -128,15 +137,8 @@ module.exports = function() {
       host.element.hide();
     }
 
-    // DEPRECATED. 将在下一版本移除
-    host.set('activePlugin', plugin);
-
     host.set('sub', {
-      id: uniqueId,
-      act: SUB_ACTION
-    }, {
-      override: true,
-      silent: true
+      instance: form
     });
 
     form.element.show();
@@ -147,13 +149,7 @@ module.exports = function() {
       host.element.show();
     }
 
-    // DEPRECATED. 将在下一版本移除
-    host.set('activePlugin', null);
-
-    host.set('sub', null, {
-      override: true,
-      silent: true
-    });
+    host.set('sub', null);
 
     form && form.destroy();
     delete plugin.exports;

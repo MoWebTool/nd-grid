@@ -7,10 +7,13 @@
 
 var $ = require('jquery');
 
+var __ = require('nd-i18n');
 var debug = require('nd-debug');
 var Widget = require('nd-widget');
 var Template = require('nd-template');
 var Promise = require('nd-promise');
+
+var SubHandler = require('./src/helpers/sub-handler');
 
 /**
  * @class
@@ -21,7 +24,7 @@ var Promise = require('nd-promise');
 var Grid = Widget.extend({
 
   // 使用 handlebars
-  Implements: [Template],
+  Implements: [Template, SubHandler],
 
   Plugins: require('./src/plugins'),
 
@@ -152,7 +155,10 @@ var Grid = Widget.extend({
     //过滤数据
     outFilter: function(data) {
       return data;
-    }
+    },
+
+    // 是否保护子视图，避免间接关闭，比如点击其它 route
+    holdSubView: false
   },
 
   initAttrs: function(config) {
@@ -209,6 +215,10 @@ var Grid = Widget.extend({
   },
 
   setup: function() {
+    if (this.get('holdSubView')) {
+      this.on('change:sub', this.handleChanged);
+    }
+
     // 保存原始状态
     this.set('initialParams', this.get('params'));
 

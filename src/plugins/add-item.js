@@ -16,6 +16,7 @@ var uid = 0;
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
+    uniqueId = '0',
     awaiting;
 
   var SUB_ACTION = 'add';
@@ -43,30 +44,32 @@ module.exports = function() {
    * 获取数据
    */
   function startup() {
-    plugin.exports && plugin.exports.destroy();
-    plugin.exports = makeForm().render();
+    // host.set('sub', {
+    //   id: uniqueId,
+    //   act: SUB_ACTION
+    // });
+
+    if (!plugin.exports) {
+      plugin.exports = makeForm().render();
+    }
+
+    plugin.trigger('show', plugin.exports);
   }
 
   // 插入按钮，并绑定事件代理
   host.addGridAction($.extend({
     role: SUB_ACTION + '-item',
     text: __('新增')
-  }, plugin.getOptions('button')), function() {
-    if (!plugin.exports) {
-      plugin.exports = makeForm().render();
-    }
-
-    plugin.trigger('show', plugin.exports);
-  });
+  }, plugin.getOptions('button')), startup);
 
   // 渲染完成后，检查二级路由并发起请求
   host.after('renderPartial', function() {
-    if (awaiting) {
-      return;
+    function valid(sub) {
+      return sub && sub.act === SUB_ACTION && sub.id === uniqueId && !sub.instance;
     }
 
     function change(sub) {
-      if (sub && sub.act === SUB_ACTION) {
+      if (valid(sub)) {
         startup();
       }
     }
@@ -85,15 +88,8 @@ module.exports = function() {
       host.element.hide();
     }
 
-    // DEPRECATED. 将在下一版本移除
-    host.set('activePlugin', plugin);
-
     host.set('sub', {
-      id: 0,
-      act: SUB_ACTION
-    }, {
-      override: true,
-      silent: true
+      instance: form
     });
 
     form.element.show();
@@ -104,13 +100,7 @@ module.exports = function() {
       host.element.show();
     }
 
-    // DEPRECATED. 将在下一版本移除
-    host.set('activePlugin', null);
-
-    host.set('sub', null, {
-      override: true,
-      silent: true
-    });
+    host.set('sub', null);
 
     form && form.destroy();
     delete plugin.exports;
