@@ -5,7 +5,7 @@
 
 'use strict';
 
-var $ = require('jquery');
+var $ = require('nd-jquery');
 
 var __ = require('nd-i18n');
 var debug = require('nd-debug');
@@ -26,15 +26,15 @@ module.exports = function() {
     };
 
     actionDelete(id)
-    .done(function(data) {
+    .then(function(data) {
       doneCallback(id, data);
 
       getDelCheck().prop('disabled', !getChecked().length);
     })
-    .fail(function(error) {
+    .catch(function(error) {
       debug.error(error);
     })
-    .always(callback);
+    .finally(callback);
   };
 
   // helpers

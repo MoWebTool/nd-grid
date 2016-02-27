@@ -5,7 +5,7 @@
 
 'use strict';
 
-var $ = require('jquery');
+var $ = require('nd-jquery');
 
 var __ = require('nd-i18n');
 
@@ -31,7 +31,7 @@ module.exports = function() {
 
     'click [data-role="item"]': function(e) {
       if (e.target.tagName === 'TD') {
-        $(e.currentTarget).find('[name="check-item"]').trigger('click');
+        host.$(e.currentTarget).find('[name="check-item"]').trigger('click');
       }
     },
 
@@ -71,7 +71,7 @@ module.exports = function() {
       text: '<input data-role="check-all" type="checkbox" title="' + label + '">' + label
     }, plugin.getOptions('button')), function(e) {
       if (e.target.tagName !== 'INPUT') {
-        $(e.currentTarget).find('input').trigger('click');
+        host.$(e.currentTarget).find('input').trigger('click');
       }
     });
   }

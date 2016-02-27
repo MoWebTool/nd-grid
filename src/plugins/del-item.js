@@ -5,7 +5,7 @@
 
 'use strict';
 
-var $ = require('jquery');
+var $ = require('nd-jquery');
 
 var __ = require('nd-i18n');
 var debug = require('nd-debug');
@@ -46,13 +46,13 @@ module.exports = function() {
     };
 
     actionDelete(id)
-    .done(function(/*data*/) {
+    .then(function(/*data*/) {
       host.deleteItem(id);
     })
-    .fail(function(error) {
+    .catch(function(error) {
       debug.error(error);
     })
-    .always(done);
+    .finally(done);
   });
 
   // 通知就绪

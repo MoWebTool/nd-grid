@@ -5,7 +5,7 @@
 
 'use strict';
 
-var $ = require('jquery');
+var $ = require('nd-jquery');
 
 var SORT_ASC = 'asc';
 var SORT_DESC = 'desc';

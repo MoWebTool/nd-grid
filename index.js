@@ -5,7 +5,7 @@
 
 'use strict';
 
-var $ = require('jquery');
+var $ = require('nd-jquery');
 
 var __ = require('nd-i18n');
 var debug = require('nd-debug');
@@ -254,7 +254,7 @@ var Grid = Widget.extend({
     });
 
     this.LIST(options)
-      .done(function(data) {
+      .then(function(data) {
         var outFilter = that.get('outFilter');
 
         // maybe destroyed

@@ -5,7 +5,7 @@
 
 'use strict';
 
-var $ = require('jquery');
+var $ = require('nd-jquery');
 
 var __ = require('nd-i18n');
 var debug = require('nd-debug');
@@ -120,7 +120,7 @@ module.exports = function() {
       };
 
     actionPost(data)
-    .done(function( /*data*/ ) {
+    .then(function( /*data*/ ) {
       // 成功，返回第一页
       host.getList({
         data: host.get('initialParams')
@@ -129,10 +129,10 @@ module.exports = function() {
       // 隐藏
       plugin.trigger('hide', plugin.exports);
     })
-    .fail(function(error) {
+    .catch(function(error) {
       debug.error(error);
     })
-    .always(done);
+    .finally(done);
   });
 
   // 通知就绪

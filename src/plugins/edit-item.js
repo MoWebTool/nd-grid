@@ -5,7 +5,7 @@
 
 'use strict';
 
-var $ = require('jquery');
+var $ = require('nd-jquery');
 
 var __ = require('nd-i18n');
 var debug = require('nd-debug');
@@ -62,23 +62,21 @@ module.exports = function() {
     // 从本地（GRID）获取数据
     if (actionFetch === 'LOCAL') {
       actionFetch = function(uniqueId) {
-        var defer = $.Deferred();
-        defer.resolve(host.getItemDataById(uniqueId, true));
-        return defer.promise();
+        return Promise.resolve(host.getItemDataById(uniqueId, true));
       };
     }
 
     plugin.exports && plugin.exports.destroy();
 
     actionFetch(uniqueId)
-      .done(function(data) {
+      .then(function(data) {
         plugin.exports = makeForm(data).render();
         plugin.trigger('show', plugin.exports);
       })
-      .fail(function(error) {
+      .catch(function(error) {
         debug.error(error);
       })
-      .always(done || resetAwaiting);
+      .finally(done || resetAwaiting);
   }
 
   // 插入按钮，并绑定事件代理
@@ -169,16 +167,16 @@ module.exports = function() {
       };
 
     action(uniqueId, data)
-      .done(function( /*data*/ ) {
+      .then(function( /*data*/ ) {
         // 成功，刷新当前页
         host.getList();
 
         plugin.trigger('hide', plugin.exports);
       })
-      .fail(function(error) {
+      .catch(function(error) {
         debug.error(error);
       })
-      .always(done);
+      .finally(done);
   });
 
   // 通知就绪

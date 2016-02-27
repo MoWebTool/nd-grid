@@ -5,10 +5,11 @@
 
 'use strict';
 
-var $ = require('jquery');
+var $ = require('nd-jquery');
 
 var __ = require('nd-i18n');
 var debug = require('nd-debug');
+var Promise = require('nd-promise');
 
 var View = require('../modules/view');
 
@@ -37,7 +38,7 @@ module.exports = function() {
     }, plugin.getOptions('view')));
   }
 
-  function delegate(e) {
+  function startup(e) {
     if (awaiting) {
       return;
     }
@@ -56,21 +57,19 @@ module.exports = function() {
 
       if (actionFetch === 'LOCAL') {
         actionFetch = function(uniqueId) {
-          var defer = $.Deferred();
-          defer.resolve(host.getItemDataById(uniqueId, true));
-          return defer.promise();
+          return Promise.resolve(host.getItemDataById(uniqueId, true));
         };
       }
 
       actionFetch(uniqueId)
-        .done(function(data) {
+        .then(function(data) {
           plugin.exports = makeView(data, trigger).render();
           plugin.trigger('show', plugin.exports);
         })
-        .fail(function(error) {
+        .catch(function(error) {
           debug.error(error);
         })
-        .always(function() {
+        .finally(function() {
           awaiting = false;
         });
     } else {
@@ -81,14 +80,14 @@ module.exports = function() {
   (function(button) {
     if (!button) {
       return host.delegateEvents({
-        'click [data-role="view-item"]': delegate
+        'click [data-role="view-item"]': startup
       });
     }
 
     host.addItemAction($.extend({
       'role': 'view-item',
       'text': __('查看详情')
-    }, button), button && button.index, delegate);
+    }, button), button && button.index, startup);
   })(plugin.getOptions('button'));
 
   host.before('destroy', function() {
@@ -100,7 +99,9 @@ module.exports = function() {
       host.element.hide();
     }
 
-    host.set('activePlugin', plugin);
+    // host.set('sub', {
+    //   instance: view
+    // });
 
     view.element.show();
   });
@@ -110,7 +111,7 @@ module.exports = function() {
       host.element.show();
     }
 
-    host.set('activePlugin', null);
+    // host.set('sub', null);
 
     view && view.destroy();
     delete plugin.exports;
