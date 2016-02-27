@@ -9,6 +9,7 @@ var $ = require('nd-jquery');
 
 var __ = require('nd-i18n');
 var debug = require('nd-debug');
+var Promise = require('nd-promise');
 var FormExtra = require('nd-form-extra');
 
 var uid = 0;

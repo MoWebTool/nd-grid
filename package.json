@@ -1,6 +1,6 @@
 {
   "name": "nd-grid",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "基于模板的数据表格",
   "keywords": [],
   "homepage": "https://github.com/ndfront/nd-grid",
@@ -23,13 +23,14 @@
   "main": "index.js",
   "dependencies": {
     "handlebars": "^4.0.5",
-    "nd-jquery": "^2.2.1",
     "nd-confirm": "^3.0.1",
     "nd-debug": "^3.0.0",
     "nd-form-extra": "^3.0.1",
     "nd-i18n": "^3.0.0",
     "nd-interact": "^3.0.0",
+    "nd-jquery": "^2.2.1",
     "nd-pagination": "^3.0.0",
+    "nd-promise": "^3.0.0",
     "nd-queue": "^3.0.0",
     "nd-template": "^3.0.1",
     "nd-widget": "^3.0.1"
