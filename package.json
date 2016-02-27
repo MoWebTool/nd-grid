@@ -24,15 +24,15 @@
   "dependencies": {
     "handlebars": "^4.0.5",
     "nd-jquery": "^2.2.1",
-    "nd-confirm": "^3.0.0",
+    "nd-confirm": "^3.0.1",
     "nd-debug": "^3.0.0",
     "nd-form-extra": "^3.0.0",
     "nd-i18n": "^3.0.0",
     "nd-interact": "^3.0.0",
     "nd-pagination": "^3.0.0",
     "nd-queue": "^3.0.0",
-    "nd-template": "^3.0.0",
-    "nd-widget": "^3.0.0"
+    "nd-template": "^3.0.1",
+    "nd-widget": "^3.0.1"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
