@@ -3,25 +3,25 @@
  * @author crossjs <liwenfu@crossjs.com>
  */
 
-'use strict';
+'use strict'
 
-var $ = require('nd-jquery');
+var $ = require('nd-jquery')
 
-var Pagination = require('nd-pagination');
+var Pagination = require('nd-pagination')
 
 module.exports = function() {
   var plugin = this,
-    host = plugin.host;
+    host = plugin.host
 
-  var viewOption = plugin.getOptions('view');
+  var viewOption = plugin.getOptions('view')
 
   if (viewOption && viewOption.theme === 'none') {
     host.on('change:gridData', function(gridData) {
       if (plugin.exports) {
-        plugin.exports.destroy();
+        plugin.exports.destroy()
       }
 
-      var params = host.get('params');
+      var params = host.get('params')
 
       plugin.exports = new Pagination($.extend({
         parentNode: host.$('[data-role="footer"]'),
@@ -31,24 +31,24 @@ module.exports = function() {
           data: {
             $offset: params.$limit * (page - 1)
           }
-        });
-      }).render();
-    });
+        })
+      }).render()
+    })
   } else {
     host.on('change:gridData', function(gridData) {
       if (plugin.exports) {
-        plugin.exports.destroy();
+        plugin.exports.destroy()
       }
 
       if (!gridData.count) {
-        return;
+        return
       }
 
-      var params = host.get('params');
+      var params = host.get('params')
 
       if (gridData.count) {
         if (params.$limit >= gridData.count) {
-          return;
+          return
         }
       }
 
@@ -61,15 +61,15 @@ module.exports = function() {
           data: {
             $offset: params.$limit * (page - 1)
           }
-        });
-      }).render();
-    });
+        })
+      }).render()
+    })
   }
 
   host.before('destroy', function() {
-    plugin.exports && plugin.exports.destroy();
-  });
+    plugin.exports && plugin.exports.destroy()
+  })
 
   // 通知就绪
-  this.ready();
-};
+  this.ready()
+}

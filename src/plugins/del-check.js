@@ -3,48 +3,48 @@
  * @author crossjs <liwenfu@crossjs.com>
  */
 
-'use strict';
+'use strict'
 
-var $ = require('nd-jquery');
+var $ = require('nd-jquery')
 
-var __ = require('nd-i18n');
-var debug = require('nd-debug');
-var Confirm = require('nd-confirm');
-var Queue = require('nd-queue');
+var __ = require('nd-i18n')
+var debug = require('nd-debug')
+var Confirm = require('nd-confirm')
+var Queue = require('nd-queue')
 
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
-    awaiting;
-
-  var delItem = function(id, callback) {
-    var actionDelete = plugin.getOptions('DELETE') || function(id) {
-      return host.DELETE(id);
-    };
-    var doneCallback = plugin.getOptions('callback') || function(id) {
-      host.deleteItem(id);
-    };
-
-    actionDelete(id)
-    .then(function(data) {
-      doneCallback(id, data);
-
-      getDelCheck().prop('disabled', !getChecked().length);
-    })
-    .catch(function(error) {
-      debug.error(error);
-    })
-    .finally(callback);
-  };
+    awaiting
 
   // helpers
 
   function getChecked() {
-    return host.$('[name="check-item"]:checked');
+    return host.$('[name="check-item"]:checked')
   }
 
   function getDelCheck() {
-    return host.$('[data-role="del-check"]');
+    return host.$('[data-role="del-check"]')
+  }
+
+  var delItem = function(id, callback) {
+    var actionDelete = plugin.getOptions('DELETE') || function(id) {
+      return host.DELETE(id)
+    }
+    var doneCallback = plugin.getOptions('callback') || function(id) {
+      host.deleteItem(id)
+    }
+
+    actionDelete(id)
+    .then(function(data) {
+      doneCallback(id, data)
+
+      getDelCheck().prop('disabled', !getChecked().length)
+    })
+    .catch(function(error) {
+      debug.error(error)
+    })
+    .finally(callback)
   }
 
   host.addGridAction($.extend({
@@ -54,64 +54,64 @@ module.exports = function() {
     disabled: true
   }, plugin.getOptions('button')), function(e) {
     if (awaiting) {
-      return;
+      return
     }
 
     Confirm.show(e.currentTarget.getAttribute('data-tips'), function() {
-      awaiting = true;
+      awaiting = true
 
       plugin.trigger('submit', $.map(getChecked(), function(item) {
-        return item.value;
+        return item.value
       }), function() {
-        awaiting = false;
-      });
-    });
-  });
+        awaiting = false
+      })
+    })
+  })
 
   host.delegateEvents({
 
     // 全选
     'change [data-role="check-all"]': function(e) {
-      getDelCheck().prop('disabled', !e.currentTarget.checked);
+      getDelCheck().prop('disabled', !e.currentTarget.checked)
     },
 
     // 选中行
     'change [name="check-item"]': function(e) {
       if (e.currentTarget.checked) {
-        getDelCheck().prop('disabled', false);
+        getDelCheck().prop('disabled', false)
       } else {
-        getDelCheck().prop('disabled', !getChecked().length);
+        getDelCheck().prop('disabled', !getChecked().length)
       }
     }
 
-  });
+  })
 
   plugin.on('submit', function(ids, done) {
     // batch delete
     if (plugin.getOptions('multiple')) {
-      delItem(ids, done);
+      delItem(ids, done)
     } else {
-      var queue = new Queue();
+      var queue = new Queue()
 
       ids.forEach(function(id) {
         queue.use(function(next) {
-          delItem(id, next);
-        });
-      });
+          delItem(id, next)
+        })
+      })
 
-      queue.all(done);
+      queue.all(done)
     }
-  });
+  })
 
   host.after('renderPartial', function() {
-    getDelCheck().prop('disabled', !getChecked().length);
-  });
+    getDelCheck().prop('disabled', !getChecked().length)
+  })
 
   // 删除 item 后重新判断是否 disabled
   host.on('deleteItemDone', function() {
-    getDelCheck().prop('disabled', !getChecked().length);
-  });
+    getDelCheck().prop('disabled', !getChecked().length)
+  })
 
   // 通知就绪
-  this.ready();
-};
+  this.ready()
+}

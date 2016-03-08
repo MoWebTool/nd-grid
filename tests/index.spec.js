@@ -14,9 +14,12 @@ chai.use(sinonChai)
 
 describe('Grid', function() {
 
-  it('new Grid', function() {
+  it('function', function() {
     expect(Grid).to.be.a('function')
-    expect(new Grid).to.be.a('object')
+  })
+
+  it('new Grid', function() {
+    expect(new Grid).to.have.property('getList')
   })
 
 })

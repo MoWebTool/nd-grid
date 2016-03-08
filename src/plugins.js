@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = [{
   name: 'search',
@@ -46,4 +46,4 @@ module.exports = [{
   name: 'interact',
   priority: 0,
   starter: require('nd-interact')
-}];
+}]

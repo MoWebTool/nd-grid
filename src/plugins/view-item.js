@@ -3,21 +3,21 @@
  * @author crossjs <liwenfu@crossjs.com>
  */
 
-'use strict';
+'use strict'
 
-var $ = require('nd-jquery');
+var $ = require('nd-jquery')
 
-var __ = require('nd-i18n');
-var debug = require('nd-debug');
-var Promise = require('nd-promise');
+var __ = require('nd-i18n')
+var debug = require('nd-debug')
+var Promise = require('nd-promise')
 
-var View = require('../modules/view');
+var View = require('../modules/view')
 
 module.exports = function() {
   var plugin = this,
     host = plugin.host,
     uniqueId,
-    awaiting;
+    awaiting
 
   function makeView(data, trigger) {
     return new View($.extend(true, {
@@ -28,52 +28,52 @@ module.exports = function() {
 
       events: {
         'click [data-role="back"]': function() {
-          plugin.trigger('hide', this);
+          plugin.trigger('hide', this)
         }
       },
 
       labelMap: {},
       valueMap: data
 
-    }, plugin.getOptions('view')));
+    }, plugin.getOptions('view')))
   }
 
   function startup(e) {
     if (awaiting) {
-      return;
+      return
     }
 
     if (!plugin.exports) {
       // 添加用于阻止多次点击
-      awaiting = true;
+      awaiting = true
 
-      var trigger = e.currentTarget;
+      var trigger = e.currentTarget
 
-      uniqueId = host.getItemIdByTarget(trigger);
+      uniqueId = host.getItemIdByTarget(trigger)
 
       var actionFetch = plugin.getOptions('GET') || function(uniqueId) {
-        return host.GET(uniqueId);
-      };
+        return host.GET(uniqueId)
+      }
 
       if (actionFetch === 'LOCAL') {
         actionFetch = function(uniqueId) {
-          return Promise.resolve(host.getItemDataById(uniqueId, true));
-        };
+          return Promise.resolve(host.getItemDataById(uniqueId, true))
+        }
       }
 
       actionFetch(uniqueId)
         .then(function(data) {
-          plugin.exports = makeView(data, trigger).render();
-          plugin.trigger('show', plugin.exports);
+          plugin.exports = makeView(data, trigger).render()
+          plugin.trigger('show', plugin.exports)
         })
         .catch(function(error) {
-          debug.error(error);
+          debug.error(error)
         })
         .finally(function() {
-          awaiting = false;
-        });
+          awaiting = false
+        })
     } else {
-      plugin.trigger('show', plugin.exports);
+      plugin.trigger('show', plugin.exports)
     }
   }
 
@@ -81,42 +81,42 @@ module.exports = function() {
     if (!button) {
       return host.delegateEvents({
         'click [data-role="view-item"]': startup
-      });
+      })
     }
 
     host.addItemAction($.extend({
       'role': 'view-item',
       'text': __('查看详情')
-    }, button), button && button.index, startup);
-  })(plugin.getOptions('button'));
+    }, button), button && button.index, startup)
+  })(plugin.getOptions('button'))
 
   host.before('destroy', function() {
-    plugin.exports && plugin.exports.destroy();
-  });
+    plugin.exports && plugin.exports.destroy()
+  })
 
   plugin.on('show', function(view) {
     if (!plugin.getOptions('interact')) {
-      host.element.hide();
+      host.element.hide()
     }
 
     // host.set('sub', {
     //   instance: view
     // });
 
-    view.element.show();
-  });
+    view.element.show()
+  })
 
   plugin.on('hide', function(view) {
     if (!plugin.getOptions('interact')) {
-      host.element.show();
+      host.element.show()
     }
 
     // host.set('sub', null);
 
-    view && view.destroy();
-    delete plugin.exports;
-  });
+    view && view.destroy()
+    delete plugin.exports
+  })
 
   // 通知就绪
-  this.ready();
-};
+  this.ready()
+}
