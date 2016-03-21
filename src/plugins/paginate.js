@@ -25,7 +25,8 @@ module.exports = function() {
 
       plugin.exports = new Pagination($.extend({
         parentNode: host.$('[data-role="footer"]'),
-        isLastPage: gridData.items === null
+        //当 items.length 数不足分页阈值时，就可以预判当前为最后一页
+        isLastPage: gridData.items === null || gridData.items.length < params.$limit
       }, params, viewOption)).on('goto', function(page) {
         host.getList({
           data: {
