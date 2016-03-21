@@ -16,10 +16,9 @@ var Promise = require('nd-promise')
 var SubHandler = require('./src/helpers/sub-handler')
 
 /**
- * @class
- * @extends {Widget}
- * @implements {Template}
- * @param  {config} [config]   attrs
+ * @class ND.Grid
+ * @author crossjs <liwenfu@crossjs.com>
+ * @extends Widget
  */
 var Grid = Widget.extend({
 
@@ -238,6 +237,11 @@ var Grid = Widget.extend({
     }
   },
 
+  /**
+   * 拉取数据
+   * @method getList
+   * @param {Object} options
+   */
   getList: function(options) {
     var that = this
 

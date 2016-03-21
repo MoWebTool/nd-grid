@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "test": "node ./node_modules/karma/bin/karma start ./karma.conf.js",
-    "test:dev": "npm run test -- --watch"
+    "test:dev": "npm run test -- --watch",
+    "doc": "jsduck --config=./config/doc.json"
   },
   "repository": {
     "type": "git",

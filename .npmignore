@@ -1,7 +1,6 @@
 .DS_Store
-
 coverage/
 node_modules/
+docs/
 tests/
-
-karma.conf.js
+dist/
