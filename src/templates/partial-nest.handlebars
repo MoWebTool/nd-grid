@@ -1,8 +1,8 @@
 {{#if itemList}}
-<table>
+<table{{#if childKey}} class="nested"{{/if}}>
   <thead>
     <tr>
-      {{#if checkable}}<th><label class="check-all"><input data-role="check-all" type="checkbox" title="{{__ '全选'}}"{{#if checked}} checked{{/if}}></label></th>{{/if}}
+      {{#if checkable}}<th class="check-cell"><label class="check-all"><input data-role="check-all" type="checkbox" title="{{__ '全选'}}"{{#if checked}} checked{{/if}}></label></th>{{/if}}
       {{#each labelMap}}<th data-key="{{@key}}"{{#isSortKey @key}} data-sort{{/isSortKey}}>{{this}}</th>{{/each}}
       {{#if itemActions}}<th>{{__ '操作'}}</th>{{/if}}
     </tr>
@@ -10,14 +10,15 @@
   <tbody>
     {{#each itemList}}
     {{!-- ROWS --}}
-      <tr data-role="item" data-id="{{uniqueId @root.uniqueId}}"{{#if checked}} class="selected"{{/if}}>
-      {{#if @root.checkable}}<td data-role="cell">{{#unless disabled}}<label class="check-item"><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"{{#if checked}} checked{{/if}}></label>{{/unless}}</td>{{/if}}
+      <tr data-role="item" data-id="{{__uniqueId}}"{{#if checked}} class="selected"{{/if}}{{#if __parent}} data-parent="{{__parent}}" hidden{{/if}}>
+      {{#if @root.checkable}}<td class="check-cell" data-role="cell">{{#unless disabled}}<label class="check-item"><input name="check-item" type="checkbox" value="{{__uniqueId}}"{{#if checked}} checked{{/if}}></label>{{/unless}}</td>{{/if}}
       {{#each this}}
       {{#if visible}}
       {{!-- COLS --}}
       {{#if isMerge}}
         {{#unless index}}
           <td data-key="{{key}}" data-role="cell" rowspan="{{count}}">
+          {{#if ../__child}}{{#if first}}<i class="nest-expander"></i>{{/if}}{{/if}}
             {{#if isEntry}}
               <a href="javascript:;" data-role="view-item">{{adapter}}</a>
             {{else}}
@@ -27,6 +28,15 @@
         {{/unless}}
       {{else}}
         <td data-key="{{key}}" data-role="cell">
+        {{#if first}}
+        {{#if ../__child}}
+          <i data-index="{{../__index}}" class="nest-expander nest-expander-{{../__level}}"></i>
+        {{else}}
+        {{#if ../__parent}}
+          <i class="nest-indenter nest-indenter-{{../__level}}"></i>
+        {{/if}}
+        {{/if}}
+        {{/if}}
         {{#if isEntry}}
           <a href="javascript:;" data-role="view-item">{{adapter}}</a>
         {{else}}

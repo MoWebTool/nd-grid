@@ -2,13 +2,13 @@
 <ul class="cards">
   {{#each itemList}}
   {{!-- ROWS --}}
-    <li class="card{{#if checked}} selected{{/if}}" data-role="item" data-id="{{uniqueId @root.uniqueId}}">
+    <li class="card{{#if checked}} selected{{/if}}" data-role="item" data-id="{{__uniqueId}}">
     <div class="card-wrapper">
     {{#if @root.hasHeader}}
     <div class="card-header">
     {{/if}}
     {{#if @root.checkable}}
-      {{#unless disabled}}<label class="check-item"><input name="check-item" type="checkbox" value="{{uniqueId @root.uniqueId}}"{{#if checked}} checked{{/if}}></label>{{/unless}}
+      {{#unless disabled}}<label class="check-item"><input name="check-item" type="checkbox" value="{{__uniqueId}}"{{#if checked}} checked{{/if}}></label>{{/unless}}
     {{/if}}
     {{#if @root.itemActions}}
       <div data-role="actions">
@@ -23,7 +23,7 @@
     {{#if visible}}
     {{!-- COLS --}}
     <div data-key="{{key}}" data-role="cell">
-      <div data-role="cell-key">{{getLabel key}}</div>
+      <div data-role="cell-key">{{label}}</div>
       <div data-role="cell-value">
       {{#if isEntry}}
         <a href="javascript:;" data-role="view-item">{{adapter}}</a>

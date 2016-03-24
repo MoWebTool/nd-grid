@@ -15,6 +15,8 @@ var Promise = require('nd-promise')
 
 var SubHandler = require('./src/helpers/sub-handler')
 
+var CLS_NEST_EXPANDER_EXPANDED = 'nest-expander-expanded'
+
 /**
  * @class
  * @extends {Widget}
@@ -30,7 +32,7 @@ var Grid = Widget.extend({
 
   templatePartials: {
     header: require('./src/templates/partial-header.handlebars'),
-    grid: require('./src/templates/partial-grid.handlebars'),
+    nest: require('./src/templates/partial-nest.handlebars'),
     card: require('./src/templates/partial-card.handlebars'),
     content: function(model, templateOptions) {
       return templateOptions.partials[this.get('theme')](model, templateOptions)
@@ -47,25 +49,18 @@ var Grid = Widget.extend({
     templateHelpers: {
       value: null,
       getter: function() {
-        var labelMap = this.get('labelMap')
         var sortable = this.get('sortable')
 
         return {
-          uniqueId: function(uniqueId) {
-            return this[uniqueId].value
-          },
           isSortKey: function(key, options) {
             return (typeof sortable === 'boolean' ? sortable :sortable.indexOf(key) !== -1) ? options.fn(this) : options.inverse(this)
           },
-          isDisabled: this.get('isDisabled'),
-          getLabel: function(key) {
-            return labelMap[key]
-          }
+          isDisabled: this.get('isDisabled')
         }
       }
     },
 
-    theme: 'grid',
+    theme: 'nest',
 
     // 行处理
     itemActions: [],
@@ -88,6 +83,8 @@ var Grid = Widget.extend({
         return (typeof value === 'undefined') ? this.get('uniqueId') : value
       }
     },
+    // 多级嵌套
+    childKey: null,
     labelMap: {},
 
     // 未在 labelMap 中定义的字段，
@@ -174,12 +171,6 @@ var Grid = Widget.extend({
   },
 
   initProps: function() {
-    var i18n = this.get('i18n')
-
-    if (i18n) {
-      this.i18n = i18n
-    }
-
     var proxy = this.get('proxy')
 
     if (!proxy) {
@@ -236,6 +227,40 @@ var Grid = Widget.extend({
       // 取列表
       this.getList()
     }
+
+    if (this.get('childKey')) {
+      this.delegateEvents({
+        'click .nest-expander': function(e) {
+          e.preventDefault()
+          e.stopPropagation()
+          var expander = $(e.currentTarget)
+          if (expander.hasClass(CLS_NEST_EXPANDER_EXPANDED)) {
+            expander.removeClass(CLS_NEST_EXPANDER_EXPANDED)
+            this.hideNested(expander)
+          } else {
+            expander.addClass(CLS_NEST_EXPANDER_EXPANDED)
+            this.showNested(expander)
+          }
+        }
+      })
+    }
+  },
+
+  hideNested: function(expander) {
+    expander.removeClass(CLS_NEST_EXPANDER_EXPANDED)
+
+    var that = this
+    that.$('[data-parent="' + expander.data('index') + '"]').each(function(i, item) {
+      expander = $(item).attr('hidden', true).find('.' + CLS_NEST_EXPANDER_EXPANDED)
+      if (expander.hasClass(CLS_NEST_EXPANDER_EXPANDED)) {
+        that.hideNested(expander)
+      }
+    })
+  },
+
+  showNested: function(expander) {
+    expander.addClass(CLS_NEST_EXPANDER_EXPANDED)
+    this.$('[data-parent="' + expander.data('index') + '"]').attr('hidden', false)
   },
 
   getList: function(options) {
@@ -310,9 +335,9 @@ var Grid = Widget.extend({
 
       // 从 model 中移除
       itemList.splice(index, 1)
-      //页面还有数据
+      // 页面还有数据
       if (itemList.length) {
-        //仅考虑mergeKey只有一个的情况
+        // 仅考虑 mergeKey 只有一个的情况
         if (mergeKey) {
           var mergeVal = beDeleted[mergeKey].value
           var mergeIndex = beDeleted[mergeKey].index
@@ -345,40 +370,48 @@ var Grid = Widget.extend({
     gridData = $.extend(true, {}, gridData)
 
     var items = gridData.items,
+      adapters = this.get('adapters'),
+      uniqueId,
       entryKey,
       mergeKey,
+      childKey,
+      labelMap,
       visKeys,
       extKeys,
       allKeys,
       itemList = [0]
 
-    // 强制无数据时列表刷新
-    itemList.hacked = true
+    function translateItems(items, level, parent) {
+      if (!items || !items.length) {
+        return
+      }
 
-    if (items && items.length) {
-      entryKey = this.get('entryKey')
-      mergeKey = this.get('mergeKey')
+      items.forEach(function(item, index) {
+        var _item = {
+          '__uniqueId': item[uniqueId]
+        }
 
-      // keys that visible
-      visKeys = Object.keys(this.get('labelMap'))
+        var hasChild = childKey && item[childKey] && 1 || 0
+        var hasParent = parent !== -1
 
-      // keys that invisible
-      extKeys = this.get('extKeys') || Object.keys(items[0]).filter(function(key) {
-        return visKeys.indexOf(key) === -1
-      })
+        if (hasChild || hasParent) {
+          _item['__child'] = hasChild
+          _item['__index'] = hasParent ? [level, index].join('-') : ('' + index)
+          _item['__level'] = '' + level
+          _item['__parent'] = hasParent ? ('' + parent) : null
+        }
 
-      // sort keys by visibility
-      allKeys = visKeys.concat(extKeys)
+        allKeys.forEach(function(key, index) {
+          if (key === childKey) {
+            return
+          }
 
-      var adapters = this.get('adapters')
-
-      itemList = items.map(function(item) {
-        var _item = {}
-
-        allKeys.forEach(function(key) {
           _item[key] = {
+            first: index === 0,
+            last: index === visKeys.length - 1,
             key: key,
             value: item[key],
+            label: labelMap[key],
             adapter: adapters(key, item[key], item),
             visible: visKeys.indexOf(key) !== -1,
             isEntry: key === entryKey,
@@ -389,8 +422,38 @@ var Grid = Widget.extend({
           }
         })
 
-        return _item
+        itemList.push(_item)
+
+        if (hasChild) {
+          translateItems(item[childKey], level + 1, _item['__index'])
+        }
       })
+    }
+
+    // 强制无数据时列表刷新
+    itemList.hacked = true
+
+    if (items && items.length) {
+      uniqueId = this.get('uniqueId')
+      entryKey = this.get('entryKey')
+      mergeKey = this.get('mergeKey')
+      childKey = this.get('childKey')
+      labelMap = this.get('labelMap')
+
+      // keys that visible
+      visKeys = Object.keys(labelMap)
+
+      // keys that invisible
+      extKeys = this.get('extKeys') || Object.keys(items[0]).filter(function(key) {
+        return visKeys.indexOf(key) === -1
+      })
+
+      // sort keys by visibility
+      allKeys = visKeys.concat(extKeys)
+
+      itemList = []
+
+      translateItems(items, 0, -1)
 
       delete itemList.hacked
     }
@@ -417,7 +480,7 @@ var Grid = Widget.extend({
 
   _renderPartial: function(itemList) {
     this.renderPartialTemplate('content', {
-      uniqueId: this.get('uniqueId'),
+      childKey: this.get('childKey'),
       checkable: this.get('checkable'),
       // if check all
       checked: this.get('checked'),
@@ -490,7 +553,9 @@ var Grid = Widget.extend({
     if (purify) {
       var _data = {}
       Object.keys(data).forEach(function(key) {
-        _data[key] = data[key].value
+        if (key.charAt(0) !== '_' && key.charAt(1) !== '_') {
+          _data[key] = data[key].value
+        }
       })
       return _data
     }
