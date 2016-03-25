@@ -1,0 +1,8 @@
+{
+    "--title": "nd-form - API Documentation",
+    "--warnings": ["-link", "-no_doc"],
+    "--seo": true,
+    "--": "../index.js",
+    "--output":"../docs",
+    "--footer": "Generated on {DATE}"
+}
