@@ -274,9 +274,15 @@ var Grid = Widget.extend({
       options = {}
     }
 
+    var inFilter = this.get('inFilter')
+
+    // maybe destroyed
+    if (!inFilter) {
+      return
+    }
     var params = options.data =
       // 开放给外部处理
-      this.get('inFilter').call(this, $.extend({}, this.get('params')))
+      inFilter.call(this, $.extend({}, this.get('params')))
 
     Object.keys(params).forEach(function(key) {
       // 空字符串不提交查询
