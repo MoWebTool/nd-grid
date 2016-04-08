@@ -3,7 +3,7 @@
   <thead>
     <tr>
       {{#if checkable}}<th class="check-cell"><label class="check-all"><input data-role="check-all" type="checkbox" title="{{__ '全选'}}"{{#if checked}} checked{{/if}}></label></th>{{/if}}
-      {{#each labelMap}}<th data-key="{{@key}}"{{#isSortKey @key}} data-sort{{/isSortKey}}>{{this}}</th>{{/each}}
+      {{#each columns}}{{#if visible}}<th data-name="{{name}}"{{#if sortable}} data-sort{{/if}}>{{__ label}}</th>{{/if}}{{/each}}
       {{#if itemActions}}<th>{{__ '操作'}}</th>{{/if}}
     </tr>
   </thead>
@@ -15,19 +15,7 @@
       {{#each this}}
       {{#if visible}}
       {{!-- COLS --}}
-      {{#if isMerge}}
-        {{#unless index}}
-          <td data-key="{{key}}" data-role="cell" rowspan="{{count}}">
-          {{#if ../__child}}{{#if first}}<i class="nest-expander"></i>{{/if}}{{/if}}
-            {{#if isEntry}}
-              <a href="javascript:;" data-role="view-item">{{adapter}}</a>
-            {{else}}
-              <span>{{adapter}}</span>
-            {{/if}}
-          </td>
-        {{/unless}}
-      {{else}}
-        <td data-key="{{key}}" data-role="cell">
+        <td data-role="cell">
         {{#if first}}
         {{#if ../__child}}
           <i data-index="{{../__index}}" class="nest-expander nest-expander-{{../__level}}"></i>
@@ -37,18 +25,25 @@
         {{/if}}
         {{/if}}
         {{/if}}
+        {{#if adapted.safe}}
         {{#if isEntry}}
-          <a href="javascript:;" data-role="view-item">{{adapter}}</a>
+          <a href="javascript:;" data-role="view-item" data-name="{{name}}">{{{adapted.html}}}</a>
         {{else}}
-          <span>{{adapter}}</span>
+          <span data-name="{{name}}">{{{adapted.html}}}</span>
+        {{/if}}
+        {{else}}
+        {{#if isEntry}}
+          <a href="javascript:;" data-role="view-item" data-name="{{name}}" data-value="{{adapted}}"></a>
+        {{else}}
+          <span data-name="{{name}}" data-value="{{adapted}}"></span>
+        {{/if}}
         {{/if}}
         </td>
       {{/if}}
-      {{/if}}
       {{/each}}
       {{#if @root.itemActions}}
-        <td data-role="cell">
-          {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}" data-tips="{{tips}}"{{#isDisabled ../this}} disabled{{/isDisabled}}><span>{{text}}</span></button>{{/each}}
+        <td data-role="cell" data-partial="buttons">
+          {{#each @root.itemActions}}<button class="button-{{role}}" data-role="{{role}}" data-tips="{{tips}}"{{#isDisabled ../this}} disabled{{/isDisabled}}><span>{{__ text}}</span></button>{{/each}}
         </td>
       {{/if}}
       </tr>

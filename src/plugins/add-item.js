@@ -7,7 +7,6 @@
 
 var $ = require('nd-jquery')
 
-var __ = require('nd-i18n')
 var debug = require('nd-debug')
 var FormExtra = require('nd-form-extra')
 
@@ -30,25 +29,19 @@ module.exports = function() {
     return new FormExtra($.extend(true, {
       name: 'grid-' + SUB_ACTION + '-item-' + (++uid),
       method: FORM_METHOD,
-      parentNode: host.get('parentNode')
-    }, plugin.getOptions('view')))
-      .on('formCancel', function() {
-        plugin.trigger('hide', this)
-      })
-      .on('formSubmit', function(data) {
-        plugin.trigger('submit', data, resetAwaiting)
-      })
+      parentNode: host.get('parentNode'),
+      fields: host.getEditableColumns()
+    }, plugin.getOptions('view'))).on('formCancel', function() {
+      plugin.trigger('hide', this)
+    }).on('formSubmit', function(data) {
+      plugin.trigger('submit', data, resetAwaiting)
+    })
   }
 
   /**
    * 获取数据
    */
   function startup() {
-    // host.set('sub', {
-    //   id: uniqueId,
-    //   act: SUB_ACTION
-    // });
-
     if (!plugin.exports) {
       plugin.exports = makeForm().render()
     }
@@ -59,7 +52,7 @@ module.exports = function() {
   // 插入按钮，并绑定事件代理
   host.addGridAction($.extend({
     role: SUB_ACTION + '-item',
-    text: __('新增')
+    text: '新增'
   }, plugin.getOptions('button')), startup)
 
   // 渲染完成后，检查二级路由并发起请求
@@ -129,9 +122,7 @@ module.exports = function() {
       // 隐藏
       plugin.trigger('hide', plugin.exports)
     })
-    .catch(function(error) {
-      debug.error(error)
-    })
+    .catch(debug.error)
     .finally(done)
   })
 

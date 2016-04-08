@@ -22,13 +22,13 @@
     {{#each this}}
     {{#if visible}}
     {{!-- COLS --}}
-    <div data-key="{{key}}" data-role="cell">
-      <div data-role="cell-key">{{label}}</div>
+    <div data-name="{{name}}" data-role="cell">
+      <div data-role="cell-key">{{__ label}}</div>
       <div data-role="cell-value">
       {{#if isEntry}}
-        <a href="javascript:;" data-role="view-item">{{adapter}}</a>
+        <a href="javascript:;" data-role="view-item">{{#if adapted.safe}}{{{adapted.html}}}{{else}}{{adapted}}{{/if}}</a>
       {{else}}
-        {{adapter}}
+        {{#if adapted.safe}}{{{adapted.html}}}{{else}}{{adapted}}{{/if}}
       {{/if}}
       </div>
     </div>

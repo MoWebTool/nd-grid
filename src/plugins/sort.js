@@ -11,24 +11,22 @@ var SORT_ASC = 'asc'
 var SORT_DESC = 'desc'
 
 module.exports = function() {
-  var plugin = this,
-    host = plugin.host
+  var plugin = this
+  var host = plugin.host
 
-  var key
+  var name
   var sort
 
   host.delegateEvents({
 
     'click [data-sort]': function(e) {
-      key = e.target.getAttribute('data-key')
-      sort = e.target.getAttribute('data-sort')
-
-      sort = sort === SORT_ASC ? SORT_DESC : SORT_ASC
+      name = e.target.getAttribute('data-name')
+      sort = e.target.getAttribute('data-sort') === SORT_ASC ? SORT_DESC : SORT_ASC
 
       host.getList({
         // 重置为第一页
         data: $.extend({
-          $orderby: [key, sort].join(' ')
+          $orderby: [name, sort].join(' ')
         }, host.get('initialParams'))
       })
     }
@@ -36,8 +34,8 @@ module.exports = function() {
   })
 
   host.after('renderPartial', function() {
-    key && sort &&
-      this.$('[data-sort][data-key="' + key + '"]')
+    name && sort &&
+      this.$('[data-sort][data-name="' + name + '"]')
       .attr('data-sort', sort)
   })
 

@@ -7,7 +7,6 @@
 
 var $ = require('nd-jquery')
 
-var __ = require('nd-i18n')
 var debug = require('nd-debug')
 var Confirm = require('nd-confirm')
 
@@ -34,8 +33,8 @@ module.exports = function() {
   (function(button) {
     host.addItemAction($.extend({
       'role': 'del-item',
-      'text': __('删除'),
-      'tips': __('确定删除？')
+      'text': '删除',
+      'tips': '确定删除？'
     }, button), button && button.index, delegate)
   })(plugin.getOptions('button'))
 
@@ -49,9 +48,7 @@ module.exports = function() {
     .then(function(/*data*/) {
       host.deleteItem(id)
     })
-    .catch(function(error) {
-      debug.error(error)
-    })
+    .catch(debug.error)
     .finally(done)
   })
 

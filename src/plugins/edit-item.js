@@ -7,10 +7,11 @@
 
 var $ = require('nd-jquery')
 
-var __ = require('nd-i18n')
 var debug = require('nd-debug')
-var Promise = require('nd-promise')
 var FormExtra = require('nd-form-extra')
+
+var fetch = require('../helpers/fetch')
+var Edit = require('../modules/inline/edit')
 
 var uid = 0
 
@@ -23,80 +24,65 @@ module.exports = function() {
   var SUB_ACTION = 'edit'
   var FORM_METHOD = 'PATCH'
 
-  function resetAwaiting() {
+  var viewOptions = plugin.getOptions('view')
+  var interact = plugin.getOptions('interact')
+  var isInline = interact && interact.type === 'inline'
+  var columns = host.getEditableColumns()
+
+  function already() {
     awaiting = false
   }
 
   /**
    * 生成表单
    */
-  function makeForm(data) {
-    return new FormExtra($.extend(true, {
+  function makeForm(data, item) {
+    var Cls = (isInline && item) ? Edit : FormExtra
+
+    return new Cls($.extend({
       name: 'grid-' + SUB_ACTION + '-item-' + (++uid),
       method: FORM_METHOD,
-      parentNode: host.get('parentNode')
-    }, plugin.getOptions('view'), {
+      parentNode: isInline && item || host.get('parentNode'),
+      fields: columns,
+      host: host
+    }, viewOptions, {
       formData: data
-    }))
-      .on('formCancel', function() {
-        plugin.trigger('hide', this)
-      })
-      .on('formSubmit', function(data) {
-        plugin.trigger('submit', data, resetAwaiting)
-      })
+    })).on('formCancel', function() {
+      plugin.trigger('hide', this)
+    }).on('formSubmit', function(data) {
+      plugin.trigger('submit', data, already)
+    })
   }
 
   /**
    * 获取数据
    */
-  function startup(id, done) {
-    // host.set('sub', {
-    //   id: uniqueId,
-    //   act: SUB_ACTION
-    // });
-
-    var actionFetch = plugin.getOptions('GET') ||
-      function(uniqueId) {
-        return host.GET(uniqueId)
-      }
-
-    // 从本地（GRID）获取数据
-    if (actionFetch === 'LOCAL') {
-      actionFetch = function(uniqueId) {
-        return Promise.resolve(host.getItemDataById(uniqueId, true))
-      }
-    }
-
-    plugin.exports && plugin.exports.destroy()
-
-    actionFetch(uniqueId)
+  function startup(id, item) {
+    fetch(plugin)(uniqueId)
       .then(function(data) {
-        plugin.exports = makeForm(data).render()
+        plugin.exports = makeForm(data, item).render()
         plugin.trigger('show', plugin.exports)
       })
-      .catch(function(error) {
-        debug.error(error)
-      })
-      .finally(done || resetAwaiting)
+      .catch(debug.error)
+      .finally(already)
   }
 
   // 插入按钮，并绑定事件代理
   (function(button) {
     host.addItemAction($.extend({
       'role': SUB_ACTION + '-item',
-      'text': __('编辑')
+      'text': '编辑'
     }, button), button && button.index || 0, function(e) {
       if (awaiting) {
         return
       }
 
-      if (!plugin.exports) {
-        // 添加用于阻止多次点击
-        awaiting = true
-        startup((uniqueId = host.getItemIdByTarget(e.currentTarget)))
-      } else {
-        plugin.trigger('show', plugin.exports)
+      if (plugin.exports) {
+        plugin.trigger('hide', plugin.exports)
       }
+      // 添加用于阻止多次点击
+      awaiting = true
+      startup((uniqueId = host.getItemIdByTarget(e.currentTarget)), host.getItemByTarget(e.currentTarget))
     })
   })(plugin.getOptions('button'))
 
@@ -132,7 +118,7 @@ module.exports = function() {
   })
 
   plugin.on('show', function(form) {
-    if (!plugin.getOptions('interact')) {
+    if (!interact) {
       host.element.hide()
     }
 
@@ -140,11 +126,11 @@ module.exports = function() {
       instance: form
     })
 
-    form.element.show()
+    form.show ? form.show() : form.element.show()
   })
 
   plugin.on('hide', function(form) {
-    if (!plugin.getOptions('interact')) {
+    if (!interact) {
       host.element.show()
     }
 
@@ -174,9 +160,7 @@ module.exports = function() {
 
         plugin.trigger('hide', plugin.exports)
       })
-      .catch(function(error) {
-        debug.error(error)
-      })
+      .catch(debug.error)
       .finally(done)
   })
 

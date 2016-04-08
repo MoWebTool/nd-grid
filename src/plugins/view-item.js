@@ -7,10 +7,9 @@
 
 var $ = require('nd-jquery')
 
-var __ = require('nd-i18n')
 var debug = require('nd-debug')
-var Promise = require('nd-promise')
 
+var fetch = require('../helpers/fetch')
 var View = require('../modules/view')
 
 module.exports = function() {
@@ -51,24 +50,12 @@ module.exports = function() {
 
       uniqueId = host.getItemIdByTarget(trigger)
 
-      var actionFetch = plugin.getOptions('GET') || function(uniqueId) {
-        return host.GET(uniqueId)
-      }
-
-      if (actionFetch === 'LOCAL') {
-        actionFetch = function(uniqueId) {
-          return Promise.resolve(host.getItemDataById(uniqueId, true))
-        }
-      }
-
-      actionFetch(uniqueId)
+      fetch(plugin)(uniqueId)
         .then(function(data) {
           plugin.exports = makeView(data, trigger).render()
           plugin.trigger('show', plugin.exports)
         })
-        .catch(function(error) {
-          debug.error(error)
-        })
+        .catch(debug.error)
         .finally(function() {
           awaiting = false
         })
@@ -86,7 +73,7 @@ module.exports = function() {
 
     host.addItemAction($.extend({
       'role': 'view-item',
-      'text': __('查看详情')
+      'text': '查看详情'
     }, button), button && button.index, startup)
   })(plugin.getOptions('button'))
 

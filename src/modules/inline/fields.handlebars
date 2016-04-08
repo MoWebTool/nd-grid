@@ -1,0 +1,23 @@
+<div class="{{classPrefix}}-field">
+  {{#if prefix}}<span class="{{classPrefix}}-prefix">{{prefix}}</span>{{/if}}
+  {{#oneOf type 'textarea,multiline,json'}}
+    <textarea class="{{classPrefix}}-textarea" name="{{name}}" id="{{classPrefix}}-{{name}}"{{> attrs}}{{> messages}}>{{value}}</textarea>
+  {{/oneOf}}
+  {{#oneOf type 'select'}}
+    <select name="{{name}}"{{> attrs}}{{> messages}}>{{> options}}</select>
+  {{/oneOf}}
+  {{#oneOf type 'radio,checkbox'}}
+    <div class="{{type}}-group">
+      {{#each options}}
+      <span class="{{../type}}-pair">
+        <input type="{{../type}}" name="{{../name}}" id="{{../classPrefix}}-{{../name}}-{{value}}" value="{{value}}"{{#if checked}} checked{{/if}}{{#each ../attrs}}{{#if this}} {{@key}}="{{this}}"{{/if}}{{/each}}{{#each ../messages}} data-errormessage-{{@key}}="{{this}}"{{/each}}>
+        <label for="{{../classPrefix}}-{{../name}}-{{value}}">{{__ text}}</label>
+      </span>
+      {{/each}}
+    </div>
+  {{/oneOf}}
+  {{#oneOf type 'hidden,text,password,file,email,number,range,date,time,datetime,datetime-local,color,url,mobile,digits'}}
+    <input class="{{classPrefix}}-input" type="{{#if type}}{{type}}{{else}}text{{/if}}" name="{{name}}" id="{{classPrefix}}-{{name}}" value="{{value}}"{{> attrs}}{{> messages}}>
+  {{/oneOf}}
+  {{#if suffix}}<span class="{{classPrefix}}-suffix">{{suffix}}</span>{{/if}}
+</div>

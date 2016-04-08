@@ -47,16 +47,17 @@ var Grid = Widget.extend({
     template: require('./src/templates/grid.handlebars'),
 
     templateHelpers: {
-      value: null,
-      getter: function() {
-        var sortable = this.get('sortable')
+      isDisabled: function(itemData, options) {
+        var disabled = this.disabled
 
-        return {
-          isSortKey: function(key, options) {
-            return (typeof sortable === 'boolean' ? sortable :sortable.indexOf(key) !== -1) ? options.fn(this) : options.inverse(this)
-          },
-          isDisabled: this.get('isDisabled')
+        if (typeof disabled === 'function') {
+          disabled = disabled(itemData)
         }
+
+        return (disabled === true ||
+          // 整行禁止
+          (itemData.disabled && (itemData.disabled === true || itemData.disabled.value === true))) ?
+          options.fn(this) : options.inverse(this)
       }
     },
 
@@ -76,7 +77,12 @@ var Grid = Widget.extend({
 
     // 数据
     model: {},
-    mergeKey: '',
+    mergeKey: {
+      value: null,
+      setter: function() {
+        throw new Error('不再支持 mergeKey 参数')
+      }
+    },
     uniqueId: 'id',
     entryKey: {
       getter: function(value) {
@@ -85,16 +91,16 @@ var Grid = Widget.extend({
     },
     // 多级嵌套
     childKey: null,
-    labelMap: {},
+    labelMap: {
+      value: {},
+      setter: function() {
+        throw new Error('不再支持 labelMap 参数，请使用 columns')
+      }
+    },
 
-    // 未在 labelMap 中定义的字段，
-    // 如果需要被存储，请设置 extKeys = [x, y, z]
-    extKeys: null,
+    columns: [],
 
     checkable: false,
-    // 是否可按字段排序
-    // boolean, or array for sortable columns
-    sortable: false,
 
     pluginCfg: {
       sort: {},
@@ -127,22 +133,14 @@ var Grid = Widget.extend({
     itemList: null,
 
     // 数据处理
-    adapters: function(key, value/*, item*/) {
-      return value
-    },
-
-    isDisabled: function(itemData, options) {
-      var disabled = this.disabled
-
-      if (typeof disabled === 'function') {
-        disabled = disabled(itemData)
+    adapters: {
+      value: null,
+      setter: function() {
+        throw new Error('不再支持 adapters 参数，请直接在 columns 中设置 filters')
       }
-
-      return (disabled === true ||
-        // 整行禁止
-        (itemData.disabled && (itemData.disabled === true || itemData.disabled.value === true))) ?
-        options.fn(this) : options.inverse(this)
     },
+
+    filters: require('./src/helpers/filters'),
 
     //过滤数据
     inFilter: function(data) {
@@ -192,22 +190,17 @@ var Grid = Widget.extend({
 
   initPlugins: function() {
     var checkable = this.get('checkable')
-    var sortable = this.get('sortable')
-    var mode = this.get('mode')
-
     var pluginCfg = this.get('pluginCfg')
 
-    pluginCfg.sort.disabled = !sortable
-
     pluginCfg.check.disabled = !checkable
-
     if (!checkable) {
       pluginCfg.delCheck.disabled = true
     }
 
-    if (mode === 2) {
-      pluginCfg.paginate.disabled = true
-    }
+    pluginCfg.sort.disabled = !this.get('columns').some(function(column){ return !!column.sortable })
+
+    pluginCfg.viewItem.disabled = !this.get('entryKey')
+    pluginCfg.paginate.disabled = (this.get('mode') === 2)
 
     Grid.superclass.initPlugins.call(this)
   },
@@ -228,6 +221,7 @@ var Grid = Widget.extend({
       this.getList()
     }
 
+    // 处理嵌套
     if (this.get('childKey')) {
       this.delegateEvents({
         'click .nest-expander': function(e) {
@@ -244,6 +238,20 @@ var Grid = Widget.extend({
         }
       })
     }
+
+    // 处理字段
+    var columns = this.get('columns')
+    var columnMap = {}
+    var allNames = columns.map(function(column) {
+      columnMap[column.name] = column
+      return column.name
+    })
+    var visableNames = allNames.filter(function(name) {
+      return columnMap[name].visible
+    })
+    this.set('allNames', allNames)
+    this.set('columnMap', columnMap)
+    this.set('visableNames', visableNames)
   },
 
   hideNested: function(expander) {
@@ -280,6 +288,7 @@ var Grid = Widget.extend({
     if (!inFilter) {
       return
     }
+
     var params = options.data =
       // 开放给外部处理
       inFilter.call(this, $.extend({}, this.get('params')))
@@ -322,43 +331,22 @@ var Grid = Widget.extend({
           }
         })
       })
-      .catch(function(error) {
-        debug.error(error)
-      })
+      .catch(debug.error)
   },
 
   deleteItem: function(id) {
     var item = this.getItemById(id),
       index, that = this,
-      beDeleted,
-      itemList = this.get('itemList'),
-      mergeKey = this.get('mergeKey')
+      itemList = this.get('itemList')
 
     // 动画
     item.fadeOut(function() {
       index = item.index()
-      beDeleted = itemList[index]
 
       // 从 model 中移除
       itemList.splice(index, 1)
       // 页面还有数据
       if (itemList.length) {
-        // 仅考虑 mergeKey 只有一个的情况
-        if (mergeKey) {
-          var mergeVal = beDeleted[mergeKey].value
-          var mergeIndex = beDeleted[mergeKey].index
-          itemList.forEach(function(item) {
-            for (var key in item) {
-              if (item.hasOwnProperty(key) && key === mergeKey && item[key].value === mergeVal) {
-                item[key].count && item[key].count--
-                if (item[key].index > mergeIndex) {
-                  item[key].index--
-                }
-              }
-            }
-          })
-          that.renderPartial(itemList)
-        }
         // 从 DOM 中移除
         item.remove()
         that.trigger('deleteItemDone')
@@ -376,16 +364,60 @@ var Grid = Widget.extend({
     gridData = $.extend(true, {}, gridData)
 
     var items = gridData.items,
-      adapters = this.get('adapters'),
       uniqueId,
       entryKey,
-      mergeKey,
       childKey,
-      labelMap,
-      visKeys,
-      extKeys,
-      allKeys,
+      columnMap,
+      filters,
+      filterMap = {},
+      allNames,
+      visableNames,
       itemList = [0]
+
+    function getFiltersByNames(names) {
+      if (typeof names === 'string') {
+        names = names.split(/\s*\|\s*/)
+      }
+      var fs = []
+      names.forEach(function(name) {
+        if (typeof name === 'function') {
+          fs.push(name)
+        } else if (filters.hasOwnProperty(name)) {
+          fs.push(filters[name])
+        }
+      })
+      return fs
+    }
+
+    function getFiltersByName(name) {
+      if (!filterMap[name]) {
+        var column = columnMap[name]
+
+        // 寻找类型与名称对应的过滤器
+        var names = [column.type, name]
+
+        // 数据结构里特殊指定的过滤器
+        if (column.filters) {
+          names = names.concat(column.filters)
+        }
+
+        filterMap[name] = getFiltersByNames(names)
+      }
+      return filterMap[name]
+    }
+
+    function applyFilters(value, name, item) {
+      var fs = getFiltersByName(name)
+
+      if (fs.length) {
+        value = fs.reduce(function(value, f) {
+          return f(value, name, item)
+        }, value)
+      }
+
+      // 引入多语言
+      return __(value)
+    }
 
     function translateItems(items, level, parent) {
       if (!items || !items.length) {
@@ -397,6 +429,7 @@ var Grid = Widget.extend({
           '__uniqueId': item[uniqueId]
         }
 
+        // 处理嵌套
         var hasChild = childKey && item[childKey] && 1 || 0
         var hasParent = parent !== -1
 
@@ -407,25 +440,20 @@ var Grid = Widget.extend({
           _item['__parent'] = hasParent ? ('' + parent) : null
         }
 
-        allKeys.forEach(function(key, index) {
-          if (key === childKey) {
+        // 处理 cells
+        allNames.forEach(function(name) {
+          // 跳过嵌套
+          if (name === childKey) {
             return
           }
 
-          _item[key] = {
-            first: index === 0,
-            last: index === visKeys.length - 1,
-            key: key,
-            value: item[key],
-            label: labelMap[key],
-            adapter: adapters(key, item[key], item),
-            visible: visKeys.indexOf(key) !== -1,
-            isEntry: key === entryKey,
-            isMerge: key === mergeKey,
-            count: item.count,
-            index: item.index,
+          _item[name] = $.extend({}, columnMap[name], {
+            first: name === visableNames[0],
+            value: item[name],
+            adapted: applyFilters(item[name], name, item),
+            isEntry: name === entryKey,
             item: item
-          }
+          })
         })
 
         itemList.push(_item)
@@ -442,20 +470,11 @@ var Grid = Widget.extend({
     if (items && items.length) {
       uniqueId = this.get('uniqueId')
       entryKey = this.get('entryKey')
-      mergeKey = this.get('mergeKey')
       childKey = this.get('childKey')
-      labelMap = this.get('labelMap')
-
-      // keys that visible
-      visKeys = Object.keys(labelMap)
-
-      // keys that invisible
-      extKeys = this.get('extKeys') || Object.keys(items[0]).filter(function(key) {
-        return visKeys.indexOf(key) === -1
-      })
-
-      // sort keys by visibility
-      allKeys = visKeys.concat(extKeys)
+      columnMap = this.get('columnMap')
+      filters = this.get('filters')
+      allNames = this.get('allNames')
+      visableNames = this.get('visableNames')
 
       itemList = []
 
@@ -490,7 +509,7 @@ var Grid = Widget.extend({
       checkable: this.get('checkable'),
       // if check all
       checked: this.get('checked'),
-      labelMap: this.get('labelMap'),
+      columns: this.get('columns'),
       itemActions: this.get('itemActions'),
       theme: this.get('theme'),
       itemList: itemList || this.get('itemList')
@@ -567,6 +586,13 @@ var Grid = Widget.extend({
     }
 
     return data
+  },
+
+  getEditableColumns: function() {
+    return $.extend(true, [], this.get('columns').filter(function(column) {
+      // 现在只要有 group 就是可编辑
+      return !!column.group || column.editable
+    }))
   }
 
 })

@@ -7,7 +7,6 @@
 
 var $ = require('nd-jquery')
 
-var __ = require('nd-i18n')
 var debug = require('nd-debug')
 var Confirm = require('nd-confirm')
 var Queue = require('nd-queue')
@@ -41,16 +40,14 @@ module.exports = function() {
 
       getDelCheck().prop('disabled', !getChecked().length)
     })
-    .catch(function(error) {
-      debug.error(error)
-    })
+    .catch(debug.error)
     .finally(callback)
   }
 
   host.addGridAction($.extend({
     role: 'del-check',
-    text: __('删除选定'),
-    tips: __('确定删除选定？'),
+    text: '删除选定',
+    tips: '确定删除选定？',
     disabled: true
   }, plugin.getOptions('button')), function(e) {
     if (awaiting) {

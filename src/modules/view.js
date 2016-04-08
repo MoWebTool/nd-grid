@@ -24,7 +24,7 @@ var View = Widget.extend({
       return value
     },
 
-    adapters: function(key, value) {
+    adapters: function(name, value) {
       return value
     }
   },
@@ -39,26 +39,26 @@ var View = Widget.extend({
 
     this.set('model', {
       hasBack: this.get('hasBack'),
-      items: Object.keys(labelMap).map(function(key) {
+      items: Object.keys(labelMap).map(function(name) {
         return {
-          key: key,
-          label: labelMap[key],
-          value: adapters(key, valueMap[key])
+          name: name,
+          label: labelMap[name],
+          value: adapters(name, valueMap[name])
         }
       })
     })
   },
 
-  getItem: function(key) {
-    return this.$('[data-key="' + key + '"]')
+  getItem: function(name) {
+    return this.$('[data-name="' + name + '"]')
   },
 
-  getValue: function(key) {
-    return this.get('valueMap')[key]
+  getValue: function(name) {
+    return this.get('valueMap')[name]
   },
 
-  setValue: function(key, value) {
-    this.getItem(key).find('.value').html(value)
+  setValue: function(name, value) {
+    this.getItem(name).find('.value').html(value)
   }
 
 })

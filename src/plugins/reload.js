@@ -7,15 +7,13 @@
 
 var $ = require('nd-jquery')
 
-var __ = require('nd-i18n')
-
 module.exports = function() {
   var plugin = this,
     host = plugin.host
 
   host.addGridAction($.extend({
     role: 'reload',
-    text: __('刷新')
+    text: '刷新'
   }, plugin.getOptions('button')), function() {
     host.getList()
   })
