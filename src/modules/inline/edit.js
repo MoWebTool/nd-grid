@@ -190,6 +190,9 @@ var Edit = Widget.extend({
         classPrefix: this.get('classPrefix'),
         value: this.get('formData')[field.name]
       })
+      if (typeof model.options === 'function') {
+        model.options = model.options()
+      }
       if (model.options) {
         model.options.forEach(function(option) {
           option.selected = option.checked = option.value === model.value
