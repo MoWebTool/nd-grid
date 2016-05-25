@@ -1,6 +1,6 @@
 {
   "name": "nd-grid",
-  "version": "3.2.1",
+  "version": "3.2.3",
   "description": "基于模板的数据表格",
   "keywords": [],
   "homepage": "https://github.com/ndfront/nd-grid",
@@ -11,7 +11,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "test": "node ./node_modules/karma/bin/karma start ./karma.conf.js",
+    "test": "karma start ./karma.conf.js",
     "test:dev": "npm run test -- --watch"
   },
   "repository": {
@@ -41,8 +41,8 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "eslint": "^2.9.0",
     "handlebars-loader": "^1.1.4",
-    "html-loader": "^0.4.3",
     "isparta-loader": "^2.0.0",
     "karma": "^0.13.8",
     "karma-coverage": "^0.5.0",
