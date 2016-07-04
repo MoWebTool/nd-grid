@@ -25,6 +25,15 @@ module.exports = function() {
     return host.$('[name="check-item"]')
   }
 
+  host.after('renderPartial',function(){
+    var items = getCheckItems()
+    if(items.length === 0){
+      $('[data-role="check-all"]').css('display','none')
+    }else{
+      $('[data-role="check-all"]').css('display','inline-block')
+    }
+  })
+
   host.delegateEvents({
 
     'click [data-role="item"]': function(e) {
