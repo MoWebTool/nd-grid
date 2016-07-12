@@ -32,6 +32,10 @@ module.exports = [{
   disabled: true,
   starter: require('./plugins/edit-item')
 }, {
+  name: 'dupItem',
+  disabled: true,
+  starter: require('./plugins/dup-item')
+}, {
   name: 'delItem',
   disabled: true,
   starter: require('./plugins/del-item')
