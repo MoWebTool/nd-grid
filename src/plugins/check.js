@@ -22,7 +22,7 @@ module.exports = function() {
   }
 
   function getCheckItems() {
-    return host.$('[name="check-item"]')
+    return host.$('[name="check-item"]:not(:disabled)')
   }
 
   host.after('renderPartial',function(){

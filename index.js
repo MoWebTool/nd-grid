@@ -102,6 +102,9 @@ var Grid = Widget.extend({
 
     checkable: false,
 
+    // for change item's checkbox's disabled property
+    checkboxDisabled: null,
+
     pluginCfg: {
       sort: {},
       check: {},
@@ -372,7 +375,8 @@ var Grid = Widget.extend({
       filterMap = {},
       allNames,
       visableNames,
-      itemList = [0]
+      itemList = [0],
+      checkboxDisabled
 
     function getFiltersByNames(names) {
       if (typeof names === 'string') {
@@ -426,7 +430,8 @@ var Grid = Widget.extend({
 
       items.forEach(function(item, index) {
         var _item = {
-          '__uniqueId': item[uniqueId]
+          '__uniqueId': item[uniqueId],
+          checkboxDisabled: typeof checkboxDisabled === 'function' || typeof checkboxDisabled === 'boolean' ? checkboxDisabled(item) : false
         }
 
         // 处理嵌套
@@ -475,6 +480,7 @@ var Grid = Widget.extend({
       filters = this.get('filters')
       allNames = this.get('allNames')
       visableNames = this.get('visableNames')
+      checkboxDisabled = this.get('checkboxDisabled')
 
       itemList = []
 
