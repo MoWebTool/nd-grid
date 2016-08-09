@@ -1,6 +1,6 @@
 {
   "name": "nd-grid",
-  "version": "3.2.8",
+  "version": "3.2.9",
   "description": "基于模板的数据表格",
   "keywords": [],
   "homepage": "https://github.com/ndfront/nd-grid",
@@ -31,7 +31,7 @@
     "nd-form-extra": "^3.0.1",
     "nd-formdata": "^3.0.0",
     "nd-i18n": "^3.0.1",
-    "nd-interact": "^3.0.0",
+    "nd-interact": "^3.1.1",
     "nd-jquery": "^2.2.2",
     "nd-pagination": "^3.0.0",
     "nd-promise": "^3.0.0",
